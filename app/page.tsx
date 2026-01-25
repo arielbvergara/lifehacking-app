@@ -1,15 +1,22 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import { auth } from "../lib/firebase";
 import {
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
   User,
 } from "firebase/auth";
+
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+const userMeEndpointPath = "/api/User/me" as const;
+
+if (!apiBaseUrl) {
+  throw new Error("NEXT_PUBLIC_API_BASE_URL is not set");
+}
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
@@ -18,6 +25,9 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [idToken, setIdToken] = useState<string | null>(null);
+  const [userProfile, setUserProfile] = useState<unknown | null>(null);
+  const [userProfileError, setUserProfileError] = useState<string | null>(null);
+  const [userProfileLoading, setUserProfileLoading] = useState(false);
 
   // Simple auth state listener
   useEffect(() => {
@@ -39,6 +49,67 @@ export default function Home() {
     return () => unsub();
   }, []);
 
+  useEffect(() => {
+    if (!idToken) {
+      setUserProfile(null);
+      setUserProfileError(null);
+      setUserProfileLoading(false);
+      return;
+    }
+
+    const abortController = new AbortController();
+
+    const fetchUserProfile = async () => {
+      setUserProfileLoading(true);
+      setUserProfileError(null);
+
+      try {
+        const response = await fetch(`${apiBaseUrl}${userMeEndpointPath}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+          signal: abortController.signal,
+        });
+
+        if (!response.ok) {
+          let backendMessage = "Failed to load user profile";
+          try {
+            const problem = await response.json();
+            if (problem && typeof problem.detail === "string") {
+              backendMessage = problem.detail;
+            }
+          } catch {
+            // Ignore JSON parse errors and keep the generic message.
+          }
+          throw new Error(backendMessage);
+        }
+
+        const profile = await response.json();
+        setUserProfile(profile);
+      } catch (err: unknown) {
+        if (err instanceof DOMException && err.name === "AbortError") {
+          return;
+        }
+
+        const message =
+          err instanceof Error && err.message
+            ? err.message
+            : "Failed to load user profile";
+        setUserProfileError(message);
+        setUserProfile(null);
+      } finally {
+        setUserProfileLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+
+    return () => {
+      abortController.abort();
+    };
+  }, [idToken]);
+
   const handleSignIn = async () => {
     setLoading(true);
     setError(null);
@@ -46,18 +117,6 @@ export default function Home() {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err: any) {
       setError(err.message ?? "Failed to sign in");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRegister = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-    } catch (err: any) {
-      setError(err.message ?? "Failed to register");
     } finally {
       setLoading(false);
     }
@@ -94,6 +153,26 @@ export default function Home() {
           {user ? (
             <div className="space-y-3 text-zinc-700 dark:text-zinc-300 w-full max-w-xl">
               <p>Signed in as {user.email ?? user.displayName}</p>
+              {userProfileLoading && (
+                <p className="text-xs text-zinc-500">
+                  Loading user profile from /api/User/me...
+                </p>
+              )}
+              {userProfileError && (
+                <p className="text-xs text-red-500">
+                  {userProfileError}
+                </p>
+              )}
+              {userProfile && (
+                <div className="rounded-md border border-zinc-300 bg-zinc-50 p-3 text-xs text-zinc-800 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
+                  <p className="mb-1 font-semibold">
+                    Backend user profile (/api/User/me):
+                  </p>
+                  <pre className="whitespace-pre-wrap break-all">
+                    {JSON.stringify(userProfile, null, 2)}
+                  </pre>
+                </div>
+              )}
               {idToken && (
                 <div className="rounded-md border border-zinc-300 bg-zinc-50 p-3 text-xs text-zinc-800 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 break-all">
                   <p className="mb-1 font-semibold">Bearer token (ID token):</p>
@@ -127,21 +206,23 @@ export default function Home() {
                 placeholder="Password"
                 className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:bg-black dark:text-zinc-50 dark:border-zinc-700"
               />
-              <div className="flex gap-3">
+              <div className="flex flex-col gap-3">
                 <button
                   onClick={handleSignIn}
                   disabled={loading}
-                  className="flex-1 rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+                  className="w-full rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
                 >
                   {loading ? "Signing in..." : "Sign in"}
                 </button>
-                <button
-                  onClick={handleRegister}
-                  disabled={loading}
-                  className="flex-1 rounded-full border border-zinc-400 px-4 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-100 dark:border-zinc-600 dark:text-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-50"
-                >
-                  {loading ? "Creating..." : "Register"}
-                </button>
+                <p className="text-sm text-zinc-600 dark:text-zinc-300">
+                  Don&apos;t have an account? {" "}
+                  <Link
+                    href="/signup"
+                    className="font-medium text-zinc-900 underline dark:text-zinc-100"
+                  >
+                    Sign up
+                  </Link>
+                </p>
               </div>
             </div>
           )}
