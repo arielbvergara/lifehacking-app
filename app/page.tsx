@@ -28,6 +28,7 @@ export default function Home() {
   const [userProfile, setUserProfile] = useState<unknown | null>(null);
   const [userProfileError, setUserProfileError] = useState<string | null>(null);
   const [userProfileLoading, setUserProfileLoading] = useState(false);
+  const [tokenCopied, setTokenCopied] = useState(false);
 
   // Simple auth state listener
   useEffect(() => {
@@ -134,6 +135,18 @@ export default function Home() {
     }
   };
 
+  const handleCopyToken = async () => {
+    if (idToken) {
+      try {
+        await navigator.clipboard.writeText(idToken);
+        setTokenCopied(true);
+        setTimeout(() => setTokenCopied(false), 2000);
+      } catch (err) {
+        console.error("Failed to copy token", err);
+      }
+    }
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
@@ -175,7 +188,15 @@ export default function Home() {
               )}
               {idToken && (
                 <div className="rounded-md border border-zinc-300 bg-zinc-50 p-3 text-xs text-zinc-800 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 break-all">
-                  <p className="mb-1 font-semibold">Bearer token (ID token):</p>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="font-semibold">Bearer token (ID token):</p>
+                    <button
+                      onClick={handleCopyToken}
+                      className="rounded border border-zinc-300 bg-white px-2 py-0.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                    >
+                      {tokenCopied ? "Copied!" : "Copy"}
+                    </button>
+                  </div>
                   <code className="whitespace-pre-wrap break-all">
                     {idToken}
                   </code>
