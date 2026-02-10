@@ -68,6 +68,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [idToken, setIdToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isSigningUp, setIsSigningUp] = useState(false);
 
   /**
    * Listen to Firebase auth state changes
@@ -77,6 +78,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       console.log('[AuthProvider] Auth state changed');
       console.log('[AuthProvider] User:', firebaseUser ? firebaseUser.uid : 'null');
+      console.log('[AuthProvider] isSigningUp:', isSigningUp);
       
       try {
         if (firebaseUser) {
@@ -87,6 +89,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
           
           setUser(firebaseUser);
           setIdToken(token);
+          
+          // Skip backend sync if we're in the middle of a signup flow
+          // The signup function will handle backend user creation
+          if (isSigningUp) {
+            console.log('[AuthProvider] Skipping sync - signup in progress');
+            return;
+          }
           
           // Sync user with backend (create if doesn't exist)
           try {
@@ -114,7 +123,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     // Cleanup subscription on unmount
     return () => unsubscribe();
-  }, []);
+  }, [isSigningUp]);
 
   /**
    * Sign in with Google OAuth
@@ -193,26 +202,38 @@ export function AuthProvider({ children }: AuthProviderProps) {
    * Opens popup for Google authentication and creates backend user
    */
   const signUpWithGoogle = useCallback(async () => {
+    console.log('[signUpWithGoogle] Starting signup process');
+    
     try {
       setLoading(true);
       setError(null);
+      setIsSigningUp(true);
       
+      console.log('[signUpWithGoogle] Opening Google popup...');
       const firebaseUser = await firebaseSignUpWithGoogle();
+      console.log('[signUpWithGoogle] Firebase user created:', firebaseUser.uid);
+      
+      console.log('[signUpWithGoogle] Getting ID token...');
       const token = await firebaseGetIdToken(firebaseUser);
+      console.log('[signUpWithGoogle] Token obtained (first 20 chars):', token.substring(0, 20) + '...');
       
       // Create user in backend with Google account data
       // Note: externalAuthId is extracted from the token by the backend
+      console.log('[signUpWithGoogle] Creating user in backend...');
       await createUserInBackend(token, {
         email: firebaseUser.email!,
         name: firebaseUser.displayName || undefined,
       });
+      console.log('[signUpWithGoogle] Backend user created successfully');
       
       // State will be updated by onAuthStateChanged listener
     } catch (err) {
+      console.error('[signUpWithGoogle] Error during signup:', err);
       const errorMessage = formatAuthError(err);
       setError(errorMessage);
       throw err; // Re-throw so caller can handle (e.g., for redirect logic)
     } finally {
+      setIsSigningUp(false);
       setLoading(false);
     }
   }, []);
@@ -233,6 +254,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       setLoading(true);
       setError(null);
+      setIsSigningUp(true);
       
       console.log('[signUpWithEmail] Creating Firebase user...');
       const firebaseUser = await firebaseSignUpWithEmail(email, password);
@@ -258,6 +280,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setError(errorMessage);
       throw err; // Re-throw so caller can handle (e.g., for redirect logic)
     } finally {
+      setIsSigningUp(false);
       setLoading(false);
     }
   }, []);
