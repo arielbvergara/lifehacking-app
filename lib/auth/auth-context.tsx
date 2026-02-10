@@ -192,10 +192,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const token = await firebaseGetIdToken(firebaseUser);
       
       // Create user in backend with Google account data
+      // Note: externalAuthId is extracted from the token by the backend
       await createUserInBackend(token, {
         email: firebaseUser.email!,
         name: firebaseUser.displayName || undefined,
-        externalAuthId: firebaseUser.uid,
       });
       
       // State will be updated by onAuthStateChanged listener
@@ -225,10 +225,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const token = await firebaseGetIdToken(firebaseUser);
       
       // Create user in backend with form data
+      // Note: externalAuthId is extracted from the token by the backend
       await createUserInBackend(token, {
         email,
         name,
-        externalAuthId: firebaseUser.uid,
       });
       
       // State will be updated by onAuthStateChanged listener

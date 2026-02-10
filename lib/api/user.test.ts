@@ -356,7 +356,6 @@ describe('User API Functions', () => {
       const mockPayload: CreateUserPayload = {
         email: 'newuser@example.com',
         name: 'New User',
-        externalAuthId: 'firebase-uid-123',
       };
 
       global.fetch = vi.fn().mockResolvedValue({
@@ -389,7 +388,6 @@ describe('User API Functions', () => {
       const mockPayload: CreateUserPayload = {
         email: 'test@example.com',
         name: 'Test User',
-        externalAuthId: 'uid-456',
       };
 
       global.fetch = vi.fn().mockResolvedValue({
@@ -415,7 +413,6 @@ describe('User API Functions', () => {
       const mockToken = 'test-token';
       const mockPayload: CreateUserPayload = {
         email: 'noname@example.com',
-        externalAuthId: 'uid-789',
       };
 
       global.fetch = vi.fn().mockResolvedValue({
@@ -443,7 +440,6 @@ describe('User API Functions', () => {
       const mockPayload: CreateUserPayload = {
         email: 'fail@example.com',
         name: 'Fail User',
-        externalAuthId: 'uid-fail',
       };
 
       global.fetch = vi.fn().mockResolvedValue({
@@ -464,7 +460,6 @@ describe('User API Functions', () => {
       const mockToken = 'test-token';
       const mockPayload: CreateUserPayload = {
         email: 'error@example.com',
-        externalAuthId: 'uid-error',
       };
 
       global.fetch = vi.fn().mockResolvedValue({
@@ -485,7 +480,6 @@ describe('User API Functions', () => {
       const mockToken = 'test-token';
       const mockPayload: CreateUserPayload = {
         email: 'json@example.com',
-        externalAuthId: 'uid-json',
       };
 
       global.fetch = vi.fn().mockResolvedValue({
@@ -508,7 +502,6 @@ describe('User API Functions', () => {
       const mockToken = 'test-token';
       const mockPayload: CreateUserPayload = {
         email: 'network@example.com',
-        externalAuthId: 'uid-network',
       };
 
       global.fetch = vi.fn().mockRejectedValue(
@@ -527,7 +520,6 @@ describe('User API Functions', () => {
       const mockToken = 'invalid-token';
       const mockPayload: CreateUserPayload = {
         email: 'unauth@example.com',
-        externalAuthId: 'uid-unauth',
       };
 
       global.fetch = vi.fn().mockResolvedValue({

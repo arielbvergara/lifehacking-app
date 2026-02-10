@@ -19,11 +19,11 @@ export interface UserProfile {
 
 /**
  * Payload for creating a new user in the backend
+ * Note: externalAuthId is extracted from the JWT token by the backend, not from the request body
  */
 export interface CreateUserPayload {
   email: string;
   name?: string;
-  externalAuthId: string;
 }
 
 /**
@@ -125,11 +125,11 @@ export async function handleUserSync(idToken: string): Promise<UserProfile> {
  * Create user in backend with specific payload
  * 
  * This function is used during signup to create a user profile with
- * specific data (email, name, externalAuthId). It's different from
- * createUser() which relies on the backend to extract data from the token.
+ * specific data (email, name). The externalAuthId is automatically
+ * extracted from the JWT token by the backend.
  * 
  * @param idToken - Firebase ID token for authentication
- * @param payload - User data to create (email, name, externalAuthId)
+ * @param payload - User data to create (email, name)
  * @returns Promise resolving when user is created
  * @throws Error if API request fails
  * 
@@ -137,8 +137,7 @@ export async function handleUserSync(idToken: string): Promise<UserProfile> {
  * try {
  *   await createUserInBackend(idToken, {
  *     email: 'user@example.com',
- *     name: 'John Doe',
- *     externalAuthId: 'firebase-uid-123'
+ *     name: 'John Doe'
  *   });
  *   console.log('User created successfully');
  * } catch (error) {
