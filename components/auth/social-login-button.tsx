@@ -8,7 +8,6 @@ interface SocialLoginButtonProps {
 }
 
 export function SocialLoginButton({
-  provider,
   onLogin,
   loading = false,
   disabled = false,

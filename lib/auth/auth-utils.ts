@@ -59,7 +59,9 @@ const FIREBASE_ERROR_MESSAGES: Record<string, string> = {
  * // Returns: "An error occurred. Please try again"
  */
 export function getFirebaseErrorMessage(code: string): string {
-  return FIREBASE_ERROR_MESSAGES[code] || 'An error occurred. Please try again';
+  return Object.prototype.hasOwnProperty.call(FIREBASE_ERROR_MESSAGES, code)
+    ? FIREBASE_ERROR_MESSAGES[code]
+    : 'An error occurred. Please try again';
 }
 
 /**
@@ -79,12 +81,13 @@ export function getFirebaseErrorMessage(code: string): string {
  */
 export function isAuthError(error: unknown): error is FirebaseError {
   return (
-    typeof error === 'object' &&
+    typeof error === "object" &&
     error !== null &&
-    'code' in error &&
-    'message' in error &&
-    typeof (error as any).code === 'string' &&
-    (error as any).code.startsWith('auth/')
+    "code" in error &&
+    "message" in error &&
+    typeof (error as { code: unknown }).code === "string" &&
+    typeof (error as { code: string }).code === "string" &&
+    (error as { code: string }).code.startsWith("auth/")
   );
 }
 
