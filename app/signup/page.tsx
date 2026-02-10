@@ -1,148 +1,71 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { auth } from "../../lib/firebase";
-import { createUserWithEmailAndPassword, User } from "firebase/auth";
-
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-const userEndpointPath = "/api/User" as const;
-
-if (!apiBaseUrl) {
-  // Fail fast during development if the API base URL is not configured.
-  // Configure NEXT_PUBLIC_API_BASE_URL in your environment (e.g., .env.local).
-  // This is intentionally outside the component so it surfaces clearly on startup.
-  throw new Error("NEXT_PUBLIC_API_BASE_URL is not set");
-}
+import { useAuth } from "@/lib/auth/auth-context";
+import { AuthNav } from "@/components/layout/auth-nav";
+import { AuthFooter } from "@/components/layout/auth-footer";
+import { SignupHeader } from "@/components/auth/signup-header";
+import { SocialLoginButton } from "@/components/auth/social-login-button";
+import { Divider } from "@/components/shared/divider";
+import { SignupForm } from "@/components/auth/signup-form";
+import { LoginLink } from "@/components/auth/login-link";
 
 export default function SignupPage() {
   const router = useRouter();
+  const { signUpWithGoogle } = useAuth();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
-  const handleSignup = async () => {
-    setLoading(true);
-    setError(null);
-    setSuccessMessage(null);
-
+  const handleGoogleSignup = async () => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      );
-
-      const firebaseUser: User = userCredential.user;
-      const idToken = await firebaseUser.getIdToken();
-
-      const createUserPayload = {
-        email,
-        name,
-        externalAuthId: firebaseUser.uid,
-      } as const;
-
-      const response = await fetch(`${apiBaseUrl}${userEndpointPath}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${idToken}`,
-        },
-        body: JSON.stringify(createUserPayload),
-      });
-
-      if (!response.ok) {
-        let backendMessage = "Failed to create user in backend";
-        try {
-          const problem = await response.json();
-          if (problem && typeof problem.detail === "string") {
-            backendMessage = problem.detail;
-          }
-        } catch {
-          // Ignore JSON parse issues and keep the generic message.
-        }
-        throw new Error(backendMessage);
-      }
-
-      setSuccessMessage("Account created successfully.");
-      // Optionally redirect to home or another page after a short delay.
+      await signUpWithGoogle();
       router.push("/");
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error && err.message
-          ? err.message
-          : "Failed to sign up";
-      setError(message);
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error("Google signup failed:", error);
     }
   };
 
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-center py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <div className="w-full max-w-sm space-y-6 text-center sm:text-left">
-          <h1 className="text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            Create your account
-          </h1>
-          <p className="text-sm text-zinc-600 dark:text-zinc-300">
-            Sign up with your email and password. We will create your Firebase account
-            and register you with the CleanArchitecture API.
-          </p>
+  const handleSignupSuccess = () => {
+    router.push("/");
+  };
 
-          <div className="space-y-3">
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Display name"
-              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:bg-black dark:text-zinc-50 dark:border-zinc-700"
-            />
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:bg-black dark:text-zinc-50 dark:border-zinc-700"
-            />
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:bg-black dark:text-zinc-50 dark:border-zinc-700"
-            />
+  return (
+    <div className="page-gradient min-h-screen flex flex-col antialiased selection:text-black selection:bg-primary">
+      {/* Navigation */}
+      <AuthNav showSignupButton={false} showLoginButton={true} />
+
+      {/* Main Content */}
+      <main className="flex-grow flex items-center justify-center p-4 relative overflow-hidden">
+        {/* Decorative Blur Circles */}
+        <div 
+          className="absolute top-1/4 left-10 w-72 h-72 rounded-full blur-3xl -z-10 mix-blend-multiply filter opacity-50 animate-pulse-slow"
+          style={{ backgroundColor: 'rgba(43, 238, 43, 0.2)' }}
+        ></div>
+        <div 
+          className="absolute bottom-10 right-10 w-80 h-80 rounded-full blur-3xl -z-10 mix-blend-multiply filter opacity-50"
+          style={{ backgroundColor: 'rgba(254, 240, 138, 0.4)' }}
+        ></div>
+
+        {/* Signup Card */}
+        <div 
+          className="w-full max-w-md bg-white rounded-3xl p-8 md:p-10 relative z-10 border border-white/50 shadow-soft"
+        >
+          <SignupHeader />
+
+          <div className="space-y-3 mb-8">
+            <SocialLoginButton provider="google" onLogin={handleGoogleSignup} />
           </div>
 
-          <button
-            onClick={handleSignup}
-            disabled={loading}
-            className="w-full rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
-          >
-            {loading ? "Signing up..." : "Sign up"}
-          </button>
+          <Divider text="Or sign up with email" />
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
-          {successMessage && (
-            <p className="text-sm text-green-600">{successMessage}</p>
-          )}
+          <div className="mt-6">
+            <SignupForm onSuccess={handleSignupSuccess} />
+          </div>
 
-          <p className="text-sm text-zinc-600 dark:text-zinc-300">
-            Already have an account? {" "}
-            <Link
-              href="/"
-              className="font-medium text-zinc-900 underline dark:text-zinc-100"
-            >
-              Sign in
-            </Link>
-          </p>
+          <LoginLink />
         </div>
       </main>
+
+      {/* Footer */}
+      <AuthFooter />
     </div>
   );
 }
