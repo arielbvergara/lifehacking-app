@@ -11,6 +11,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
   User,
   UserCredential,
@@ -122,6 +123,70 @@ export async function getIdToken(user: User): Promise<string> {
   try {
     const token = await user.getIdToken();
     return token;
+  } catch (error) {
+    // Re-throw with context for better error handling upstream
+    throw error;
+  }
+}
+
+/**
+ * Sign up with Google OAuth using popup authentication
+ * 
+ * Creates a new user account or signs in if account already exists.
+ * Uses the same Google OAuth flow as signInWithGoogle.
+ * 
+ * @returns Promise resolving to the authenticated Firebase User
+ * @throws FirebaseError if authentication fails
+ * 
+ * @example
+ * try {
+ *   const user = await signUpWithGoogle();
+ *   console.log('Signed up:', user.email);
+ *   console.log('Display name:', user.displayName);
+ * } catch (error) {
+ *   console.error('Google sign-up failed:', error);
+ * }
+ */
+export async function signUpWithGoogle(): Promise<User> {
+  try {
+    const provider = new GoogleAuthProvider();
+    const result: UserCredential = await signInWithPopup(auth, provider);
+    return result.user;
+  } catch (error) {
+    // Re-throw with context for better error handling upstream
+    throw error;
+  }
+}
+
+/**
+ * Sign up with email and password
+ * 
+ * Creates a new user account with the provided email and password.
+ * 
+ * @param email - User's email address
+ * @param password - User's password (must meet Firebase requirements)
+ * @returns Promise resolving to the authenticated Firebase User
+ * @throws FirebaseError if account creation fails (e.g., email already in use)
+ * 
+ * @example
+ * try {
+ *   const user = await signUpWithEmail('user@example.com', 'password123');
+ *   console.log('Account created:', user.email);
+ * } catch (error) {
+ *   console.error('Email sign-up failed:', error);
+ * }
+ */
+export async function signUpWithEmail(
+  email: string,
+  password: string
+): Promise<User> {
+  try {
+    const result: UserCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    return result.user;
   } catch (error) {
     // Re-throw with context for better error handling upstream
     throw error;
