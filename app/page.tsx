@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useAuth } from "@/lib/auth/auth-context";
 import { ComingSoon } from "@/components/home/coming-soon";
 import { Logo } from "@/components/shared/logo";
@@ -53,7 +52,7 @@ export default function Home() {
             Welcome back, {displayName}!
           </h1>
           <p className="text-lg md:text-xl text-gray-600 mb-8">
-            You're successfully logged in.
+            You&apos;re successfully logged in.
           </p>
 
           {/* Sign Out Button */}
