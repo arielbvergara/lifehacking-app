@@ -10,9 +10,9 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { signInWithGoogle as firebaseSignInWithGoogle, signInWithEmail as firebaseSignInWithEmail, signOut as firebaseSignOut, getIdToken as firebaseGetIdToken } from '@/lib/auth/firebase-auth';
+import { signInWithGoogle as firebaseSignInWithGoogle, signInWithEmail as firebaseSignInWithEmail, signOut as firebaseSignOut, getIdToken as firebaseGetIdToken, signUpWithGoogle as firebaseSignUpWithGoogle, signUpWithEmail as firebaseSignUpWithEmail } from '@/lib/auth/firebase-auth';
 import { formatAuthError } from '@/lib/auth/auth-utils';
-import { handleUserSync } from '@/lib/api/user';
+import { handleUserSync, createUserInBackend } from '@/lib/api/user';
 
 /**
  * Authentication context state interface
@@ -32,6 +32,10 @@ interface AuthContextState {
   signInWithEmail: (email: string, password: string) => Promise<void>;
   /** Sign out current user */
   signOut: () => Promise<void>;
+  /** Sign up with Google OAuth */
+  signUpWithGoogle: () => Promise<void>;
+  /** Sign up with email and password */
+  signUpWithEmail: (email: string, password: string, name?: string) => Promise<void>;
 }
 
 /**
@@ -175,6 +179,68 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
+  /**
+   * Sign up with Google OAuth
+   * Opens popup for Google authentication and creates backend user
+   */
+  const signUpWithGoogle = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const firebaseUser = await firebaseSignUpWithGoogle();
+      const token = await firebaseGetIdToken(firebaseUser);
+      
+      // Create user in backend with Google account data
+      await createUserInBackend(token, {
+        email: firebaseUser.email!,
+        name: firebaseUser.displayName || undefined,
+        externalAuthId: firebaseUser.uid,
+      });
+      
+      // State will be updated by onAuthStateChanged listener
+    } catch (err) {
+      const errorMessage = formatAuthError(err);
+      setError(errorMessage);
+      throw err; // Re-throw so caller can handle (e.g., for redirect logic)
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  /**
+   * Sign up with email and password
+   * Creates new Firebase account and backend user profile
+   * 
+   * @param email - User's email address
+   * @param password - User's password
+   * @param name - Optional display name
+   */
+  const signUpWithEmail = useCallback(async (email: string, password: string, name?: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const firebaseUser = await firebaseSignUpWithEmail(email, password);
+      const token = await firebaseGetIdToken(firebaseUser);
+      
+      // Create user in backend with form data
+      await createUserInBackend(token, {
+        email,
+        name,
+        externalAuthId: firebaseUser.uid,
+      });
+      
+      // State will be updated by onAuthStateChanged listener
+    } catch (err) {
+      const errorMessage = formatAuthError(err);
+      setError(errorMessage);
+      throw err; // Re-throw so caller can handle (e.g., for redirect logic)
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const value: AuthContextState = {
     user,
     idToken,
@@ -183,6 +249,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     signInWithGoogle,
     signInWithEmail,
     signOut,
+    signUpWithGoogle,
+    signUpWithEmail,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
