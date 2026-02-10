@@ -281,7 +281,7 @@ describe('Firebase Auth Functions', () => {
         photoURL: null,
         emailVerified: true,
         getIdToken: vi.fn().mockResolvedValue(mockToken),
-      } as any;
+      } as unknown;
 
       // Act
       const result = await getIdToken(mockUser);
@@ -301,7 +301,7 @@ describe('Firebase Auth Functions', () => {
         photoURL: null,
         emailVerified: true,
         getIdToken: vi.fn().mockResolvedValue(mockRefreshedToken),
-      } as any;
+      } as unknown;
 
       // Act
       const result = await getIdToken(mockUser);
@@ -325,7 +325,7 @@ describe('Firebase Auth Functions', () => {
         photoURL: null,
         emailVerified: true,
         getIdToken: vi.fn().mockRejectedValue(mockError),
-      } as any;
+      } as unknown;
 
       // Act & Assert
       await expect(getIdToken(mockUser)).rejects.toEqual(mockError);
@@ -346,7 +346,7 @@ describe('Firebase Auth Functions', () => {
         photoURL: null,
         emailVerified: true,
         getIdToken: vi.fn().mockRejectedValue(mockError),
-      } as any;
+      } as unknown;
 
       // Act & Assert
       await expect(getIdToken(mockUser)).rejects.toEqual(mockError);

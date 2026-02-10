@@ -11,7 +11,6 @@ import {
   isAuthError,
   formatAuthError,
 } from './auth-utils';
-import { FirebaseError } from 'firebase/app';
 
 describe('Auth Utility Functions', () => {
   describe('getFirebaseErrorMessage', () => {

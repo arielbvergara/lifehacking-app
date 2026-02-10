@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { waitFor, act } from '@testing-library/react';
 import { renderHook } from '@testing-library/react';
 import { AuthProvider, useAuth } from './auth-context';
 import * as firebaseAuth from 'firebase/auth';
@@ -63,7 +63,7 @@ describe('AuthProvider', () => {
     });
 
     it('should provide auth context when used inside AuthProvider', () => {
-      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((auth, callback) => {
+      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((_auth, callback) => {
         callback(null);
         return unsubscribe;
       });
@@ -83,7 +83,7 @@ describe('AuthProvider', () => {
 
   describe('Initial state', () => {
     it('should start with loading=true and user=null', () => {
-      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((auth, callback) => {
+      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation(() => {
         // Don't call callback immediately to keep loading state
         return unsubscribe;
       });
@@ -99,7 +99,7 @@ describe('AuthProvider', () => {
     });
 
     it('should set loading=false when auth state is determined', async () => {
-      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((auth, callback) => {
+      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((_auth, callback) => {
         callback(null);
         return unsubscribe;
       });
@@ -120,11 +120,11 @@ describe('AuthProvider', () => {
         uid: 'test-uid',
         email: 'test@example.com',
         displayName: 'Test User',
-      } as any;
+      } as unknown;
 
       const mockToken = 'mock-id-token';
 
-      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((auth, callback) => {
+      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((_auth, callback) => {
         callback(mockUser);
         return unsubscribe;
       });
@@ -149,7 +149,7 @@ describe('AuthProvider', () => {
     });
 
     it('should clear user and idToken when user signs out', async () => {
-      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((auth, callback) => {
+      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((_auth, callback) => {
         callback(null);
         return unsubscribe;
       });
@@ -169,11 +169,11 @@ describe('AuthProvider', () => {
       const mockUser = {
         uid: 'test-uid',
         email: 'test@example.com',
-      } as any;
+      } as unknown;
 
       const mockToken = 'mock-id-token';
 
-      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((auth, callback) => {
+      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((_auth, callback) => {
         callback(mockUser);
         return unsubscribe;
       });
@@ -199,11 +199,11 @@ describe('AuthProvider', () => {
       const mockUser = {
         uid: 'test-uid',
         email: 'test@example.com',
-      } as any;
+      } as unknown;
 
       const mockToken = 'mock-id-token';
 
-      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((auth, callback) => {
+      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((_auth, callback) => {
         callback(mockUser);
         return unsubscribe;
       });
@@ -232,11 +232,11 @@ describe('AuthProvider', () => {
       const mockUser = {
         uid: 'test-uid',
         email: 'test@example.com',
-      } as any;
+      } as unknown;
 
       const mockToken = 'mock-id-token';
 
-      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((auth, callback) => {
+      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((_auth, callback) => {
         callback(null);
         return unsubscribe;
       });
@@ -267,7 +267,7 @@ describe('AuthProvider', () => {
     });
 
     it('should set error state if Google sign in fails', async () => {
-      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((auth, callback) => {
+      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((_auth, callback) => {
         callback(null);
         return unsubscribe;
       });
@@ -286,7 +286,7 @@ describe('AuthProvider', () => {
       await act(async () => {
         try {
           await result.current.signInWithGoogle();
-        } catch (err) {
+        } catch {
           // Expected to throw
         }
       });
@@ -302,11 +302,11 @@ describe('AuthProvider', () => {
       const mockUser = {
         uid: 'test-uid',
         email: 'test@example.com',
-      } as any;
+      } as unknown;
 
       const mockToken = 'mock-id-token';
 
-      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((auth, callback) => {
+      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((_auth, callback) => {
         callback(null);
         return unsubscribe;
       });
@@ -337,7 +337,7 @@ describe('AuthProvider', () => {
     });
 
     it('should set error state if email sign in fails', async () => {
-      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((auth, callback) => {
+      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((_auth, callback) => {
         callback(null);
         return unsubscribe;
       });
@@ -356,7 +356,7 @@ describe('AuthProvider', () => {
       await act(async () => {
         try {
           await result.current.signInWithEmail('test@example.com', 'wrongpassword');
-        } catch (err) {
+        } catch {
           // Expected to throw
         }
       });
@@ -369,7 +369,7 @@ describe('AuthProvider', () => {
 
   describe('signOut', () => {
     it('should call Firebase signOut', async () => {
-      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((auth, callback) => {
+      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((_auth, callback) => {
         callback(null);
         return unsubscribe;
       });
@@ -392,7 +392,7 @@ describe('AuthProvider', () => {
     });
 
     it('should set error state if sign out fails', async () => {
-      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((auth, callback) => {
+      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((_auth, callback) => {
         callback(null);
         return unsubscribe;
       });
@@ -411,7 +411,7 @@ describe('AuthProvider', () => {
       await act(async () => {
         try {
           await result.current.signOut();
-        } catch (err) {
+        } catch {
           // Expected to throw
         }
       });
@@ -424,7 +424,7 @@ describe('AuthProvider', () => {
 
   describe('Cleanup', () => {
     it('should unsubscribe from auth state changes on unmount', () => {
-      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((auth, callback) => {
+      vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((_auth, callback) => {
         callback(null);
         return unsubscribe;
       });
@@ -451,11 +451,11 @@ describe('AuthProvider - Property Tests', () => {
     const mockUser = {
       uid: 'test-uid',
       email: 'test@example.com',
-    } as any;
+    } as unknown;
 
     const mockToken = 'mock-id-token';
 
-    vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((auth, callback) => {
+    vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((_auth, callback) => {
       callback(null);
       return vi.fn();
     });
@@ -492,7 +492,7 @@ describe('AuthProvider - Property Tests', () => {
     await act(async () => {
       try {
         await result.current.signInWithGoogle();
-      } catch (err) {
+      } catch {
         // May throw on failure, which is expected
       }
     });

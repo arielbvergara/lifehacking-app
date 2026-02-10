@@ -386,7 +386,7 @@ describe('Login Schema Validation', () => {
       const invalidInput = {
         email: 'test@example.com',
         password: 'password123',
-        rememberMe: 'yes' as any, // Invalid type
+        rememberMe: 'yes' as unknown, // Invalid type
       };
 
       // Act
@@ -440,7 +440,7 @@ describe('Login Schema Validation', () => {
       const invalidInput = {
         email: '',
         password: '',
-        rememberMe: 'invalid' as any,
+        rememberMe: 'invalid' as unknown,
       };
 
       // Act
