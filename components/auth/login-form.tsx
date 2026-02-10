@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "@/lib/auth/auth-context";
+import { getFirebaseErrorMessage } from "@/lib/auth/auth-utils";
 
 interface LoginFormProps {
   onSuccess?: () => void;
 }
 
 export function LoginForm({ onSuccess }: LoginFormProps) {
+  const { signInWithEmail } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -18,13 +21,15 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
     setError(null);
     setLoading(true);
 
-    // TODO: Implement Firebase authentication
-    // For now, just simulate a delay
-    setTimeout(() => {
+    try {
+      await signInWithEmail(email, password);
+      onSuccess?.();
+    } catch (err: any) {
+      const errorCode = err?.code || "unknown";
+      setError(getFirebaseErrorMessage(errorCode));
+    } finally {
       setLoading(false);
-      console.log("Login attempt:", { email, password, rememberMe });
-      // onSuccess?.();
-    }, 1000);
+    }
   };
 
   return (
@@ -48,7 +53,8 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="hello@example.com"
             required
-            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all text-gray-900 placeholder-gray-400 focus:border-primary focus:ring-2 focus:ring-primary"
+            disabled={loading}
+            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all text-gray-900 placeholder-gray-400 focus:border-primary focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
       </div>
@@ -80,7 +86,8 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
             required
-            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all text-gray-900 placeholder-gray-400 focus:border-primary focus:ring-2 focus:ring-primary"
+            disabled={loading}
+            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all text-gray-900 placeholder-gray-400 focus:border-primary focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
       </div>
@@ -92,7 +99,8 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           type="checkbox"
           checked={rememberMe}
           onChange={(e) => setRememberMe(e.target.checked)}
-          className="w-5 h-5 border-gray-300 rounded cursor-pointer accent-primary"
+          disabled={loading}
+          className="w-5 h-5 border-gray-300 rounded cursor-pointer accent-primary disabled:opacity-50 disabled:cursor-not-allowed"
         />
         <label
           htmlFor="remember-me"
@@ -104,7 +112,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
 
       {/* Error Message */}
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+        <div className="p-3 bg-red-50 border border-red-200 rounded-lg" role="alert">
           <p className="text-sm text-red-600">{error}</p>
         </div>
       )}

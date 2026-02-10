@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth/auth-context";
 import { AuthNav } from "@/components/layout/auth-nav";
 import { AuthFooter } from "@/components/layout/auth-footer";
 import { LoginHeader } from "@/components/auth/login-header";
@@ -9,9 +11,20 @@ import { LoginForm } from "@/components/auth/login-form";
 import { GuestLink } from "@/components/auth/guest-link";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { signInWithGoogle } = useAuth();
+
   const handleGoogleLogin = async () => {
-    // TODO: Implement Google OAuth
-    console.log("Google login clicked");
+    try {
+      await signInWithGoogle();
+      router.push("/");
+    } catch (error) {
+      console.error("Google login failed:", error);
+    }
+  };
+
+  const handleLoginSuccess = () => {
+    router.push("/");
   };
 
   return (
@@ -44,7 +57,7 @@ export default function LoginPage() {
           <Divider text="Or log in with email" />
 
           <div className="mt-6">
-            <LoginForm />
+            <LoginForm onSuccess={handleLoginSuccess} />
           </div>
 
           <GuestLink />
