@@ -224,7 +224,7 @@ describe('Auth Utility Functions', () => {
    *   getFirebaseErrorMessage(c) returns a user-friendly message (not the code itself)
    */
   describe('Property-Based Tests', () => {
-    test.prop([fc.string()], { numRuns: 20 })(
+    test.prop([fc.string().filter(s => typeof s === 'string')], { numRuns: 20 })(
       'getFirebaseErrorMessage_ShouldAlwaysReturnNonEmptyString_ForAnyErrorCode',
       (errorCode) => {
         const message = getFirebaseErrorMessage(errorCode);

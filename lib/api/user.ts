@@ -18,6 +18,15 @@ export interface UserProfile {
 }
 
 /**
+ * Payload for creating a new user in the backend
+ * Note: externalAuthId is extracted from the JWT token by the backend, not from the request body
+ */
+export interface CreateUserPayload {
+  email: string;
+  name?: string;
+}
+
+/**
  * Fetch user profile from backend API
  * 
  * @param idToken - Firebase ID token for authentication
@@ -65,6 +74,9 @@ export async function getUserProfile(idToken: string): Promise<UserProfile> {
  * }
  */
 export async function createUser(idToken: string): Promise<UserProfile> {
+  console.log('[createUser] Creating user without payload');
+  console.log('[createUser] API_BASE_URL:', API_BASE_URL);
+  
   const response = await fetch(`${API_BASE_URL}/api/User`, {
     method: 'POST',
     headers: {
@@ -73,11 +85,23 @@ export async function createUser(idToken: string): Promise<UserProfile> {
     },
   });
 
+  console.log('[createUser] Response status:', response.status);
+  console.log('[createUser] Response ok:', response.ok);
+
   if (!response.ok) {
+    let errorBody = 'No error body';
+    try {
+      errorBody = JSON.stringify(await response.json(), null, 2);
+    } catch {
+      // Ignore
+    }
+    console.log('[createUser] Error response:', errorBody);
     throw new Error('Failed to create user');
   }
 
-  return response.json();
+  const profile = await response.json();
+  console.log('[createUser] User created successfully:', profile.id);
+  return profile;
 }
 
 /**
@@ -99,15 +123,96 @@ export async function createUser(idToken: string): Promise<UserProfile> {
  * }
  */
 export async function handleUserSync(idToken: string): Promise<UserProfile> {
+  console.log('[handleUserSync] Starting user sync');
+  
   try {
     // Try to fetch existing user profile
-    return await getUserProfile(idToken);
+    console.log('[handleUserSync] Checking if user exists...');
+    const profile = await getUserProfile(idToken);
+    console.log('[handleUserSync] User exists:', profile.id);
+    return profile;
   } catch (error) {
+    console.log('[handleUserSync] Error fetching user:', error);
+    
     // If user doesn't exist (404), create new profile
     if (error instanceof Error && error.message === 'User profile not found') {
-      return await createUser(idToken);
+      console.log('[handleUserSync] User not found, creating new user...');
+      const newProfile = await createUser(idToken);
+      console.log('[handleUserSync] New user created:', newProfile.id);
+      return newProfile;
     }
+    
     // Re-throw other errors
+    console.log('[handleUserSync] Re-throwing error');
     throw error;
   }
+}
+
+/**
+ * Create user in backend with specific payload
+ * 
+ * This function is used during signup to create a user profile with
+ * specific data (email, name). The externalAuthId is automatically
+ * extracted from the JWT token by the backend.
+ * 
+ * @param idToken - Firebase ID token for authentication
+ * @param payload - User data to create (email, name)
+ * @returns Promise resolving when user is created
+ * @throws Error if API request fails
+ * 
+ * @example
+ * try {
+ *   await createUserInBackend(idToken, {
+ *     email: 'user@example.com',
+ *     name: 'John Doe'
+ *   });
+ *   console.log('User created successfully');
+ * } catch (error) {
+ *   console.error('Failed to create user:', error);
+ * }
+ */
+export async function createUserInBackend(
+  idToken: string,
+  payload: CreateUserPayload
+): Promise<void> {
+  console.log('[createUserInBackend] Starting user creation');
+  console.log('[createUserInBackend] API_BASE_URL:', API_BASE_URL);
+  console.log('[createUserInBackend] Payload:', JSON.stringify(payload, null, 2));
+  console.log('[createUserInBackend] Token (first 20 chars):', idToken.substring(0, 20) + '...');
+  
+  if (!API_BASE_URL) {
+    throw new Error("NEXT_PUBLIC_API_BASE_URL is not set");
+  }
+
+  const url = `${API_BASE_URL}/api/User`;
+  console.log('[createUserInBackend] Request URL:', url);
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${idToken}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  console.log('[createUserInBackend] Response status:', response.status);
+  console.log('[createUserInBackend] Response ok:', response.ok);
+
+  if (!response.ok) {
+    let backendMessage = "Failed to create user in backend";
+    try {
+      const problem = await response.json();
+      console.log('[createUserInBackend] Error response body:', JSON.stringify(problem, null, 2));
+      if (problem && typeof problem.detail === "string") {
+        backendMessage = problem.detail;
+      }
+    } catch (parseError) {
+      console.log('[createUserInBackend] Failed to parse error response:', parseError);
+    }
+    console.log('[createUserInBackend] Throwing error:', backendMessage);
+    throw new Error(backendMessage);
+  }
+  
+  console.log('[createUserInBackend] User created successfully');
 }

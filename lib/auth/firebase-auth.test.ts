@@ -11,6 +11,8 @@ import {
   signInWithEmail,
   signOut,
   getIdToken,
+  signUpWithGoogle,
+  signUpWithEmail,
 } from './firebase-auth';
 import * as firebaseAuth from 'firebase/auth';
 
@@ -21,6 +23,7 @@ vi.mock('firebase/auth', async () => {
     ...actual,
     signInWithPopup: vi.fn(),
     signInWithEmailAndPassword: vi.fn(),
+    createUserWithEmailAndPassword: vi.fn(),
     signOut: vi.fn(),
     GoogleAuthProvider: vi.fn(),
   };
@@ -348,6 +351,218 @@ describe('Firebase Auth Functions', () => {
       // Act & Assert
       await expect(getIdToken(mockUser)).rejects.toEqual(mockError);
       expect(mockUser.getIdToken).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('signUpWithGoogle', () => {
+    it('signUpWithGoogle_ShouldReturnUser_WhenSignupSucceeds', async () => {
+      // Arrange
+      const mockUser = {
+        uid: 'new-user-uid-123',
+        email: 'newuser@example.com',
+        displayName: 'New User',
+        photoURL: 'https://example.com/photo.jpg',
+        emailVerified: true,
+      };
+
+      const mockUserCredential = {
+        user: mockUser,
+        providerId: 'google.com',
+        operationType: 'signIn',
+      };
+
+      (firebaseAuth.signInWithPopup as Mock).mockResolvedValue(mockUserCredential);
+
+      // Act
+      const result = await signUpWithGoogle();
+
+      // Assert
+      expect(result).toEqual(mockUser);
+      expect(firebaseAuth.signInWithPopup).toHaveBeenCalledTimes(1);
+      expect(firebaseAuth.GoogleAuthProvider).toHaveBeenCalledTimes(1);
+    });
+
+    it('signUpWithGoogle_ShouldIncludeDisplayName_WhenGoogleAccountHasName', async () => {
+      // Arrange
+      const mockUser = {
+        uid: 'new-user-uid-456',
+        email: 'user@gmail.com',
+        displayName: 'John Doe',
+        photoURL: 'https://example.com/john.jpg',
+        emailVerified: true,
+      };
+
+      const mockUserCredential = {
+        user: mockUser,
+        providerId: 'google.com',
+        operationType: 'signIn',
+      };
+
+      (firebaseAuth.signInWithPopup as Mock).mockResolvedValue(mockUserCredential);
+
+      // Act
+      const result = await signUpWithGoogle();
+
+      // Assert
+      expect(result.displayName).toBe('John Doe');
+      expect(result.email).toBe('user@gmail.com');
+    });
+
+    it('signUpWithGoogle_ShouldThrowError_WhenPopupIsBlocked', async () => {
+      // Arrange
+      const mockError = {
+        code: 'auth/popup-blocked',
+        message: 'The popup has been blocked by the browser.',
+      };
+
+      (firebaseAuth.signInWithPopup as Mock).mockRejectedValue(mockError);
+
+      // Act & Assert
+      await expect(signUpWithGoogle()).rejects.toEqual(mockError);
+      expect(firebaseAuth.signInWithPopup).toHaveBeenCalledTimes(1);
+    });
+
+    it('signUpWithGoogle_ShouldThrowError_WhenPopupIsClosedByUser', async () => {
+      // Arrange
+      const mockError = {
+        code: 'auth/popup-closed-by-user',
+        message: 'The popup has been closed by the user before finalizing the operation.',
+      };
+
+      (firebaseAuth.signInWithPopup as Mock).mockRejectedValue(mockError);
+
+      // Act & Assert
+      await expect(signUpWithGoogle()).rejects.toEqual(mockError);
+      expect(firebaseAuth.signInWithPopup).toHaveBeenCalledTimes(1);
+    });
+
+    it('signUpWithGoogle_ShouldThrowError_WhenNetworkFails', async () => {
+      // Arrange
+      const mockError = {
+        code: 'auth/network-request-failed',
+        message: 'A network error has occurred.',
+      };
+
+      (firebaseAuth.signInWithPopup as Mock).mockRejectedValue(mockError);
+
+      // Act & Assert
+      await expect(signUpWithGoogle()).rejects.toEqual(mockError);
+      expect(firebaseAuth.signInWithPopup).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('signUpWithEmail', () => {
+    it('signUpWithEmail_ShouldReturnUser_WhenSignupSucceeds', async () => {
+      // Arrange
+      const email = 'newuser@example.com';
+      const password = 'securePassword123';
+      const mockUser = {
+        uid: 'new-user-uid-789',
+        email: email,
+        displayName: null,
+        photoURL: null,
+        emailVerified: false,
+      };
+
+      const mockUserCredential = {
+        user: mockUser,
+        providerId: 'password',
+        operationType: 'signIn',
+      };
+
+      (firebaseAuth.createUserWithEmailAndPassword as Mock).mockResolvedValue(mockUserCredential);
+
+      // Act
+      const result = await signUpWithEmail(email, password);
+
+      // Assert
+      expect(result).toEqual(mockUser);
+      expect(firebaseAuth.createUserWithEmailAndPassword).toHaveBeenCalledTimes(1);
+      expect(firebaseAuth.createUserWithEmailAndPassword).toHaveBeenCalledWith(
+        expect.anything(), // auth instance
+        email,
+        password
+      );
+    });
+
+    it('signUpWithEmail_ShouldThrowError_WhenEmailAlreadyInUse', async () => {
+      // Arrange
+      const email = 'existing@example.com';
+      const password = 'password123';
+      const mockError = {
+        code: 'auth/email-already-in-use',
+        message: 'The email address is already in use by another account.',
+      };
+
+      (firebaseAuth.createUserWithEmailAndPassword as Mock).mockRejectedValue(mockError);
+
+      // Act & Assert
+      await expect(signUpWithEmail(email, password)).rejects.toEqual(mockError);
+      expect(firebaseAuth.createUserWithEmailAndPassword).toHaveBeenCalledTimes(1);
+    });
+
+    it('signUpWithEmail_ShouldThrowError_WhenEmailIsInvalid', async () => {
+      // Arrange
+      const email = 'invalid-email';
+      const password = 'password123';
+      const mockError = {
+        code: 'auth/invalid-email',
+        message: 'The email address is badly formatted.',
+      };
+
+      (firebaseAuth.createUserWithEmailAndPassword as Mock).mockRejectedValue(mockError);
+
+      // Act & Assert
+      await expect(signUpWithEmail(email, password)).rejects.toEqual(mockError);
+      expect(firebaseAuth.createUserWithEmailAndPassword).toHaveBeenCalledTimes(1);
+    });
+
+    it('signUpWithEmail_ShouldThrowError_WhenPasswordIsWeak', async () => {
+      // Arrange
+      const email = 'test@example.com';
+      const password = '123'; // Too weak
+      const mockError = {
+        code: 'auth/weak-password',
+        message: 'Password should be at least 6 characters.',
+      };
+
+      (firebaseAuth.createUserWithEmailAndPassword as Mock).mockRejectedValue(mockError);
+
+      // Act & Assert
+      await expect(signUpWithEmail(email, password)).rejects.toEqual(mockError);
+      expect(firebaseAuth.createUserWithEmailAndPassword).toHaveBeenCalledTimes(1);
+    });
+
+    it('signUpWithEmail_ShouldThrowError_WhenOperationNotAllowed', async () => {
+      // Arrange
+      const email = 'test@example.com';
+      const password = 'password123';
+      const mockError = {
+        code: 'auth/operation-not-allowed',
+        message: 'Email/password accounts are not enabled.',
+      };
+
+      (firebaseAuth.createUserWithEmailAndPassword as Mock).mockRejectedValue(mockError);
+
+      // Act & Assert
+      await expect(signUpWithEmail(email, password)).rejects.toEqual(mockError);
+      expect(firebaseAuth.createUserWithEmailAndPassword).toHaveBeenCalledTimes(1);
+    });
+
+    it('signUpWithEmail_ShouldThrowError_WhenNetworkFails', async () => {
+      // Arrange
+      const email = 'test@example.com';
+      const password = 'password123';
+      const mockError = {
+        code: 'auth/network-request-failed',
+        message: 'A network error has occurred.',
+      };
+
+      (firebaseAuth.createUserWithEmailAndPassword as Mock).mockRejectedValue(mockError);
+
+      // Act & Assert
+      await expect(signUpWithEmail(email, password)).rejects.toEqual(mockError);
+      expect(firebaseAuth.createUserWithEmailAndPassword).toHaveBeenCalledTimes(1);
     });
   });
 });
