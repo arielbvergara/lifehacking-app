@@ -1,254 +1,68 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { auth } from "../lib/firebase";
-import {
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  User,
-} from "firebase/auth";
-
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-const userMeEndpointPath = "/api/User/me" as const;
-
-if (!apiBaseUrl) {
-  throw new Error("NEXT_PUBLIC_API_BASE_URL is not set");
-}
+import { useAuth } from "@/lib/auth/auth-context";
+import { ComingSoon } from "@/components/home/coming-soon";
+import { Logo } from "@/components/shared/logo";
 
 export default function Home() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [idToken, setIdToken] = useState<string | null>(null);
-  const [userProfile, setUserProfile] = useState<Record<string, any> | null>(null);
-  const [userProfileError, setUserProfileError] = useState<string | null>(null);
-  const [userProfileLoading, setUserProfileLoading] = useState(false);
-  const [tokenCopied, setTokenCopied] = useState(false);
+  const { user, loading, signOut } = useAuth();
 
-  // Simple auth state listener
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
-      setUser(firebaseUser);
-      if (firebaseUser) {
-        try {
-          const token = await firebaseUser.getIdToken();
-          setIdToken(token);
-        } catch (err) {
-          console.error("Failed to get ID token", err);
-          setIdToken(null);
-        }
-      } else {
-        setIdToken(null);
-      }
-    });
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-zinc-50">
+        <div className="text-center">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
+          <p className="mt-4 text-sm text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
-    return () => unsub();
-  }, []);
+  // Show coming soon page for unauthenticated users
+  if (!user) {
+    return <ComingSoon />;
+  }
 
-  useEffect(() => {
-    if (!idToken) {
-      setUserProfile(null);
-      setUserProfileError(null);
-      setUserProfileLoading(false);
-      return;
-    }
-
-    const abortController = new AbortController();
-
-    const fetchUserProfile = async () => {
-      setUserProfileLoading(true);
-      setUserProfileError(null);
-
-      try {
-        const response = await fetch(`${apiBaseUrl}${userMeEndpointPath}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-          signal: abortController.signal,
-        });
-
-        if (!response.ok) {
-          let backendMessage = "Failed to load user profile";
-          try {
-            const problem = await response.json();
-            if (problem && typeof problem.detail === "string") {
-              backendMessage = problem.detail;
-            }
-          } catch {
-            // Ignore JSON parse errors and keep the generic message.
-          }
-          throw new Error(backendMessage);
-        }
-
-        const profile = await response.json();
-        setUserProfile(profile);
-      } catch (err: unknown) {
-        if (err instanceof DOMException && err.name === "AbortError") {
-          return;
-        }
-
-        const message =
-          err instanceof Error && err.message
-            ? err.message
-            : "Failed to load user profile";
-        setUserProfileError(message);
-        setUserProfile(null);
-      } finally {
-        setUserProfileLoading(false);
-      }
-    };
-
-    fetchUserProfile();
-
-    return () => {
-      abortController.abort();
-    };
-  }, [idToken]);
-
-  const handleSignIn = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch (err: any) {
-      setError(err.message ?? "Failed to sign in");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSignOut = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      await signOut(auth);
-    } catch (err: any) {
-      setError(err.message ?? "Failed to sign out");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCopyToken = async () => {
-    if (idToken) {
-      try {
-        await navigator.clipboard.writeText(idToken);
-        setTokenCopied(true);
-        setTimeout(() => setTokenCopied(false), 2000);
-      } catch (err) {
-        console.error("Failed to copy token", err);
-      }
-    }
-  };
+  // Show personalized welcome for authenticated users
+  const displayName = user.displayName || user.email || "User";
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            Firebase Auth demo
+    <div className="page-gradient min-h-screen flex flex-col antialiased selection:text-black selection:bg-primary">
+      <main className="flex-grow flex items-center justify-center p-4 relative overflow-hidden">
+        {/* Decorative Blur Circles */}
+        <div 
+          className="absolute top-1/4 left-10 w-72 h-72 rounded-full blur-3xl -z-10 mix-blend-multiply filter opacity-50 animate-pulse-slow"
+          style={{ backgroundColor: 'rgba(43, 238, 43, 0.2)' }}
+        ></div>
+        <div 
+          className="absolute bottom-10 right-10 w-80 h-80 rounded-full blur-3xl -z-10 mix-blend-multiply filter opacity-50"
+          style={{ backgroundColor: 'rgba(254, 240, 138, 0.4)' }}
+        ></div>
+
+        {/* Welcome Card */}
+        <div className="w-full max-w-2xl bg-white rounded-3xl p-8 md:p-16 relative z-10 border border-white/50 shadow-soft text-center">
+          {/* Logo */}
+          <div className="flex justify-center mb-8">
+            <Logo size="lg" />
+          </div>
+
+          {/* Welcome Message */}
+          <h1 className="text-4xl md:text-5xl font-extrabold text-textMain mb-4">
+            Welcome back, {displayName}!
           </h1>
+          <p className="text-lg md:text-xl text-gray-600 mb-8">
+            You're successfully logged in.
+          </p>
 
-          {user ? (
-            <div className="space-y-3 text-zinc-700 dark:text-zinc-300 w-full max-w-xl">
-              <p>Signed in as {user.email ?? user.displayName}</p>
-              {userProfileLoading && (
-                <p className="text-xs text-zinc-500">
-                  Loading user profile from /api/User/me...
-                </p>
-              )}
-              {userProfileError && (
-                <p className="text-xs text-red-500">
-                  {userProfileError}
-                </p>
-              )}
-              {userProfile && (
-                <div className="rounded-md border border-zinc-300 bg-zinc-50 p-3 text-xs text-zinc-800 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
-                  <p className="mb-1 font-semibold">
-                    Backend user profile (/api/User/me):
-                  </p>
-                  <pre className="whitespace-pre-wrap break-all">
-                    {JSON.stringify(userProfile, null, 2)}
-                  </pre>
-                </div>
-              )}
-              {idToken && (
-                <div className="rounded-md border border-zinc-300 bg-zinc-50 p-3 text-xs text-zinc-800 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 break-all">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="font-semibold">Bearer token (ID token):</p>
-                    <button
-                      onClick={handleCopyToken}
-                      className="rounded border border-zinc-300 bg-white px-2 py-0.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-                    >
-                      {tokenCopied ? "Copied!" : "Copy"}
-                    </button>
-                  </div>
-                  <code className="whitespace-pre-wrap break-all">
-                    {idToken}
-                  </code>
-                </div>
-              )}
-              <button
-                onClick={handleSignOut}
-                disabled={loading}
-                className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
-              >
-                {loading ? "Signing out..." : "Sign out"}
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-4 text-zinc-700 dark:text-zinc-300 w-full max-w-sm">
-              <p>Sign in with your email and password.</p>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:bg-black dark:text-zinc-50 dark:border-zinc-700"
-              />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:bg-black dark:text-zinc-50 dark:border-zinc-700"
-              />
-              <div className="flex flex-col gap-3">
-                <button
-                  onClick={handleSignIn}
-                  disabled={loading}
-                  className="w-full rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
-                >
-                  {loading ? "Signing in..." : "Sign in"}
-                </button>
-                <p className="text-sm text-zinc-600 dark:text-zinc-300">
-                  Don&apos;t have an account? {" "}
-                  <Link
-                    href="/signup"
-                    className="font-medium text-zinc-900 underline dark:text-zinc-100"
-                  >
-                    Sign up
-                  </Link>
-                </p>
-              </div>
-            </div>
-          )}
-
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {/* Sign Out Button */}
+          <button
+            onClick={signOut}
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gray-800 text-white font-bold text-lg rounded-full hover:bg-gray-700 transition-all duration-200 hover:-translate-y-0.5 active:scale-95 shadow-md hover:shadow-lg"
+          >
+            Sign Out
+          </button>
         </div>
       </main>
     </div>
