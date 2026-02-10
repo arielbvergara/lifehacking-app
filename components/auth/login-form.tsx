@@ -24,8 +24,14 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
     try {
       await signInWithEmail(email, password);
       onSuccess?.();
-    } catch (err: any) {
-      const errorCode = err?.code || "unknown";
+    } catch (err: unknown) {
+      const errorCode =
+        err &&
+        typeof err === "object" &&
+        "code" in err &&
+        typeof err.code === "string"
+          ? err.code
+          : "unknown";
       setError(getFirebaseErrorMessage(errorCode));
     } finally {
       setLoading(false);
