@@ -173,7 +173,7 @@ Wrap the application with AuthProvider:
 
 ---
 
-- [ ] 3.2 Update Login Page with Auth Handlers
+- [x] 3.2 Update Login Page with Auth Handlers
 **File**: `app/login/page.tsx`
 **Dependencies**: `lib/auth/auth-context.tsx`
 **Estimated Time**: 30 minutes
@@ -198,7 +198,7 @@ Connect login page to auth context:
 
 ---
 
-- [ ] 3.3 Update Login Form with Validation
+- [x] 3.3 Update Login Form with Validation
 **File**: `components/auth/login-form.tsx`
 **Dependencies**: `lib/schemas/login-schema.ts`, `react-hook-form`, `@hookform/resolvers/zod`
 **Estimated Time**: 2 hours
@@ -481,9 +481,67 @@ Improve perceived performance:
 
 ---
 
-### 8. Documentation & Deployment
+### 9. Home Page Implementation
 
-- [ ] 8.1 Update Documentation
+- [x] 9.1 Create Coming Soon Component
+**File**: `components/home/coming-soon.tsx` (new)
+**Dependencies**: `components/shared/logo.tsx`
+**Estimated Time**: 1 hour
+
+Create a styled "Coming Soon" component:
+- Display logo and application branding
+- Show "Coming Soon" heading with descriptive subtitle
+- Include prominent "Go to Login" button/link
+- Use gradient background consistent with login page
+- Add decorative elements (blur circles)
+- Fully responsive design
+
+**Acceptance Criteria**:
+- Component uses consistent design language with login page
+- Logo is prominently displayed
+- "Coming Soon" message is clear and welcoming
+- Login link is easy to find
+- Responsive on all screen sizes
+- Accessible (keyboard navigation, screen readers)
+
+**Testing**:
+- Unit test: Component renders correctly
+- Manual test: Verify responsive design
+- Accessibility test: Keyboard navigation and screen reader
+
+---
+
+- [x] 9.2 Update Home Page with Auth Check
+**File**: `app/page.tsx`
+**Dependencies**: `lib/auth/auth-context.tsx`, `components/home/coming-soon.tsx`
+**Estimated Time**: 1 hour
+
+Replace existing login logic with new home page design:
+- Use `useAuth()` hook to check authentication state
+- For unauthenticated users: render ComingSoon component
+- For authenticated users: display personalized welcome with user name
+- Show loading state while checking authentication
+- Add sign out button for authenticated users
+
+**Acceptance Criteria**:
+- All login logic removed from home page
+- Unauthenticated users see "Coming Soon" page
+- Authenticated users see welcome message with their name
+- Loading state displays while checking auth
+- Sign out button works correctly
+- No console errors
+
+**Testing**:
+- Integration test: Unauthenticated state shows ComingSoon
+- Integration test: Authenticated state shows user name
+- Manual test: Sign out button works
+- Manual test: Loading state displays correctly
+
+---
+
+### 10. Documentation & Deployment
+
+- [ ] 10.1 Update Documentation
 **File**: `.kiro/specs/login-page-redesign/IMPLEMENTATION-STATUS.md`
 **Dependencies**: None
 **Estimated Time**: 30 minutes
@@ -502,7 +560,7 @@ Update implementation status document:
 
 ---
 
-- [ ] 8.2 Environment Setup Documentation
+- [ ] 10.2 Environment Setup Documentation
 **File**: `.kiro/specs/login-page-redesign/SETUP.md` (new)
 **Dependencies**: None
 **Estimated Time**: 30 minutes
@@ -521,7 +579,7 @@ Create setup guide for developers:
 
 ---
 
-- [ ] 8.3 Final QA & Deployment
+- [ ] 10.3 Final QA & Deployment
 **File**: Various
 **Dependencies**: All previous tasks
 **Estimated Time**: 2 hours
@@ -553,7 +611,7 @@ Final quality assurance and deployment:
 
 ## Task Summary
 
-### Total Tasks: 23
+### Total Tasks: 25
 - **Authentication Infrastructure**: 3 tasks (2 hours)
 - **State Management**: 2 tasks (3 hours)
 - **Component Integration**: 4 tasks (3.5 hours)
@@ -561,9 +619,10 @@ Final quality assurance and deployment:
 - **Navigation**: 2 tasks (1.5 hours)
 - **Testing**: 3 tasks (5 hours)
 - **Performance**: 2 tasks (2 hours)
+- **Home Page**: 2 tasks (2 hours)
 - **Documentation**: 3 tasks (3 hours)
 
-### Total Estimated Time: ~20 hours (3 days)
+### Total Estimated Time: ~22 hours (3-4 days)
 
 ---
 

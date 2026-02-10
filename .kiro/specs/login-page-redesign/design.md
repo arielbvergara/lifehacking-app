@@ -124,6 +124,35 @@ interface SocialLoginButtonProps {
 #### 2.2.5 Other Components
 All other components (LoginHeader, Divider, GuestLink, AuthFooter, Logo) are complete and require no changes.
 
+### 2.3 Home Page Component Architecture
+
+#### 2.3.1 HomePage (`app/page.tsx`)
+**Type**: Client Component
+**Responsibility**: Display coming soon page or authenticated user welcome
+**Status**: ⏳ Needs Implementation
+
+**Props**: None (page component)
+
+**Behavior**:
+- Uses `useAuth()` hook to check authentication state
+- For unauthenticated users: displays ComingSoon component
+- For authenticated users: displays personalized welcome message with user name
+- Shows loading state while checking authentication
+
+#### 2.3.2 ComingSoon (`components/home/coming-soon.tsx`)
+**Type**: Client Component
+**Responsibility**: Display coming soon message with branding
+**Status**: ⏳ Needs Implementation
+
+**Props**: None
+
+**Behavior**:
+- Displays logo and application branding
+- Shows "Coming Soon" heading with subtitle
+- Provides prominent link/button to login page
+- Uses consistent design language with login page (gradient, colors)
+- Fully responsive design
+
 ## 3. Authentication Flow
 
 ### 3.1 Google OAuth Flow
@@ -271,6 +300,17 @@ components/
 ```
 lib/
 └── firebase.ts                   # ✅ Already configured, reuse as-is
+```
+
+### 5.4 Home Page Files (New)
+
+```
+app/
+└── page.tsx                      # Update with coming soon design (UPDATE)
+
+components/
+└── home/
+    └── coming-soon.tsx           # Coming soon component (NEW)
 ```
 
 ## 6. Authentication Logic Design

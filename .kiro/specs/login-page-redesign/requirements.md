@@ -59,6 +59,22 @@ Redesign the login page to match the modern, friendly design template provided i
 - AC-6.5: Screen readers can announce all content correctly
 - AC-6.6: Form validation errors are announced to screen readers
 
+### US-7: As a visitor, I want to see a welcoming home page
+**Acceptance Criteria:**
+- AC-7.1: Home page displays "Coming Soon" message with branding
+- AC-7.2: Page includes logo and application name
+- AC-7.3: Navigation link to login page is prominently displayed
+- AC-7.4: Page uses consistent design language with login page
+- AC-7.5: Page is responsive on all screen sizes
+
+### US-8: As an authenticated user, I want to see my name on the home page
+**Acceptance Criteria:**
+- AC-8.1: Home page displays user's display name or email
+- AC-8.2: Welcome message is personalized (e.g., "Welcome back, John!")
+- AC-8.3: Sign out button is available
+- AC-8.4: User profile information loads from auth context
+- AC-8.5: Loading state is shown while checking authentication
+
 ## Design Specifications
 
 ### Color Palette
@@ -101,6 +117,8 @@ colors: {
 - Create `/components/auth/login-form.tsx` for the form component
 - Create `/components/auth/social-login-button.tsx` for Google button
 - Create `/lib/auth/firebase-auth.ts` for authentication logic
+- Update `/app/page.tsx` for the home page with "Coming Soon" design
+- Create `/components/home/coming-soon.tsx` for the coming soon component
 - Update `/app/globals.css` with custom styles and animations
 
 ### TR-2: Dependencies
