@@ -75,28 +75,37 @@ export function AuthProvider({ children }: AuthProviderProps) {
    */
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      console.log('[AuthProvider] Auth state changed');
+      console.log('[AuthProvider] User:', firebaseUser ? firebaseUser.uid : 'null');
+      
       try {
         if (firebaseUser) {
           // User is signed in, get ID token
+          console.log('[AuthProvider] Getting ID token...');
           const token = await firebaseGetIdToken(firebaseUser);
+          console.log('[AuthProvider] Token obtained (first 20 chars):', token.substring(0, 20) + '...');
+          
           setUser(firebaseUser);
           setIdToken(token);
           
           // Sync user with backend (create if doesn't exist)
           try {
+            console.log('[AuthProvider] Syncing user with backend...');
             await handleUserSync(token);
+            console.log('[AuthProvider] User sync completed');
           } catch (syncError) {
-            console.error('Failed to sync user with backend:', syncError);
+            console.error('[AuthProvider] Failed to sync user with backend:', syncError);
             // Don't set error state here - user is still authenticated with Firebase
             // Backend sync can be retried later
           }
         } else {
           // User is signed out
+          console.log('[AuthProvider] User signed out');
           setUser(null);
           setIdToken(null);
         }
       } catch (err) {
-        console.error('Error in auth state change:', err);
+        console.error('[AuthProvider] Error in auth state change:', err);
         setError(formatAuthError(err));
       } finally {
         setLoading(false);
@@ -217,22 +226,34 @@ export function AuthProvider({ children }: AuthProviderProps) {
    * @param name - Optional display name
    */
   const signUpWithEmail = useCallback(async (email: string, password: string, name?: string) => {
+    console.log('[signUpWithEmail] Starting signup process');
+    console.log('[signUpWithEmail] Email:', email);
+    console.log('[signUpWithEmail] Name:', name);
+    
     try {
       setLoading(true);
       setError(null);
       
+      console.log('[signUpWithEmail] Creating Firebase user...');
       const firebaseUser = await firebaseSignUpWithEmail(email, password);
+      console.log('[signUpWithEmail] Firebase user created:', firebaseUser.uid);
+      
+      console.log('[signUpWithEmail] Getting ID token...');
       const token = await firebaseGetIdToken(firebaseUser);
+      console.log('[signUpWithEmail] Token obtained (first 20 chars):', token.substring(0, 20) + '...');
       
       // Create user in backend with form data
       // Note: externalAuthId is extracted from the token by the backend
+      console.log('[signUpWithEmail] Creating user in backend...');
       await createUserInBackend(token, {
         email,
         name,
       });
+      console.log('[signUpWithEmail] Backend user created successfully');
       
       // State will be updated by onAuthStateChanged listener
     } catch (err) {
+      console.error('[signUpWithEmail] Error during signup:', err);
       const errorMessage = formatAuthError(err);
       setError(errorMessage);
       throw err; // Re-throw so caller can handle (e.g., for redirect logic)
