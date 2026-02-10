@@ -11,7 +11,9 @@ import {
   getUserProfile,
   createUser,
   handleUserSync,
+  createUserInBackend,
   UserProfile,
+  CreateUserPayload,
 } from './user';
 
 // Store original fetch
@@ -344,6 +346,201 @@ describe('User API Functions', () => {
           method: 'POST',
         })
       );
+    });
+  });
+
+  describe('createUserInBackend', () => {
+    it('createUserInBackend_ShouldSucceed_WhenAPICallSucceeds', async () => {
+      // Arrange
+      const mockToken = 'test-firebase-token-789';
+      const mockPayload: CreateUserPayload = {
+        email: 'newuser@example.com',
+        name: 'New User',
+        externalAuthId: 'firebase-uid-123',
+      };
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 201,
+        json: async () => ({}),
+      } as Response);
+
+      // Act
+      await createUserInBackend(mockToken, mockPayload);
+
+      // Assert
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/api/User'),
+        expect.objectContaining({
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${mockToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(mockPayload),
+        })
+      );
+    });
+
+    it('createUserInBackend_ShouldIncludePayloadInBody_WhenMakingAPICall', async () => {
+      // Arrange
+      const mockToken = 'test-token';
+      const mockPayload: CreateUserPayload = {
+        email: 'test@example.com',
+        name: 'Test User',
+        externalAuthId: 'uid-456',
+      };
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 201,
+        json: async () => ({}),
+      } as Response);
+
+      // Act
+      await createUserInBackend(mockToken, mockPayload);
+
+      // Assert
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          body: JSON.stringify(mockPayload),
+        })
+      );
+    });
+
+    it('createUserInBackend_ShouldSucceed_WhenNameIsOmitted', async () => {
+      // Arrange
+      const mockToken = 'test-token';
+      const mockPayload: CreateUserPayload = {
+        email: 'noname@example.com',
+        externalAuthId: 'uid-789',
+      };
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 201,
+        json: async () => ({}),
+      } as Response);
+
+      // Act
+      await createUserInBackend(mockToken, mockPayload);
+
+      // Assert
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          body: JSON.stringify(mockPayload),
+        })
+      );
+    });
+
+    it('createUserInBackend_ShouldThrowError_WhenAPICallFails', async () => {
+      // Arrange
+      const mockToken = 'test-token';
+      const mockPayload: CreateUserPayload = {
+        email: 'fail@example.com',
+        name: 'Fail User',
+        externalAuthId: 'uid-fail',
+      };
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 400,
+        json: async () => ({ detail: 'Invalid email format' }),
+      } as Response);
+
+      // Act & Assert
+      await expect(createUserInBackend(mockToken, mockPayload)).rejects.toThrow(
+        'Invalid email format'
+      );
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('createUserInBackend_ShouldThrowGenericError_WhenResponseHasNoDetail', async () => {
+      // Arrange
+      const mockToken = 'test-token';
+      const mockPayload: CreateUserPayload = {
+        email: 'error@example.com',
+        externalAuthId: 'uid-error',
+      };
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+        json: async () => ({ message: 'Server error' }),
+      } as Response);
+
+      // Act & Assert
+      await expect(createUserInBackend(mockToken, mockPayload)).rejects.toThrow(
+        'Failed to create user in backend'
+      );
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('createUserInBackend_ShouldThrowGenericError_WhenResponseIsNotJSON', async () => {
+      // Arrange
+      const mockToken = 'test-token';
+      const mockPayload: CreateUserPayload = {
+        email: 'json@example.com',
+        externalAuthId: 'uid-json',
+      };
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+        json: async () => {
+          throw new Error('Invalid JSON');
+        },
+      } as Response);
+
+      // Act & Assert
+      await expect(createUserInBackend(mockToken, mockPayload)).rejects.toThrow(
+        'Failed to create user in backend'
+      );
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('createUserInBackend_ShouldThrowError_WhenNetworkFails', async () => {
+      // Arrange
+      const mockToken = 'test-token';
+      const mockPayload: CreateUserPayload = {
+        email: 'network@example.com',
+        externalAuthId: 'uid-network',
+      };
+
+      global.fetch = vi.fn().mockRejectedValue(
+        new Error('Network connection lost')
+      );
+
+      // Act & Assert
+      await expect(createUserInBackend(mockToken, mockPayload)).rejects.toThrow(
+        'Network connection lost'
+      );
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('createUserInBackend_ShouldThrowError_When401Unauthorized', async () => {
+      // Arrange
+      const mockToken = 'invalid-token';
+      const mockPayload: CreateUserPayload = {
+        email: 'unauth@example.com',
+        externalAuthId: 'uid-unauth',
+      };
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 401,
+        json: async () => ({ detail: 'Unauthorized' }),
+      } as Response);
+
+      // Act & Assert
+      await expect(createUserInBackend(mockToken, mockPayload)).rejects.toThrow(
+        'Unauthorized'
+      );
+      expect(global.fetch).toHaveBeenCalledTimes(1);
     });
   });
 
