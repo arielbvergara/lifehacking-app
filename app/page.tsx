@@ -25,7 +25,7 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [idToken, setIdToken] = useState<string | null>(null);
-  const [userProfile, setUserProfile] = useState<unknown | null>(null);
+  const [userProfile, setUserProfile] = useState<Record<string, any> | null>(null);
   const [userProfileError, setUserProfileError] = useState<string | null>(null);
   const [userProfileLoading, setUserProfileLoading] = useState(false);
   const [tokenCopied, setTokenCopied] = useState(false);
