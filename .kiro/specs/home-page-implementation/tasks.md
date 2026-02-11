@@ -297,31 +297,31 @@ This implementation plan breaks down the home page feature into discrete, increm
 - [x] 10. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 11. Add environment configuration and final polish
-  - [ ] 11.1 Add API_BASE_URL to environment variables
+- [x] 11. Add environment configuration and final polish
+  - [x] 11.1 Add API_BASE_URL to environment variables
     - Update .env.local with NEXT_PUBLIC_API_BASE_URL
     - Document required environment variables
     - _Requirements: 13.7_
   
-  - [ ] 11.2 Verify responsive design across breakpoints
+  - [x] 11.2 Verify responsive design across breakpoints
     - Test mobile layout (< 768px)
     - Test tablet layout (768px - 1023px)
     - Test desktop layout (≥ 1024px)
     - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 10.6_
   
-  - [ ] 11.3 Verify styling consistency
+  - [x] 11.3 Verify styling consistency
     - Check color scheme (green accents, white cards)
     - Check spacing and typography
     - Check hover states and transitions
     - _Requirements: 12.2, 12.3, 12.4, 12.6, 12.8, 12.9_
   
-  - [ ] 11.4 Run full test suite and type checking
+  - [x] 11.4 Run full test suite and type checking
     - Run `npm run typecheck` to verify TypeScript compilation
     - Run `npm run test:run` to execute all tests
     - Fix any failing tests or type errors
     - _Requirements: 13.1, 13.2, 13.3, 13.4_
 
-- [ ] 12. Final checkpoint - Ensure all tests pass
+- [x] 12. Final checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

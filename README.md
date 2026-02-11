@@ -1,5 +1,26 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Environment Variables
+
+This project requires the following environment variables to be configured:
+
+### Firebase Configuration
+- `NEXT_PUBLIC_FIREBASE_API_KEY` - Firebase API key
+- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` - Firebase auth domain
+- `NEXT_PUBLIC_FIREBASE_PROJECT_ID` - Firebase project ID
+- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` - Firebase storage bucket
+- `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` - Firebase messaging sender ID
+- `NEXT_PUBLIC_FIREBASE_APP_ID` - Firebase app ID
+
+### API Configuration
+- `NEXT_PUBLIC_API_BASE_URL` - Base URL for the backend API (default: `http://localhost:5055`)
+
+Copy `.env.example` to `.env.local` and fill in your values:
+
+```bash
+cp .env.example .env.local
+```
+
 ## Getting Started
 
 First, run the development server:
