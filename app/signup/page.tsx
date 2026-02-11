@@ -24,7 +24,7 @@ export default function SignupPage() {
   };
 
   const handleSignupSuccess = () => {
-    router.push("/");
+    router.push("/welcome");
   };
 
   return (
