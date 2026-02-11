@@ -526,4 +526,203 @@ describe('Property-Based Tests', () => {
       }
     );
   });
+
+  describe('Property 12: Request Deduplication', () => {
+    /**
+     * Feature: home-page-implementation, Property 12: Request Deduplication
+     * 
+     * For any sequence of rapid page loads or component re-renders, only one API
+     * request per endpoint should be in flight at any given time.
+     * 
+     * Validates: Requirements 9.9
+     */
+    fcTest.prop([
+      fc.integer({ min: 2, max: 10 }), // number of rapid re-renders
+    ], { numRuns: 10 })(
+      'should prevent duplicate requests during rapid re-renders',
+      async (numRerenders) => {
+        vi.clearAllMocks();
+
+        let resolveCategories: (value: CategoryListResponse) => void;
+        const categoriesPromise = new Promise<CategoryListResponse>((resolve) => {
+          resolveCategories = resolve;
+        });
+
+        mockFetchCategories.mockReturnValue(categoriesPromise);
+        mockFetchTips.mockResolvedValue({
+          items: [],
+          metadata: { totalItems: 0, pageNumber: 1, pageSize: 1, totalPages: 0 },
+        });
+
+        const { rerender, unmount } = renderHook(() => useHomeData());
+
+        // Trigger multiple rapid re-renders while request is in progress
+        for (let i = 0; i < numRerenders; i++) {
+          rerender();
+        }
+
+        // Resolve the promise
+        resolveCategories!({ items: [] });
+
+        await waitFor(() => {
+          // Should only have been called once despite multiple re-renders
+          expect(mockFetchCategories).toHaveBeenCalledTimes(1);
+        }, { timeout: 3000 });
+
+        unmount();
+      }
+    );
+  });
+
+  describe('Property 9: Loading State Exclusivity', () => {
+    /**
+     * Feature: home-page-implementation, Property 9: Loading State Exclusivity
+     * 
+     * For any component state, when loading is true, neither error content nor
+     * success content should be rendered simultaneously.
+     * 
+     * Validates: Requirements 9.1, 9.2
+     */
+    fcTest.prop([
+      fc.boolean(), // simulate success or error
+    ], { numRuns: 10 })(
+      'should never show loading with error or success simultaneously',
+      async (willSucceed) => {
+        vi.clearAllMocks();
+
+        if (willSucceed) {
+          mockFetchCategories.mockResolvedValue({ items: [] });
+          mockFetchTips.mockResolvedValue({
+            items: [],
+            metadata: { totalItems: 0, pageNumber: 1, pageSize: 1, totalPages: 0 },
+          });
+        } else {
+          mockFetchCategories.mockRejectedValue(new Error('Failed'));
+          mockFetchTips.mockResolvedValue({
+            items: [],
+            metadata: { totalItems: 0, pageNumber: 1, pageSize: 1, totalPages: 0 },
+          });
+        }
+
+        const { result, unmount } = renderHook(() => useHomeData());
+
+        // While loading, error should be null
+        if (result.current.loading) {
+          expect(result.current.error).toBeNull();
+        }
+
+        await waitFor(() => {
+          expect(result.current.loading).toBe(false);
+        }, { timeout: 3000 });
+
+        // After loading completes, loading should be false
+        expect(result.current.loading).toBe(false);
+
+        // Either error or success, but not both
+        if (result.current.error) {
+          expect(result.current.categories).toBeNull();
+        } else {
+          expect(result.current.error).toBeNull();
+        }
+
+        unmount();
+      }
+    );
+  });
+
+  describe('Property 10: Error State Completeness', () => {
+    /**
+     * Feature: home-page-implementation, Property 10: Error State Completeness
+     * 
+     * For any error state displayed to the user, the error UI should include both
+     * a user-friendly message and a retry mechanism.
+     * 
+     * Validates: Requirements 9.3, 9.4, 9.6
+     */
+    fcTest.prop([
+      fc.constantFrom('Network error', 'Timeout', 'Server error', 'Unknown error'),
+    ], { numRuns: 10 })(
+      'should provide error message and retry function for any error',
+      async (errorType) => {
+        vi.clearAllMocks();
+
+        mockFetchCategories.mockRejectedValue(new Error(errorType));
+        mockFetchTips.mockResolvedValue({
+          items: [],
+          metadata: { totalItems: 0, pageNumber: 1, pageSize: 1, totalPages: 0 },
+        });
+
+        const { result, unmount } = renderHook(() => useHomeData());
+
+        await waitFor(() => {
+          expect(result.current.loading).toBe(false);
+        }, { timeout: 3000 });
+
+        // Error message should be present
+        expect(result.current.error).toBeTruthy();
+        expect(typeof result.current.error).toBe('string');
+
+        // Retry function should be available
+        expect(result.current.retry).toBeDefined();
+        expect(typeof result.current.retry).toBe('function');
+
+        unmount();
+      }
+    );
+  });
+
+  describe('Property 11: Error Message Sanitization', () => {
+    /**
+     * Feature: home-page-implementation, Property 11: Error Message Sanitization
+     * 
+     * For any error object, the displayed error message should not contain technical
+     * details such as stack traces, file paths, or internal error codes.
+     * 
+     * Validates: Requirements 9.5
+     */
+    fcTest.prop([
+      fc.constantFrom(
+        'Internal server error: database connection failed at /var/www/app.js:123',
+        'Error: ECONNREFUSED 127.0.0.1:5432',
+        'TypeError: Cannot read property "id" of undefined at Object.<anonymous>',
+        'SQL Error: SELECT * FROM users WHERE id = 1; Syntax error near "WHERE"',
+        'Stack trace: at fetchData (/app/lib/api.ts:45:12)'
+      ),
+    ], { numRuns: 10 })(
+      'should sanitize technical details from error messages',
+      async (technicalError) => {
+        vi.clearAllMocks();
+
+        mockFetchCategories.mockRejectedValue(new Error(technicalError));
+        mockFetchTips.mockResolvedValue({
+          items: [],
+          metadata: { totalItems: 0, pageNumber: 1, pageSize: 1, totalPages: 0 },
+        });
+
+        const { result, unmount } = renderHook(() => useHomeData());
+
+        await waitFor(() => {
+          expect(result.current.loading).toBe(false);
+        }, { timeout: 3000 });
+
+        const errorMessage = result.current.error || '';
+
+        // Error message should not contain technical details
+        expect(errorMessage).not.toContain('database');
+        expect(errorMessage).not.toContain('ECONNREFUSED');
+        expect(errorMessage).not.toContain('TypeError');
+        expect(errorMessage).not.toContain('SQL');
+        expect(errorMessage).not.toContain('Stack trace');
+        expect(errorMessage).not.toContain('.ts:');
+        expect(errorMessage).not.toContain('.js:');
+        expect(errorMessage).not.toContain('/var/');
+        expect(errorMessage).not.toContain('127.0.0.1');
+
+        // Should be a user-friendly message
+        expect(errorMessage).toMatch(/unable to load|unexpected error|try again/i);
+
+        unmount();
+      }
+    );
+  });
 });
