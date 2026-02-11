@@ -17,7 +17,7 @@ export default function SignupPage() {
   const handleGoogleSignup = async () => {
     try {
       await signUpWithGoogle();
-      router.push("/");
+      router.push("/welcome");
     } catch (error) {
       console.error("Google signup failed:", error);
     }
