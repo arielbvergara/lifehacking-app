@@ -351,14 +351,14 @@ describe('Tips API Functions', () => {
           });
         });
 
-        // Act & Assert
-        const promise = fetchTips().catch((error) => {
-          throw error;
-        });
+        // Act & Assert - create promise and immediately start assertion
+        const assertionPromise = expect(fetchTips()).rejects.toThrow('Request timeout - please try again');
 
+        // Fast-forward time to trigger timeout
         await vi.advanceTimersByTimeAsync(10000);
 
-        await expect(promise).rejects.toThrow('Request timeout - please try again');
+        // Wait for assertion
+        await assertionPromise;
       }
     );
 
@@ -627,16 +627,14 @@ describe('Tips API Functions', () => {
           });
         });
 
-        // Act & Assert
-        const promise = fetchTipById('123e4567-e89b-12d3-a456-426614174000').catch(
-          (error) => {
-            throw error;
-          }
-        );
+        // Act & Assert - create promise and immediately start assertion
+        const assertionPromise = expect(fetchTipById('123e4567-e89b-12d3-a456-426614174000')).rejects.toThrow('Request timeout - please try again');
 
+        // Fast-forward time to trigger timeout
         await vi.advanceTimersByTimeAsync(10000);
 
-        await expect(promise).rejects.toThrow('Request timeout - please try again');
+        // Wait for assertion
+        await assertionPromise;
       }
     );
 

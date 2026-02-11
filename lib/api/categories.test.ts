@@ -203,17 +203,14 @@ describe('Categories API Functions', () => {
           });
         });
 
-        // Act & Assert
-        const promise = fetchCategories().catch((error) => {
-          // Catch the error to prevent unhandled rejection
-          throw error;
-        });
+        // Act & Assert - create promise and immediately start assertion
+        const assertionPromise = expect(fetchCategories()).rejects.toThrow('Request timeout - please try again');
 
         // Fast-forward time to trigger timeout
         await vi.advanceTimersByTimeAsync(10000);
 
-        // Assert
-        await expect(promise).rejects.toThrow('Request timeout - please try again');
+        // Wait for assertion
+        await assertionPromise;
       }
     );
 

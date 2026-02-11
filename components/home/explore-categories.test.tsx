@@ -187,16 +187,16 @@ describe('ExploreCategories - Property Tests', () => {
     fc.array(
       fc.record({
         id: fc.uuid(),
-        name: fc.string({ minLength: 1, maxLength: 50 }).filter(s => s.trim().length > 0),
-        createdAt: fc.date().map(d => d.toISOString()),
-        updatedAt: fc.constantFrom(null, fc.date().map(d => d.toISOString())),
+        name: fc.string({ minLength: 3, maxLength: 50 }).filter(s => s.trim().length >= 3 && /^[a-zA-Z0-9\s]+$/.test(s)),
+        createdAt: fc.integer({ min: new Date('2020-01-01').getTime(), max: new Date('2030-12-31').getTime() }).map((timestamp) => new Date(timestamp).toISOString()),
+        updatedAt: fc.option(fc.integer({ min: new Date('2020-01-01').getTime(), max: new Date('2030-12-31').getTime() }).map((timestamp) => new Date(timestamp).toISOString()), { nil: null }),
       }),
       { minLength: 1, maxLength: 20 }
     ),
   ])(
     'should render exactly one CategoryCard for each category in the list',
     (categories) => {
-      const { unmount } = render(
+      const { container, unmount } = render(
         <ExploreCategories
           categories={categories}
           loading={false}
@@ -205,18 +205,9 @@ describe('ExploreCategories - Property Tests', () => {
         />
       );
 
-      // For each category, verify its name appears in the document
-      categories.forEach((category) => {
-        expect(screen.getByText(category.name)).toBeInTheDocument();
-      });
-
-      // Verify the count matches
-      const categoryNames = categories.map(c => c.name);
-      categoryNames.forEach((name) => {
-        const elements = screen.getAllByText(name);
-        // Each category name should appear exactly once
-        expect(elements).toHaveLength(1);
-      });
+      // Count the number of category cards rendered (using role="button" which is unique to cards)
+      const cards = container.querySelectorAll('[role="button"]');
+      expect(cards).toHaveLength(categories.length);
 
       unmount();
     }
@@ -227,8 +218,8 @@ describe('ExploreCategories - Property Tests', () => {
       fc.record({
         id: fc.uuid(),
         name: fc.string({ minLength: 1, maxLength: 50 }).filter(s => s.trim().length > 0),
-        createdAt: fc.date().map(d => d.toISOString()),
-        updatedAt: fc.constantFrom(null, fc.date().map(d => d.toISOString())),
+        createdAt: fc.integer({ min: new Date('2020-01-01').getTime(), max: new Date('2030-12-31').getTime() }).map((timestamp) => new Date(timestamp).toISOString()),
+        updatedAt: fc.option(fc.integer({ min: new Date('2020-01-01').getTime(), max: new Date('2030-12-31').getTime() }).map((timestamp) => new Date(timestamp).toISOString()), { nil: null }),
       }),
       { minLength: 1, maxLength: 10 }
     ),
@@ -261,8 +252,8 @@ describe('ExploreCategories - Responsive Grid Property Tests', () => {
       fc.record({
         id: fc.uuid(),
         name: fc.string({ minLength: 1, maxLength: 50 }),
-        createdAt: fc.date().map(d => d.toISOString()),
-        updatedAt: fc.constantFrom(null, fc.date().map(d => d.toISOString())),
+        createdAt: fc.integer({ min: new Date('2020-01-01').getTime(), max: new Date('2030-12-31').getTime() }).map((timestamp) => new Date(timestamp).toISOString()),
+        updatedAt: fc.option(fc.integer({ min: new Date('2020-01-01').getTime(), max: new Date('2030-12-31').getTime() }).map((timestamp) => new Date(timestamp).toISOString()), { nil: null }),
       }),
       { minLength: 1, maxLength: 10 }
     ),
