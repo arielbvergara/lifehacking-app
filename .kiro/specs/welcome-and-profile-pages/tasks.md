@@ -78,7 +78,7 @@ This implementation plan breaks down the welcome and profile pages feature into 
     - Ensure navigation occurs after successful signup
     - _Requirements: 1.1, 6.1_
 
-  - [ ]* 3.2 Write property test for signup success navigation
+  - [x]* 3.2 Write property test for signup success navigation
     - **Property 1: Signup Success Navigation**
     - Generate random signup success states
     - Verify router.push('/welcome') is called for any successful signup
