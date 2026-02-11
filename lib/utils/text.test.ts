@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { fc, test } from '@fast-check/vitest';
 import { truncateText } from './text';
 
 describe('truncateText', () => {
@@ -68,4 +69,76 @@ describe('truncateText', () => {
     expect(result).toBe('0123456789...');
     expect(result.substring(0, 10)).toBe('0123456789');
   });
+});
+
+/**
+ * Property-Based Tests
+ * Feature: home-page-implementation
+ */
+describe('truncateText - Property-Based Tests', () => {
+  /**
+   * Property 8: Text Truncation Consistency
+   * **Validates: Requirements 4.6, 5.7**
+   * 
+   * For any text string that exceeds the maximum display length,
+   * the truncated text should end with an ellipsis ("...") and
+   * the total length should not exceed the maximum length plus 3 characters.
+   */
+  test.prop([
+    fc.string({ minLength: 1, maxLength: 500 }),
+    fc.integer({ min: 0, max: 200 })
+  ], { numRuns: 100 })(
+    'Property_8_TextTruncation_ShouldEndWithEllipsis_WhenTextExceedsMaxLength',
+    (text, maxLength) => {
+      // Act
+      const result = truncateText(text, maxLength);
+
+      // Assert
+      if (text.length > maxLength) {
+        // Should end with ellipsis
+        expect(result.endsWith('...')).toBe(true);
+        // Total length should be maxLength + 3
+        expect(result.length).toBe(maxLength + 3);
+        // Should preserve the first maxLength characters
+        expect(result.substring(0, maxLength)).toBe(text.substring(0, maxLength));
+      } else {
+        // Should return original text unchanged
+        expect(result).toBe(text);
+      }
+    }
+  );
+
+  test.prop([
+    fc.string({ minLength: 1, maxLength: 500 })
+  ], { numRuns: 100 })(
+    'Property_8_TextTruncation_ShouldPreserveOriginal_WhenTextIsShorterThanMaxLength',
+    (text) => {
+      // Arrange: Use a maxLength that's always longer than the text
+      const maxLength = text.length + 10;
+
+      // Act
+      const result = truncateText(text, maxLength);
+
+      // Assert
+      expect(result).toBe(text);
+      expect(result.endsWith('...')).toBe(false);
+    }
+  );
+
+  test.prop([
+    fc.string({ minLength: 10, maxLength: 500 }),
+    fc.integer({ min: 1, max: 200 })
+  ], { numRuns: 100 })(
+    'Property_8_TextTruncation_ShouldBeDeterministic_ForSameInputs',
+    (text, maxLength) => {
+      // Act: Call the function multiple times with the same inputs
+      const result1 = truncateText(text, maxLength);
+      const result2 = truncateText(text, maxLength);
+      const result3 = truncateText(text, maxLength);
+
+      // Assert: Results should be identical
+      expect(result1).toBe(result2);
+      expect(result2).toBe(result3);
+    }
+  );
 });
