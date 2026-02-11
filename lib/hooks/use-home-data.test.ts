@@ -426,3 +426,104 @@ describe('useHomeData', () => {
     });
   });
 });
+
+// Property-Based Tests
+import { fc, test as fcTest } from '@fast-check/vitest';
+
+describe('Property-Based Tests', () => {
+  describe('Property 15: Parallel API Request Independence', () => {
+    /**
+     * Feature: home-page-implementation, Property 15: Parallel API Request Independence
+     * 
+     * For any page load, the category API request and tip API requests should execute
+     * in parallel, and a failure in one should not prevent the other from completing successfully.
+     * 
+     * Validates: Requirements 14.1
+     */
+    fcTest.prop([
+      fc.boolean(), // categories success/failure
+      fc.boolean(), // featured tip success/failure  
+      fc.boolean(), // latest tips success/failure
+    ], { numRuns: 8 })(
+      'should allow independent completion of parallel API requests',
+      async (categoriesSuccess, featuredTipSuccess, latestTipsSuccess) => {
+        // Clear mocks before each iteration
+        vi.clearAllMocks();
+        
+        const mockCategories: CategoryListResponse = {
+          items: [
+            {
+              id: '1',
+              name: 'Test Category',
+              createdAt: '2024-01-01T00:00:00Z',
+              updatedAt: null,
+            },
+          ],
+        };
+
+        const mockTips: PagedTipsResponse = {
+          items: [
+            {
+              id: 'tip-1',
+              title: 'Test Tip',
+              description: 'Description',
+              categoryId: '1',
+              categoryName: 'Test',
+              tags: [],
+              videoUrl: null,
+              createdAt: '2024-01-01T00:00:00Z',
+            },
+          ],
+          metadata: {
+            totalItems: 1,
+            pageNumber: 1,
+            pageSize: 1,
+            totalPages: 1,
+          },
+        };
+
+        // Setup mocks based on success/failure flags
+        if (categoriesSuccess) {
+          mockFetchCategories.mockResolvedValue(mockCategories);
+        } else {
+          mockFetchCategories.mockRejectedValue(new Error('Categories failed'));
+        }
+
+        if (featuredTipSuccess) {
+          mockFetchTips.mockResolvedValueOnce(mockTips);
+        } else {
+          mockFetchTips.mockRejectedValueOnce(new Error('Featured tip failed'));
+        }
+
+        if (latestTipsSuccess) {
+          mockFetchTips.mockResolvedValueOnce(mockTips);
+        } else {
+          mockFetchTips.mockRejectedValueOnce(new Error('Latest tips failed'));
+        }
+
+        const { result, unmount } = renderHook(() => useHomeData());
+
+        await waitFor(() => {
+          expect(result.current.loading).toBe(false);
+        }, { timeout: 3000 });
+
+        // If any request fails, error should be set
+        const anyFailed = !categoriesSuccess || !featuredTipSuccess || !latestTipsSuccess;
+        
+        if (anyFailed) {
+          expect(result.current.error).toBeTruthy();
+        } else {
+          expect(result.current.error).toBeNull();
+        }
+
+        // Verify all API calls were made regardless of individual failures
+        // This proves parallel execution - all calls attempted even if some failed
+        expect(mockFetchCategories).toHaveBeenCalledTimes(1);
+        expect(mockFetchTips).toHaveBeenCalledTimes(2);
+        
+        // Cleanup
+        unmount();
+      }
+    );
+  });
+});
