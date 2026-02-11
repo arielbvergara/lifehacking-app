@@ -9,13 +9,9 @@ import RootLayout from './layout';
 
 // Mock Next.js fonts
 vi.mock('next/font/google', () => ({
-  Geist: () => ({
-    variable: '--font-geist-sans',
-    className: 'geist-sans',
-  }),
-  Geist_Mono: () => ({
-    variable: '--font-geist-mono',
-    className: 'geist-mono',
+  Plus_Jakarta_Sans: () => ({
+    variable: '--font-display',
+    className: 'plus-jakarta-sans',
   }),
 }));
 
