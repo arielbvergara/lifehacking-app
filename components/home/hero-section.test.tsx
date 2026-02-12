@@ -34,10 +34,9 @@ describe('HeroSection', () => {
   it('should render CategoryTags component with default tags', () => {
     render(<HeroSection />);
 
-    expect(screen.getByRole('button', { name: /popular/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /recommended/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /automotive/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /fashion/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /#kitchenhacks/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /#organization/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /#wellness/i })).toBeInTheDocument();
   });
 
   it('should pass onSearch prop to SearchBar', () => {

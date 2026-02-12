@@ -40,36 +40,46 @@ vi.mock('@/components/layout/home-header', () => ({
 }));
 
 vi.mock('@/components/home/hero-section', () => ({
-  HeroSection: () => <div data-testid="hero-section">Hero Section</div>,
+  HeroSection: () => (
+    <section data-testid="hero-section">
+      <div className="container mx-auto px-4 max-w-4xl">Hero Section</div>
+    </section>
+  ),
 }));
 
 vi.mock('@/components/home/explore-categories', () => ({
   ExploreCategories: ({ categories, loading, error }: { categories: unknown; loading: boolean; error: string | null }) => (
-    <div data-testid="explore-categories">
-      {loading && 'Loading categories'}
-      {error && 'Error loading categories'}
-      {categories && `${(categories as Array<unknown>).length} categories`}
-    </div>
+    <section data-testid="explore-categories">
+      <div className="container mx-auto px-4">
+        {loading && 'Loading categories'}
+        {error && 'Error loading categories'}
+        {categories && `${(categories as Array<unknown>).length} categories`}
+      </div>
+    </section>
   ),
 }));
 
 vi.mock('@/components/home/featured-tip', () => ({
   FeaturedTip: ({ tip, loading, error }: { tip: { title: string } | null; loading: boolean; error: string | null }) => (
-    <div data-testid="featured-tip">
-      {loading && 'Loading featured tip'}
-      {error && 'Error loading featured tip'}
-      {tip && `Featured: ${tip.title}`}
-    </div>
+    <section data-testid="featured-tip">
+      <div className="container mx-auto px-4">
+        {loading && 'Loading featured tip'}
+        {error && 'Error loading featured tip'}
+        {tip && `Featured: ${tip.title}`}
+      </div>
+    </section>
   ),
 }));
 
 vi.mock('@/components/home/latest-lifehacks', () => ({
   LatestLifehacks: ({ tips, loading, error }: { tips: Array<unknown>; loading: boolean; error: string | null }) => (
-    <div data-testid="latest-lifehacks">
-      {loading && 'Loading latest tips'}
-      {error && 'Error loading latest tips'}
-      {tips && `${tips.length} latest tips`}
-    </div>
+    <section data-testid="latest-lifehacks">
+      <div className="container mx-auto px-4">
+        {loading && 'Loading latest tips'}
+        {error && 'Error loading latest tips'}
+        {tips && `${tips.length} latest tips`}
+      </div>
+    </section>
   ),
 }));
 
@@ -297,7 +307,7 @@ describe('Home Page', () => {
 
       const { container } = render(<Home />);
 
-      const containers = container.querySelectorAll('.max-w-7xl');
+      const containers = container.querySelectorAll('.container');
       expect(containers.length).toBeGreaterThan(0);
     });
   });

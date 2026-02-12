@@ -10,7 +10,8 @@ describe('CategoryTags', () => {
     render(<CategoryTags tags={defaultTags} />);
 
     defaultTags.forEach(tag => {
-      expect(screen.getByRole('button', { name: tag })).toBeInTheDocument();
+      const expectedName = `#${tag.toLowerCase().replace(/\s+/g, '')}`;
+      expect(screen.getByRole('button', { name: expectedName })).toBeInTheDocument();
     });
   });
 
@@ -24,7 +25,7 @@ describe('CategoryTags', () => {
   it('should render single tag', () => {
     render(<CategoryTags tags={['Kitchen']} />);
 
-    expect(screen.getByRole('button', { name: 'Kitchen' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '#kitchen' })).toBeInTheDocument();
   });
 
   it('should call onTagClick with correct tag when clicked', async () => {
@@ -32,7 +33,7 @@ describe('CategoryTags', () => {
     const handleTagClick = vi.fn();
     render(<CategoryTags tags={defaultTags} onTagClick={handleTagClick} />);
 
-    const popularButton = screen.getByRole('button', { name: 'Popular' });
+    const popularButton = screen.getByRole('button', { name: '#popular' });
     await user.click(popularButton);
 
     expect(handleTagClick).toHaveBeenCalledWith('Popular');
@@ -44,8 +45,8 @@ describe('CategoryTags', () => {
     const handleTagClick = vi.fn();
     render(<CategoryTags tags={defaultTags} onTagClick={handleTagClick} />);
 
-    await user.click(screen.getByRole('button', { name: 'Popular' }));
-    await user.click(screen.getByRole('button', { name: 'Automotive' }));
+    await user.click(screen.getByRole('button', { name: '#popular' }));
+    await user.click(screen.getByRole('button', { name: '#automotive' }));
 
     expect(handleTagClick).toHaveBeenCalledTimes(2);
     expect(handleTagClick).toHaveBeenNthCalledWith(1, 'Popular');
@@ -56,7 +57,7 @@ describe('CategoryTags', () => {
     const user = userEvent.setup();
     render(<CategoryTags tags={defaultTags} />);
 
-    const button = screen.getByRole('button', { name: 'Popular' });
+    const button = screen.getByRole('button', { name: '#popular' });
     
     // Should not throw
     await expect(user.click(button)).resolves.not.toThrow();
@@ -66,7 +67,8 @@ describe('CategoryTags', () => {
     render(<CategoryTags tags={defaultTags} />);
 
     defaultTags.forEach(tag => {
-      const button = screen.getByRole('button', { name: tag });
+      const expectedName = `#${tag.toLowerCase().replace(/\s+/g, '')}`;
+      const button = screen.getByRole('button', { name: expectedName });
       expect(button.tagName).toBe('BUTTON');
     });
   });
@@ -74,26 +76,26 @@ describe('CategoryTags', () => {
   it('should apply correct styling classes to tags', () => {
     render(<CategoryTags tags={['Test Tag']} />);
 
-    const button = screen.getByRole('button', { name: 'Test Tag' });
-    expect(button).toHaveClass('rounded-full');
-    expect(button).toHaveClass('bg-white');
-    expect(button).toHaveClass('border');
+    const button = screen.getByRole('button', { name: '#testtag' });
+    expect(button).toHaveClass('text-gray-600');
+    expect(button).toHaveClass('hover:text-primary');
+    expect(button).toHaveClass('transition-colors');
   });
 
   it('should handle tags with special characters', () => {
     const specialTags = ['DIY & Crafts', 'Tech-Help', 'Home/Garden'];
     render(<CategoryTags tags={specialTags} />);
 
-    specialTags.forEach(tag => {
-      expect(screen.getByRole('button', { name: tag })).toBeInTheDocument();
-    });
+    expect(screen.getByRole('button', { name: '#diy&crafts' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '#tech-help' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '#home/garden' })).toBeInTheDocument();
   });
 
   it('should handle duplicate tags by rendering each instance', () => {
     const tagsWithDuplicates = ['Popular', 'Popular', 'Recommended'];
     render(<CategoryTags tags={tagsWithDuplicates} />);
 
-    const popularButtons = screen.getAllByRole('button', { name: 'Popular' });
+    const popularButtons = screen.getAllByRole('button', { name: '#popular' });
     expect(popularButtons).toHaveLength(2);
   });
 
@@ -104,6 +106,7 @@ describe('CategoryTags', () => {
     const buttons = screen.getAllByRole('button');
     const buttonTexts = buttons.map(btn => btn.textContent);
 
-    expect(buttonTexts).toEqual(orderedTags);
+    const expectedTexts = orderedTags.map(tag => `#${tag.toLowerCase().replace(/\s+/g, '')}`);
+    expect(buttonTexts).toEqual(expectedTexts);
   });
 });
