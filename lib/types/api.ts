@@ -1,11 +1,21 @@
 // API Response Types based on docs/api-schema.json
 
 // Category Types
+export interface CategoryImage {
+  imageUrl: string | null;
+  imageStoragePath: string | null;
+  originalFileName: string | null;
+  contentType: string | null;
+  fileSizeBytes: number;
+  uploadedAt: string; // ISO 8601 date-time
+}
+
 export interface Category {
   id: string; // UUID
   name: string;
   createdAt: string; // ISO 8601 date-time
   updatedAt: string | null; // ISO 8601 date-time
+  image?: CategoryImage;
 }
 
 export interface CategoryListResponse {

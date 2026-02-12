@@ -24,6 +24,18 @@ describe('CategoryCard', () => {
     updatedAt: null,
   };
 
+  const mockCategoryWithImage: Category = {
+    ...mockCategory,
+    image: {
+      imageUrl: 'https://example.com/kitchen.jpg',
+      imageStoragePath: '/images/kitchen.jpg',
+      originalFileName: 'kitchen.jpg',
+      contentType: 'image/jpeg',
+      fileSizeBytes: 1024,
+      uploadedAt: '2024-01-01T00:00:00Z',
+    },
+  };
+
   it('should render category name', () => {
     render(<CategoryCard category={mockCategory} />);
     expect(screen.getByText('Kitchen')).toBeInTheDocument();
@@ -94,6 +106,54 @@ describe('CategoryCard', () => {
     
     expect(card).toHaveClass('hover:shadow-md');
     expect(card).toHaveClass('cursor-pointer');
+  });
+
+  it('should render image when imageUrl is provided', () => {
+    render(<CategoryCard category={mockCategoryWithImage} />);
+    
+    const image = screen.getByAltText('Kitchen');
+    expect(image).toBeInTheDocument();
+    expect(image).toHaveAttribute('src', 'https://example.com/kitchen.jpg');
+  });
+
+  it('should render white text when image is provided', () => {
+    render(<CategoryCard category={mockCategoryWithImage} />);
+    
+    const heading = screen.getByText('Kitchen');
+    expect(heading).toHaveClass('text-white');
+  });
+
+  it('should render dark overlay when image is provided', () => {
+    const { container } = render(<CategoryCard category={mockCategoryWithImage} />);
+    
+    const overlay = container.querySelector('.bg-black.bg-opacity-40');
+    expect(overlay).toBeInTheDocument();
+  });
+
+  it('should render icon when no image is provided', () => {
+    render(<CategoryCard category={mockCategory} />);
+    
+    expect(screen.getByText('🍳')).toBeInTheDocument();
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+  });
+
+  it('should render icon when image object exists but imageUrl is null', () => {
+    const categoryWithNullImage: Category = {
+      ...mockCategory,
+      image: {
+        imageUrl: null,
+        imageStoragePath: null,
+        originalFileName: null,
+        contentType: null,
+        fileSizeBytes: 0,
+        uploadedAt: '2024-01-01T00:00:00Z',
+      },
+    };
+    
+    render(<CategoryCard category={categoryWithNullImage} />);
+    
+    expect(screen.getByText('🍳')).toBeInTheDocument();
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
   });
 });
 

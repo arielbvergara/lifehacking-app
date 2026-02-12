@@ -10,7 +10,7 @@ export interface CategoryCardProps {
 }
 
 /**
- * CategoryCard displays a category with its icon, name, and tip count.
+ * CategoryCard displays a category with its image or icon, name, and tip count.
  * Clicking the card navigates to the category detail page.
  */
 export function CategoryCard({ category, tipCount = 0 }: CategoryCardProps) {
@@ -22,6 +22,37 @@ export function CategoryCard({ category, tipCount = 0 }: CategoryCardProps) {
 
   const icon = getCategoryIcon(category.name);
   const formattedCount = formatTipCount(tipCount);
+  const imageUrl = category.image?.imageUrl;
+
+  if (imageUrl) {
+    return (
+      <div
+        onClick={handleClick}
+        className="relative rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer h-full min-h-[200px]"
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleClick();
+          }
+        }}
+      >
+        <img
+          src={imageUrl}
+          alt={category.name}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black bg-opacity-40" />
+        <div className="relative p-6 h-full flex flex-col justify-end">
+          <h3 className="text-lg font-semibold text-white mb-1">
+            {category.name}
+          </h3>
+          <p className="text-sm text-white text-opacity-90">{formattedCount}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
