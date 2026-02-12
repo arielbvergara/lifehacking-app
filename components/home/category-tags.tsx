@@ -8,11 +8,11 @@ export interface CategoryTagsProps {
 /**
  * CategoryTags Component
  * 
- * Displays a collection of category filter badges. Currently non-functional
+ * Displays popular category hashtags. Currently non-functional
  * placeholders for future filtering implementation.
  * 
  * @example
- * <CategoryTags tags={['Popular', 'Recommended', 'Automotive']} />
+ * <CategoryTags tags={['kitchenhacks', 'organization', 'wellness']} />
  */
 export function CategoryTags({ tags, onTagClick }: CategoryTagsProps) {
   const handleTagClick = (tag: string) => {
@@ -22,15 +22,16 @@ export function CategoryTags({ tags, onTagClick }: CategoryTagsProps) {
   };
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap items-center justify-center gap-2 text-sm md:text-base">
+      <span className="text-gray-600 font-medium">Popular:</span>
       {tags.map((tag, index) => (
         <button
           key={`${tag}-${index}`}
           onClick={() => handleTagClick(tag)}
-          className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:border-primary hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          className="text-gray-600 hover:text-primary transition-colors focus:outline-none focus:underline"
           type="button"
         >
-          {tag}
+          #{tag.toLowerCase().replace(/\s+/g, '')}
         </button>
       ))}
     </div>

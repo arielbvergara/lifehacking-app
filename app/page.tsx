@@ -44,47 +44,32 @@ export default function Home() {
       {/* Main Content */}
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="bg-gradient-to-b from-primary/5 to-transparent py-12 md:py-16">
-          <div className="max-w-7xl mx-auto px-4 md:px-8">
-            <HeroSection />
-          </div>
-        </section>
+        <HeroSection />
 
         {/* Explore Categories Section */}
-        <section className="py-12 md:py-16">
-          <div className="max-w-7xl mx-auto px-4 md:px-8">
-            <ExploreCategories
-              categories={categories}
-              loading={dataLoading}
-              error={error}
-              onRetry={retry}
-            />
-          </div>
-        </section>
+        <ExploreCategories
+          categories={categories}
+          loading={dataLoading}
+          error={error}
+          onRetry={retry}
+        />
 
         {/* Featured Tip Section */}
-        <section className="py-12 md:py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-4 md:px-8">
-            <FeaturedTip
+        <FeaturedTip
               tip={featuredTip}
               loading={dataLoading}
               error={error}
               onRetry={retry}
             />
-          </div>
-        </section>
 
         {/* Latest Lifehacks Section */}
-        <section className="py-12 md:py-16">
-          <div className="max-w-7xl mx-auto px-4 md:px-8">
-            <LatestLifehacks
-              tips={latestTips}
-              loading={dataLoading}
-              error={error}
-              onRetry={retry}
-            />
-          </div>
-        </section>
+        <LatestLifehacks
+          tips={latestTips}
+          loading={dataLoading}
+          error={error}
+          onRetry={retry}
+        />
+        
       </main>
 
       {/* Footer */}
