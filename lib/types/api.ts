@@ -23,6 +23,15 @@ export interface CategoryListResponse {
 }
 
 // Tip Types
+export interface TipImage {
+  imageUrl: string | null;
+  imageStoragePath: string | null;
+  originalFileName: string | null;
+  contentType: string | null;
+  fileSizeBytes: number;
+  uploadedAt: string; // ISO 8601 date-time
+}
+
 export interface TipSummary {
   id: string; // UUID
   title: string;
@@ -32,6 +41,7 @@ export interface TipSummary {
   tags: string[];
   videoUrl: string | null;
   createdAt: string; // ISO 8601 date-time
+  image?: TipImage;
 }
 
 export interface TipStep {
