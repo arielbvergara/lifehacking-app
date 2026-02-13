@@ -26,7 +26,7 @@ export function Logo({ size = "md", href = "/" }: LogoProps) {
         <span className="material-icons-round text-white">emoji_objects</span>
       </div>
       <span className={`${textSize} font-bold tracking-tight text-gray-900`}>
-        LifeHack
+        LifeHacking
         <span className="text-primary-dark">Buddy</span>
       </span>
     </Link>
