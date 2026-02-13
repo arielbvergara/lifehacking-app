@@ -72,7 +72,7 @@ export function FeaturedTip({ tip, loading, error, onRetry }: FeaturedTipProps) 
   const truncatedDescription = truncateText(tip.description, DESCRIPTION_MAX_LENGTH);
 
   return (
-    <section className="py-12 md:py-16 bg-gradient-to-r from-[#e8f5e8] via-[#f0f9f0] to-white">
+    <section className="py-12 md:py-16 bg-gradient-to-r from-[#e8f5e8] via-[#f0f9f0] to-[#FCFCFC]">
       <div className="container mx-auto px-4 max-w-6xl">
           <div className="flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-12">
             {/* Content Section */}
