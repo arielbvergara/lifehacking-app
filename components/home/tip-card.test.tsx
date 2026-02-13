@@ -65,7 +65,7 @@ describe('TipCard', () => {
 
   it('should render tip image when image is provided', () => {
     render(<TipCard tip={mockTip} />);
-    const image = screen.getByAltText('How to Clean Your Kitchen Faster');
+    const image = screen.getByAltText('How to Clean Your Kitchen Faster - Kitchen life hack with step-by-step guide');
     expect(image).toBeInTheDocument();
     expect(image).toHaveAttribute('src', 'https://example.com/image.jpg');
   });
@@ -122,7 +122,7 @@ describe('TipCard', () => {
 
   it('should render heart icon for favorites', () => {
     render(<TipCard tip={mockTip} />);
-    const favoriteButton = screen.getByLabelText('Add to favorites');
+    const favoriteButton = screen.getByLabelText('Add How to Clean Your Kitchen Faster to favorites');
     expect(favoriteButton).toBeInTheDocument();
   });
 
@@ -130,7 +130,7 @@ describe('TipCard', () => {
     const user = userEvent.setup();
     render(<TipCard tip={mockTip} />);
     
-    const favoriteButton = screen.getByLabelText('Add to favorites');
+    const favoriteButton = screen.getByLabelText('Add How to Clean Your Kitchen Faster to favorites');
     await user.click(favoriteButton);
     
     // Heart icon should not trigger navigation
@@ -151,7 +151,7 @@ describe('TipCard', () => {
     expect(screen.getByText('How to Clean Your Kitchen Faster')).toBeInTheDocument();
     expect(screen.getByText(/Learn the best techniques/)).toBeInTheDocument();
     expect(screen.getByText('Kitchen')).toBeInTheDocument();
-    expect(screen.getByAltText('How to Clean Your Kitchen Faster')).toBeInTheDocument();
+    expect(screen.getByAltText('How to Clean Your Kitchen Faster - Kitchen life hack with step-by-step guide')).toBeInTheDocument();
   });
 });
 
@@ -254,7 +254,8 @@ describe('TipCard - Property Tests', () => {
       if (image?.imageUrl) {
         // Use getByRole to find the image more reliably
         const images = container.querySelectorAll('img');
-        const tipImage = Array.from(images).find(img => img.getAttribute('alt') === title);
+        const expectedAlt = `${title} - ${categoryName} life hack with step-by-step guide`;
+        const tipImage = Array.from(images).find(img => img.getAttribute('alt') === expectedAlt);
         expect(tipImage).toBeDefined();
         expect(tipImage?.getAttribute('src')).toBe(image.imageUrl);
       } else {
