@@ -1,16 +1,44 @@
-'use client';
-
-import { useAuth } from '@/lib/auth/auth-context';
-import { useHomeData } from '@/lib/hooks/use-home-data';
-import { HomeHeader } from '@/components/layout/home-header';
-import { HeroSection } from '@/components/home/hero-section';
-import { ExploreCategories } from '@/components/home/explore-categories';
-import { FeaturedTip } from '@/components/home/featured-tip';
-import { LatestLifehacks } from '@/components/home/latest-lifehacks';
-import { HomeFooter } from '@/components/home/home-footer';
+import type { Metadata } from 'next';
+import { HomePageClient } from './page.client';
+import { generateWebsiteStructuredData } from '@/lib/seo/structured-data';
 
 /**
- * Home Page Component
+ * Home Page Metadata
+ * 
+ * SEO-optimized metadata for the main landing page including
+ * Open Graph tags, Twitter cards, and canonical URL.
+ */
+export const metadata: Metadata = {
+  title: 'LifeHackBuddy - Simple Life Hacks for Everyday Living',
+  description: 'Discover simple tricks for cooking, cleaning, and living better. Browse thousands of practical life hacks organized by category.',
+  keywords: ['life hacks', 'tips', 'tricks', 'home organization', 'cooking tips', 'cleaning hacks', 'productivity', 'wellness'],
+  alternates: {
+    canonical: 'https://lifehackbuddy.com',
+  },
+  openGraph: {
+    title: 'LifeHackBuddy - Simple Life Hacks for Everyday Living',
+    description: 'Discover simple tricks for cooking, cleaning, and living better.',
+    type: 'website',
+    url: 'https://lifehackbuddy.com',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'LifeHackBuddy - Simple Life Hacks for Everyday Living',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'LifeHackBuddy - Simple Life Hacks for Everyday Living',
+    description: 'Discover simple tricks for cooking, cleaning, and living better.',
+    images: ['/twitter-image.png'],
+  },
+};
+
+/**
+ * Home Page Component (Server Component)
  * 
  * Main landing page displaying:
  * - Hero section with search and category tags
@@ -18,62 +46,22 @@ import { HomeFooter } from '@/components/home/home-footer';
  * - Featured tip (most recent)
  * - Latest lifehacks grid
  * 
- * Supports both authenticated and anonymous users with appropriate UI.
+ * Implements hybrid SSR pattern with client component for interactivity.
+ * Includes structured data (JSON-LD) for enhanced SEO.
  */
 export default function Home() {
-  const { user, loading: authLoading } = useAuth();
-  const { categories, featuredTip, latestTips, loading: dataLoading, error, retry } = useHomeData();
-
-  // Show loading state while checking authentication
-  if (authLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
-          <p className="mt-4 text-sm text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  const structuredData = generateWebsiteStructuredData();
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-50">
-      {/* Header */}
-      <HomeHeader user={user} />
-
-      {/* Main Content */}
-      <main className="flex-grow">
-        {/* Hero Section */}
-        <HeroSection />
-
-        {/* Explore Categories Section */}
-        <ExploreCategories
-          categories={categories}
-          loading={dataLoading}
-          error={error}
-          onRetry={retry}
-        />
-
-        {/* Featured Tip Section */}
-        <FeaturedTip
-              tip={featuredTip}
-              loading={dataLoading}
-              error={error}
-              onRetry={retry}
-            />
-
-        {/* Latest Lifehacks Section */}
-        <LatestLifehacks
-          tips={latestTips}
-          loading={dataLoading}
-          error={error}
-          onRetry={retry}
-        />
-        
-      </main>
-
-      {/* Footer */}
-      <HomeFooter />
-    </div>
+    <>
+      {/* Structured Data (JSON-LD) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      
+      {/* Client Component with Interactive Features */}
+      <HomePageClient />
+    </>
   );
 }
