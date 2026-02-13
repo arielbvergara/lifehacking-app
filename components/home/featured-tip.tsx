@@ -107,10 +107,10 @@ export function FeaturedTip({ tip, loading, error, onRetry }: FeaturedTipProps) 
             </div>
 
             {/* Image Section */}
-            {tip.videoUrl && (
+            {tip.image?.imageUrl && (
               <div className="lg:w-1/2 h-64 lg:h-auto">
                 <img
-                  src={tip.videoUrl}
+                  src={tip.image.imageUrl}
                   alt={tip.title}
                   className="w-full h-full object-cover"
                 />

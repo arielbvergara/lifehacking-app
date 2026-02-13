@@ -19,8 +19,16 @@ const mockTip: TipSummary = {
   categoryId: 'cat-1',
   categoryName: 'Kitchen',
   tags: ['cooking', 'efficiency'],
-  videoUrl: 'https://example.com/image.jpg',
+  videoUrl: 'https://example.com/video.mp4',
   createdAt: '2024-01-01T00:00:00Z',
+  image: {
+    imageUrl: 'https://example.com/image.jpg',
+    imageStoragePath: 'tips/image.jpg',
+    originalFileName: 'image.jpg',
+    contentType: 'image/jpeg',
+    fileSizeBytes: 1024,
+    uploadedAt: '2024-01-01T00:00:00Z',
+  },
 };
 
 describe('FeaturedTip', () => {
@@ -157,20 +165,20 @@ describe('FeaturedTip', () => {
     expect(mockPush).not.toHaveBeenCalled();
   });
 
-  it('should render tip image when videoUrl is provided', () => {
+  it('should render tip image when image is provided', () => {
     render(
       <FeaturedTip tip={mockTip} loading={false} error={null} onRetry={vi.fn()} />
     );
 
     const image = screen.getByRole('img', { name: mockTip.title });
     expect(image).toBeInTheDocument();
-    expect(image).toHaveAttribute('src', mockTip.videoUrl);
+    expect(image).toHaveAttribute('src', mockTip.image?.imageUrl);
   });
 
-  it('should not render image section when videoUrl is null', () => {
+  it('should not render image section when image is not provided', () => {
     const tipWithoutImage: TipSummary = {
       ...mockTip,
-      videoUrl: null,
+      image: undefined,
     };
 
     render(
@@ -228,8 +236,16 @@ describe('FeaturedTip - Property Tests', () => {
         categoryId: 'cat-1',
         categoryName: 'Test Category',
         tags: ['test'],
-        videoUrl: 'https://example.com/image.jpg',
+        videoUrl: null,
         createdAt: '2024-01-01T00:00:00Z',
+        image: {
+          imageUrl: 'https://example.com/image.jpg',
+          imageStoragePath: 'tips/image.jpg',
+          originalFileName: 'image.jpg',
+          contentType: 'image/jpeg',
+          fileSizeBytes: 1024,
+          uploadedAt: '2024-01-01T00:00:00Z',
+        },
       };
 
       const user = userEvent.setup();
