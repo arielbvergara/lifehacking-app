@@ -6,10 +6,12 @@ import { HomeHeader } from './home-header';
 
 // Mock Next.js router
 const mockPush = vi.fn();
+const mockPathname = vi.fn(() => '/');
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: mockPush,
   }),
+  usePathname: () => mockPathname(),
 }));
 
 // Mock auth context
@@ -288,6 +290,117 @@ describe('HomeHeader', () => {
       
       const header = container.querySelector('header');
       expect(header).toHaveClass('z-50');
+    });
+  });
+
+  describe('Navigation Links', () => {
+    it('NavigationLinks_ShouldDisplayAllLinks_WhenRendered', () => {
+      render(<HomeHeader user={null} />);
+
+      expect(screen.getByRole('link', { name: /^home$/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^categories$/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^popular$/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^about$/i })).toBeInTheDocument();
+    });
+
+    it('NavigationLinks_ShouldHaveCorrectHrefs_WhenRendered', () => {
+      render(<HomeHeader user={null} />);
+
+      expect(screen.getByRole('link', { name: /^home$/i })).toHaveAttribute('href', '/');
+      expect(screen.getByRole('link', { name: /^categories$/i })).toHaveAttribute('href', '/categories');
+      expect(screen.getByRole('link', { name: /^popular$/i })).toHaveAttribute('href', '/popular');
+      expect(screen.getByRole('link', { name: /^about$/i })).toHaveAttribute('href', '/about');
+    });
+
+    it('NavigationLinks_ShouldHighlightActiveLink_WhenOnHomePage', () => {
+      mockPathname.mockReturnValue('/');
+      render(<HomeHeader user={null} />);
+
+      const homeLink = screen.getByRole('link', { name: /^home$/i });
+      expect(homeLink).toHaveClass('text-primary');
+    });
+
+    it('NavigationLinks_ShouldHighlightActiveLink_WhenOnCategoriesPage', () => {
+      mockPathname.mockReturnValue('/categories');
+      render(<HomeHeader user={null} />);
+
+      const categoriesLink = screen.getByRole('link', { name: /^categories$/i });
+      expect(categoriesLink).toHaveClass('text-primary');
+    });
+
+    it('NavigationLinks_ShouldHighlightActiveLink_WhenOnPopularPage', () => {
+      mockPathname.mockReturnValue('/popular');
+      render(<HomeHeader user={null} />);
+
+      const popularLink = screen.getByRole('link', { name: /^popular$/i });
+      expect(popularLink).toHaveClass('text-primary');
+    });
+
+    it('NavigationLinks_ShouldHighlightActiveLink_WhenOnAboutPage', () => {
+      mockPathname.mockReturnValue('/about');
+      render(<HomeHeader user={null} />);
+
+      const aboutLink = screen.getByRole('link', { name: /^about$/i });
+      expect(aboutLink).toHaveClass('text-primary');
+    });
+
+    it('NavigationLinks_ShouldNotBeVisibleOnMobile_WhenMenuClosed', () => {
+      render(<HomeHeader user={null} />);
+
+      // Desktop links should be hidden on mobile (md:flex class)
+      const homeLinks = screen.getAllByRole('link', { name: /^home$/i });
+      const desktopLink = homeLinks[0];
+      
+      expect(desktopLink.parentElement).toHaveClass('hidden');
+      expect(desktopLink.parentElement).toHaveClass('md:flex');
+    });
+
+    it('NavigationLinks_ShouldAppearInMobileMenu_WhenMenuOpened', async () => {
+      const user = userEvent.setup();
+      render(<HomeHeader user={null} />);
+
+      const menuButton = screen.getByRole('button', { name: /toggle menu/i });
+      await user.click(menuButton);
+
+      // Should have multiple instances of each link (desktop + mobile)
+      const homeLinks = screen.getAllByRole('link', { name: /^home$/i });
+      expect(homeLinks.length).toBeGreaterThan(1);
+    });
+
+    it('NavigationLinks_ShouldCloseMobileMenu_WhenLinkClicked', async () => {
+      const user = userEvent.setup();
+      render(<HomeHeader user={null} />);
+
+      const menuButton = screen.getByRole('button', { name: /toggle menu/i });
+      await user.click(menuButton);
+
+      // Find and click a mobile navigation link
+      const categoriesLinks = screen.getAllByRole('link', { name: /^categories$/i });
+      const mobileLink = categoriesLinks.find(link => 
+        link.className.includes('rounded-lg')
+      );
+
+      if (mobileLink) {
+        await user.click(mobileLink);
+      }
+
+      // Menu should close
+      expect(menuButton.textContent).toBe('menu');
+    });
+
+    it('NavigationLinks_ShouldDisplayForAuthenticatedUsers_WhenLoggedIn', () => {
+      const mockUser = {
+        uid: '123',
+        displayName: 'John Doe',
+        email: 'john@example.com',
+      } as FirebaseUser;
+
+      render(<HomeHeader user={mockUser} />);
+
+      expect(screen.getByRole('link', { name: /^home$/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^categories$/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^popular$/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^about$/i })).toBeInTheDocument();
     });
   });
 });
