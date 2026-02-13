@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { TipSummary } from '@/lib/types/api';
 import { truncateText } from '@/lib/utils/text';
 
@@ -112,11 +113,14 @@ export function FeaturedTip({ tip, loading, error, onRetry }: FeaturedTipProps) 
             {/* Image Section */}
             {tip.image?.imageUrl && (
               <div className="lg:w-1/2 flex justify-center lg:justify-end">
-                <div className="relative w-full max-w-md">
-                  <img
+                <div className="relative w-full max-w-md h-[400px]">
+                  <Image
                     src={tip.image.imageUrl}
                     alt={tip.title}
-                    className="w-full h-auto object-cover rounded-[24px] shadow-[0_8px_30px_rgba(0,0,0,0.12)] transform rotate-[-6deg] hover:rotate-[-3deg] transition-transform duration-300"
+                    fill
+                    className="object-cover rounded-[24px] shadow-[0_8px_30px_rgba(0,0,0,0.12)] transform rotate-[-6deg] hover:rotate-[-3deg] transition-transform duration-300"
+                    loading="lazy"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
                   />
                 </div>
               </div>

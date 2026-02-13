@@ -1,19 +1,21 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Category } from '@/lib/types/api';
 import { getCategoryIcon, formatTipCount } from '@/lib/utils/category';
 
 export interface CategoryCardProps {
   category: Category;
   tipCount?: number;
+  priority?: boolean;
 }
 
 /**
  * CategoryCard displays a category with its image or icon, name, and tip count.
  * Clicking the card navigates to the category detail page.
  */
-export function CategoryCard({ category, tipCount = 0 }: CategoryCardProps) {
+export function CategoryCard({ category, tipCount = 0, priority = false }: CategoryCardProps) {
   const router = useRouter();
 
   const handleClick = () => {
@@ -38,10 +40,13 @@ export function CategoryCard({ category, tipCount = 0 }: CategoryCardProps) {
           }
         }}
       >
-        <img
+        <Image
           src={imageUrl}
           alt={category.name}
-          className="absolute inset-0 w-full h-full object-cover"
+          fill
+          className="object-cover"
+          priority={priority}
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
         <div className="absolute inset-0 bg-black bg-opacity-40" />
         <div className="relative p-6 h-full flex flex-col justify-end">
