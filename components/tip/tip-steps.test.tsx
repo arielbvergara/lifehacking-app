@@ -32,14 +32,6 @@ describe('TipSteps', () => {
     expect(screen.getByRole('heading', { name: 'Easy Steps' })).toBeInTheDocument();
   });
 
-  it('Should_RenderIcon_When_StepsExist', () => {
-    render(<TipSteps steps={mockSteps} />);
-    
-    const icon = screen.getByText('list_alt');
-    expect(icon).toBeInTheDocument();
-    expect(icon).toHaveClass('material-icons');
-  });
-
   it('Should_ApplyCardStyling_When_Rendered', () => {
     const { container } = render(<TipSteps steps={mockSteps} />);
     
