@@ -73,7 +73,6 @@ export function FeaturedTip({ tip, loading, error, onRetry }: FeaturedTipProps) 
   return (
     <section className="py-12 md:py-16 bg-gradient-to-r from-[#e8f5e8] via-[#f0f9f0] to-white">
       <div className="container mx-auto px-4 max-w-6xl">
-        <div className="bg-gradient-to-br from-[#e8f5e8] to-[#f0f9f0] rounded-3xl p-8 md:p-12 lg:p-16">
           <div className="flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-12">
             {/* Content Section */}
             <div className="flex-1">
@@ -123,7 +122,6 @@ export function FeaturedTip({ tip, loading, error, onRetry }: FeaturedTipProps) 
               </div>
             )}
           </div>
-        </div>
       </div>
     </section>
   );
