@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { User as FirebaseUser } from 'firebase/auth';
 import { Logo } from '@/components/shared/logo';
 import { UserAvatar } from '@/components/layout/user-avatar';
@@ -25,9 +25,17 @@ export interface HomeHeaderProps {
  */
 export function HomeHeader({ user }: HomeHeaderProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { signOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const navLinks = [
+    { href: '/', label: 'Home' },
+    { href: '/categories', label: 'Categories' },
+    { href: '/popular', label: 'Popular' },
+    { href: '/about', label: 'About' },
+  ];
 
   const handleAvatarClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -57,6 +65,22 @@ export function HomeHeader({ user }: HomeHeaderProps) {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
+            {/* Desktop Navigation Links */}
+            <div className="hidden md:flex items-center gap-8">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`text-sm font-medium transition-colors ${
+                    pathname === link.href
+                      ? 'text-primary'
+                      : 'text-gray-700 hover:text-gray-900'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
             {user ? (
               /* Authenticated User UI */
               <div className="relative">
@@ -124,6 +148,27 @@ export function HomeHeader({ user }: HomeHeaderProps) {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden mt-4 pb-4 border-t border-gray-100 pt-4">
+            {/* Navigation Links */}
+            <div className="flex flex-col gap-2 mb-4">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg ${
+                    pathname === link.href
+                      ? 'text-primary bg-primary/5'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-gray-100 mb-4" />
+
             {user ? (
               /* Authenticated User Mobile Menu */
               <div className="flex flex-col gap-3">
