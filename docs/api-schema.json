@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.4",
   "info": {
-    "title": "CleanArchitecture API",
+    "title": "LifeHacking API",
     "version": "v1"
   },
   "paths": {
@@ -11,7 +11,7 @@
           "AdminCategory"
         ],
         "summary": "Creates a new category.",
-        "description": "This endpoint is restricted to administrators. Creates a new category with the specified name.\n\n**Validation Rules:**\n- **Name**: Required, 2-100 characters (trimmed), case-insensitive uniqueness check\n\n**Possible Error Responses:**\n\n**400 Bad Request** - Validation error with field-level details:\n```json\n{\n  \"status\": 400,\n  \"type\": \"https://httpstatuses.io/400/validation-error\",\n  \"title\": \"Validation error\",\n  \"detail\": \"One or more validation errors occurred.\",\n  \"instance\": \"/api/admin/categories\",\n  \"correlationId\": \"abc123\",\n  \"errors\": {\n    \"Name\": [\"Category name must be at least 2 characters\"]\n  }\n}\n```\n\n**409 Conflict** - Category name already exists (case-insensitive):\n```json\n{\n  \"status\": 409,\n  \"type\": \"https://httpstatuses.io/409/conflict\",\n  \"title\": \"Conflict\",\n  \"detail\": \"Category with name 'Productivity' already exists\",\n  \"instance\": \"/api/admin/categories\",\n  \"correlationId\": \"def456\"\n}\n```\n\n**500 Internal Server Error** - Unexpected server error:\n```json\n{\n  \"status\": 500,\n  \"type\": \"https://httpstatuses.io/500/infrastructure-error\",\n  \"title\": \"Infrastructure error\",\n  \"detail\": \"An unexpected error occurred while processing your request.\",\n  \"instance\": \"/api/admin/categories\",\n  \"correlationId\": \"ghi789\"\n}\n```\n\nAll error responses include a `correlationId` for tracing and follow RFC 7807 Problem Details format.",
+        "description": "This endpoint is restricted to administrators. Creates a new category with the specified name.\n            \n**Validation Rules:**\n- **Name**: Required, 2-100 characters (trimmed), case-insensitive uniqueness check\n            \n**Possible Error Responses:**\n            \n**400 Bad Request** - Validation error with field-level details:\n```json\n{\n  \"status\": 400,\n  \"type\": \"https://httpstatuses.io/400/validation-error\",\n  \"title\": \"Validation error\",\n  \"detail\": \"One or more validation errors occurred.\",\n  \"instance\": \"/api/admin/categories\",\n  \"correlationId\": \"abc123\",\n  \"errors\": {\n    \"Name\": [\"Category name must be at least 2 characters\"]\n  }\n}\n```\n            \n**409 Conflict** - Category name already exists (case-insensitive):\n```json\n{\n  \"status\": 409,\n  \"type\": \"https://httpstatuses.io/409/conflict\",\n  \"title\": \"Conflict\",\n  \"detail\": \"Category with name 'Productivity' already exists\",\n  \"instance\": \"/api/admin/categories\",\n  \"correlationId\": \"def456\"\n}\n```\n            \n**500 Internal Server Error** - Unexpected server error:\n```json\n{\n  \"status\": 500,\n  \"type\": \"https://httpstatuses.io/500/infrastructure-error\",\n  \"title\": \"Infrastructure error\",\n  \"detail\": \"An unexpected error occurred while processing your request.\",\n  \"instance\": \"/api/admin/categories\",\n  \"correlationId\": \"ghi789\"\n}\n```\n            \nAll error responses include a `correlationId` for tracing and follow RFC 7807 Problem Details format.",
         "requestBody": {
           "description": "The create category request containing the category name.",
           "content": {
@@ -125,7 +125,7 @@
           "AdminCategory"
         ],
         "summary": "Updates an existing category's name.",
-        "description": "This endpoint is restricted to administrators. Updates the category with the specified ID.\n\n**Validation Rules:**\n- **Name**: Required, 2-100 characters (trimmed), case-insensitive uniqueness check\n\n**Possible Error Responses:**\n\n**400 Bad Request** - Validation error with field-level details:\n```json\n{\n  \"status\": 400,\n  \"type\": \"https://httpstatuses.io/400/validation-error\",\n  \"title\": \"Validation error\",\n  \"detail\": \"One or more validation errors occurred.\",\n  \"instance\": \"/api/admin/categories/{id}\",\n  \"correlationId\": \"abc123\",\n  \"errors\": {\n    \"Name\": [\"Category name cannot exceed 100 characters\"]\n  }\n}\n```\n\n**404 Not Found** - Category does not exist or is soft-deleted:\n```json\n{\n  \"status\": 404,\n  \"type\": \"https://httpstatuses.io/404/resource-not-found\",\n  \"title\": \"Resource not found\",\n  \"detail\": \"Category with id '123e4567-e89b-12d3-a456-426614174000' was not found.\",\n  \"instance\": \"/api/admin/categories/123e4567-e89b-12d3-a456-426614174000\",\n  \"correlationId\": \"def456\"\n}\n```\n\n**409 Conflict** - Category name already exists (case-insensitive):\n```json\n{\n  \"status\": 409,\n  \"type\": \"https://httpstatuses.io/409/conflict\",\n  \"title\": \"Conflict\",\n  \"detail\": \"Category with name 'Productivity' already exists\",\n  \"instance\": \"/api/admin/categories/{id}\",\n  \"correlationId\": \"ghi789\"\n}\n```\n\n**500 Internal Server Error** - Unexpected server error:\n```json\n{\n  \"status\": 500,\n  \"type\": \"https://httpstatuses.io/500/infrastructure-error\",\n  \"title\": \"Infrastructure error\",\n  \"detail\": \"An unexpected error occurred while processing your request.\",\n  \"instance\": \"/api/admin/categories/{id}\",\n  \"correlationId\": \"jkl012\"\n}\n```\n\nAll error responses include a `correlationId` for tracing and follow RFC 7807 Problem Details format.",
+        "description": "This endpoint is restricted to administrators. Updates the category with the specified ID.\n            \n**Validation Rules:**\n- **Name**: Required, 2-100 characters (trimmed), case-insensitive uniqueness check\n            \n**Possible Error Responses:**\n            \n**400 Bad Request** - Validation error with field-level details:\n```json\n{\n  \"status\": 400,\n  \"type\": \"https://httpstatuses.io/400/validation-error\",\n  \"title\": \"Validation error\",\n  \"detail\": \"One or more validation errors occurred.\",\n  \"instance\": \"/api/admin/categories/{id}\",\n  \"correlationId\": \"abc123\",\n  \"errors\": {\n    \"Name\": [\"Category name cannot exceed 100 characters\"]\n  }\n}\n```\n            \n**404 Not Found** - Category does not exist or is soft-deleted:\n```json\n{\n  \"status\": 404,\n  \"type\": \"https://httpstatuses.io/404/resource-not-found\",\n  \"title\": \"Resource not found\",\n  \"detail\": \"Category with id '123e4567-e89b-12d3-a456-426614174000' was not found.\",\n  \"instance\": \"/api/admin/categories/123e4567-e89b-12d3-a456-426614174000\",\n  \"correlationId\": \"def456\"\n}\n```\n            \n**409 Conflict** - Category name already exists (case-insensitive):\n```json\n{\n  \"status\": 409,\n  \"type\": \"https://httpstatuses.io/409/conflict\",\n  \"title\": \"Conflict\",\n  \"detail\": \"Category with name 'Productivity' already exists\",\n  \"instance\": \"/api/admin/categories/{id}\",\n  \"correlationId\": \"ghi789\"\n}\n```\n            \n**500 Internal Server Error** - Unexpected server error:\n```json\n{\n  \"status\": 500,\n  \"type\": \"https://httpstatuses.io/500/infrastructure-error\",\n  \"title\": \"Infrastructure error\",\n  \"detail\": \"An unexpected error occurred while processing your request.\",\n  \"instance\": \"/api/admin/categories/{id}\",\n  \"correlationId\": \"jkl012\"\n}\n```\n            \nAll error responses include a `correlationId` for tracing and follow RFC 7807 Problem Details format.",
         "parameters": [
           {
             "name": "id",
@@ -269,7 +269,7 @@
           "AdminCategory"
         ],
         "summary": "Soft-deletes a category and all associated tips.",
-        "description": "This endpoint is restricted to administrators. Soft-deletes the category with the specified ID\nand cascades the soft-delete to all tips associated with that category.\n\n**Possible Error Responses:**\n\n**404 Not Found** - Category does not exist or is already soft-deleted:\n```json\n{\n  \"status\": 404,\n  \"type\": \"https://httpstatuses.io/404/resource-not-found\",\n  \"title\": \"Resource not found\",\n  \"detail\": \"Category with id '123e4567-e89b-12d3-a456-426614174000' was not found.\",\n  \"instance\": \"/api/admin/categories/123e4567-e89b-12d3-a456-426614174000\",\n  \"correlationId\": \"abc123\"\n}\n```\n\n**500 Internal Server Error** - Unexpected server error:\n```json\n{\n  \"status\": 500,\n  \"type\": \"https://httpstatuses.io/500/infrastructure-error\",\n  \"title\": \"Infrastructure error\",\n  \"detail\": \"An unexpected error occurred while processing your request.\",\n  \"instance\": \"/api/admin/categories/{id}\",\n  \"correlationId\": \"def456\"\n}\n```\n\nAll error responses include a `correlationId` for tracing and follow RFC 7807 Problem Details format.",
+        "description": "This endpoint is restricted to administrators. Soft-deletes the category with the specified ID\nand cascades the soft-delete to all tips associated with that category.\n            \n**Possible Error Responses:**\n            \n**404 Not Found** - Category does not exist or is already soft-deleted:\n```json\n{\n  \"status\": 404,\n  \"type\": \"https://httpstatuses.io/404/resource-not-found\",\n  \"title\": \"Resource not found\",\n  \"detail\": \"Category with id '123e4567-e89b-12d3-a456-426614174000' was not found.\",\n  \"instance\": \"/api/admin/categories/123e4567-e89b-12d3-a456-426614174000\",\n  \"correlationId\": \"abc123\"\n}\n```\n            \n**500 Internal Server Error** - Unexpected server error:\n```json\n{\n  \"status\": 500,\n  \"type\": \"https://httpstatuses.io/500/infrastructure-error\",\n  \"title\": \"Infrastructure error\",\n  \"detail\": \"An unexpected error occurred while processing your request.\",\n  \"instance\": \"/api/admin/categories/{id}\",\n  \"correlationId\": \"def456\"\n}\n```\n            \nAll error responses include a `correlationId` for tracing and follow RFC 7807 Problem Details format.",
         "parameters": [
           {
             "name": "id",
@@ -332,15 +332,101 @@
         }
       }
     },
+    "/api/admin/categories/images": {
+      "post": {
+        "tags": [
+          "AdminCategory"
+        ],
+        "summary": "Uploads a category image to AWS S3 storage.",
+        "description": "This endpoint is restricted to administrators. Uploads an image file to S3 with validation\nfor size, content type, and format. Returns complete image metadata including CloudFront CDN URL.\n            \n**Validation Rules:**\n- **File**: Required, maximum 5MB\n- **Content Type**: Must be image/jpeg, image/png, image/gif, or image/webp\n- **Format**: Magic bytes must match declared content type\n            \n**Possible Error Responses:**\n            \n**400 Bad Request** - Validation error with field-level details:\n```json\n{\n  \"status\": 400,\n  \"type\": \"https://httpstatuses.io/400/validation-error\",\n  \"title\": \"Validation error\",\n  \"detail\": \"One or more validation errors occurred.\",\n  \"instance\": \"/api/admin/categories/images\",\n  \"correlationId\": \"abc123\",\n  \"errors\": {\n    \"File\": [\"File size cannot exceed 5MB\"]\n  }\n}\n```\n            \n**500 Internal Server Error** - Unexpected server error:\n```json\n{\n  \"status\": 500,\n  \"type\": \"https://httpstatuses.io/500/infrastructure-error\",\n  \"title\": \"Infrastructure error\",\n  \"detail\": \"An unexpected error occurred while processing your request.\",\n  \"instance\": \"/api/admin/categories/images\",\n  \"correlationId\": \"def456\"\n}\n```\n            \nAll error responses include a `correlationId` for tracing and follow RFC 7807 Problem Details format.",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryImageDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryImageDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryImageDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/api/admin/tips": {
       "post": {
         "tags": [
           "AdminTip"
         ],
-        "summary": "Creates a new tip.",
-        "description": "This endpoint is restricted to administrators. Creates a new tip with structured content\nincluding title, description, steps, category, tags, and optional video URL.\n\n**Validation Rules:**\n- **Title**: Required, 5-200 characters (trimmed)\n- **Description**: Required, 10-2000 characters (trimmed)\n- **Steps**: Required, at least one step\n  - Step Number: Must be >= 1\n  - Step Description: Required, 10-500 characters (trimmed)\n- **CategoryId**: Required, must exist and not be soft-deleted\n- **Tags**: Optional, maximum 10 tags\n  - Each tag: 1-50 characters (trimmed)\n- **VideoUrl**: Optional, must be valid URL from supported platforms\n  - YouTube Watch: `https://www.youtube.com/watch?v=*`\n  - YouTube Shorts: `https://www.youtube.com/shorts/*`\n  - Instagram: `https://www.instagram.com/p/*`\n\n**Possible Error Responses:**\n\n**400 Bad Request** - Validation error with field-level details (single field):\n```json\n{\n  \"status\": 400,\n  \"type\": \"https://httpstatuses.io/400/validation-error\",\n  \"title\": \"Validation error\",\n  \"detail\": \"One or more validation errors occurred.\",\n  \"instance\": \"/api/admin/tips\",\n  \"correlationId\": \"abc123\",\n  \"errors\": {\n    \"Title\": [\"Tip title must be at least 5 characters\"]\n  }\n}\n```\n\n**400 Bad Request** - Validation error with multiple fields:\n```json\n{\n  \"status\": 400,\n  \"type\": \"https://httpstatuses.io/400/validation-error\",\n  \"title\": \"Validation error\",\n  \"detail\": \"One or more validation errors occurred.\",\n  \"instance\": \"/api/admin/tips\",\n  \"correlationId\": \"def456\",\n  \"errors\": {\n    \"Title\": [\"Tip title must be at least 5 characters\"],\n    \"Description\": [\"Tip description cannot be empty\"],\n    \"Steps\": [\"At least one step is required\"],\n    \"VideoUrl\": [\"Video URL must match a supported format: YouTube (https://www.youtube.com/watch?v=*), YouTube Shorts (https://www.youtube.com/shorts/*), Instagram (https://www.instagram.com/p/*)\"]\n  }\n}\n```\n\n**404 Not Found** - Category does not exist or is soft-deleted:\n```json\n{\n  \"status\": 404,\n  \"type\": \"https://httpstatuses.io/404/resource-not-found\",\n  \"title\": \"Resource not found\",\n  \"detail\": \"Category with id '123e4567-e89b-12d3-a456-426614174000' was not found.\",\n  \"instance\": \"/api/admin/tips\",\n  \"correlationId\": \"ghi789\"\n}\n```\n\n**500 Internal Server Error** - Unexpected server error:\n```json\n{\n  \"status\": 500,\n  \"type\": \"https://httpstatuses.io/500/infrastructure-error\",\n  \"title\": \"Infrastructure error\",\n  \"detail\": \"An unexpected error occurred while processing your request.\",\n  \"instance\": \"/api/admin/tips\",\n  \"correlationId\": \"jkl012\"\n}\n```\n\nAll error responses include a `correlationId` for tracing and follow RFC 7807 Problem Details format.",
         "requestBody": {
-          "description": "The create tip request containing tip details.",
           "content": {
             "application/json": {
               "schema": {
@@ -615,6 +701,95 @@
           },
           "404": {
             "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/admin/tips/images": {
+      "post": {
+        "tags": [
+          "AdminTip"
+        ],
+        "summary": "Uploads a tip image to AWS S3 storage.",
+        "description": "This endpoint is restricted to administrators. Uploads an image file to S3 with validation\nfor size, content type, and format. Returns complete image metadata including CloudFront CDN URL.\n            \n**Validation Rules:**\n- **File**: Required, maximum 5MB\n- **Content Type**: Must be image/jpeg, image/png, image/gif, or image/webp\n- **Format**: Magic bytes must match declared content type\n            \n**Possible Error Responses:**\n            \n**400 Bad Request** - Validation error with field-level details:\n```json\n{\n  \"status\": 400,\n  \"type\": \"https://httpstatuses.io/400/validation-error\",\n  \"title\": \"Validation error\",\n  \"detail\": \"One or more validation errors occurred.\",\n  \"instance\": \"/api/admin/tips/images\",\n  \"correlationId\": \"abc123\",\n  \"errors\": {\n    \"File\": [\"File size cannot exceed 5MB\"]\n  }\n}\n```\n            \n**500 Internal Server Error** - Unexpected server error:\n```json\n{\n  \"status\": 500,\n  \"type\": \"https://httpstatuses.io/500/infrastructure-error\",\n  \"title\": \"Infrastructure error\",\n  \"detail\": \"An unexpected error occurred while processing your request.\",\n  \"instance\": \"/api/admin/tips/images\",\n  \"correlationId\": \"def456\"\n}\n```\n            \nAll error responses include a `correlationId` for tracing and follow RFC 7807 Problem Details format.",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TipImageDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TipImageDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TipImageDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2361,6 +2536,36 @@
   },
   "components": {
     "schemas": {
+      "CategoryImageDto": {
+        "type": "object",
+        "properties": {
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "imageStoragePath": {
+            "type": "string",
+            "nullable": true
+          },
+          "originalFileName": {
+            "type": "string",
+            "nullable": true
+          },
+          "contentType": {
+            "type": "string",
+            "nullable": true
+          },
+          "fileSizeBytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "uploadedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
       "CategoryListResponse": {
         "type": "object",
         "properties": {
@@ -2393,6 +2598,9 @@
             "type": "string",
             "format": "date-time",
             "nullable": true
+          },
+          "image": {
+            "$ref": "#/components/schemas/CategoryImageDto"
           }
         },
         "additionalProperties": false
@@ -2421,6 +2629,9 @@
           "name": {
             "type": "string",
             "nullable": true
+          },
+          "image": {
+            "$ref": "#/components/schemas/CategoryImageDto"
           }
         },
         "additionalProperties": false
@@ -2457,6 +2668,9 @@
           "videoUrl": {
             "type": "string",
             "nullable": true
+          },
+          "image": {
+            "$ref": "#/components/schemas/TipImageDto"
           }
         },
         "additionalProperties": false
@@ -2616,6 +2830,39 @@
             "type": "string",
             "format": "date-time",
             "nullable": true
+          },
+          "image": {
+            "$ref": "#/components/schemas/TipImageDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TipImageDto": {
+        "type": "object",
+        "properties": {
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "imageStoragePath": {
+            "type": "string",
+            "nullable": true
+          },
+          "originalFileName": {
+            "type": "string",
+            "nullable": true
+          },
+          "contentType": {
+            "type": "string",
+            "nullable": true
+          },
+          "fileSizeBytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "uploadedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "additionalProperties": false
@@ -2694,6 +2941,9 @@
           "createdAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "image": {
+            "$ref": "#/components/schemas/TipImageDto"
           }
         },
         "additionalProperties": false
