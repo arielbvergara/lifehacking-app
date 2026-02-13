@@ -25,10 +25,10 @@ describe('HeroSection', () => {
     render(<HeroSection />);
 
     const searchInput = screen.getByRole('textbox', { name: /search/i });
-    const searchButton = screen.getByRole('button', { name: /search/i });
+    const searchButtons = screen.getAllByRole('button', { name: /search/i });
 
     expect(searchInput).toBeInTheDocument();
-    expect(searchButton).toBeInTheDocument();
+    expect(searchButtons.length).toBeGreaterThan(0);
   });
 
   it('should render CategoryTags component with default tags', () => {

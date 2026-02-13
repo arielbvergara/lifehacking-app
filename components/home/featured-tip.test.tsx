@@ -82,12 +82,12 @@ describe('FeaturedTip', () => {
     expect(handleRetry).toHaveBeenCalledTimes(1);
   });
 
-  it('should render tip with LIFEHACK badge', () => {
+  it('should render tip with TIP OF THE DAY badge', () => {
     render(
       <FeaturedTip tip={mockTip} loading={false} error={null} onRetry={vi.fn()} />
     );
 
-    expect(screen.getByText('LIFEHACK')).toBeInTheDocument();
+    expect(screen.getByText('TIP OF THE DAY')).toBeInTheDocument();
   });
 
   it('should render tip title', () => {
@@ -121,47 +121,47 @@ describe('FeaturedTip', () => {
     expect(displayedText.textContent).toContain('...');
   });
 
-  it('should render Read More button', () => {
+  it('should render Watch Video button', () => {
     render(
       <FeaturedTip tip={mockTip} loading={false} error={null} onRetry={vi.fn()} />
     );
 
-    expect(screen.getByRole('button', { name: /read more/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /watch video/i })).toBeInTheDocument();
   });
 
-  it('should render Save button', () => {
+  it('should render Read Guide button', () => {
     render(
       <FeaturedTip tip={mockTip} loading={false} error={null} onRetry={vi.fn()} />
     );
 
-    expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /read guide/i })).toBeInTheDocument();
   });
 
-  it('should navigate to tip detail page when Read More is clicked', async () => {
+  it('should navigate to tip detail page when Watch Video is clicked', async () => {
     const user = userEvent.setup();
 
     render(
       <FeaturedTip tip={mockTip} loading={false} error={null} onRetry={vi.fn()} />
     );
 
-    const readMoreButton = screen.getByRole('button', { name: /read more/i });
-    await user.click(readMoreButton);
+    const watchVideoButton = screen.getByRole('button', { name: /watch video/i });
+    await user.click(watchVideoButton);
 
     expect(mockPush).toHaveBeenCalledWith(`/tip/${mockTip.id}`);
     expect(mockPush).toHaveBeenCalledTimes(1);
   });
 
-  it('should not navigate when Save button is clicked', async () => {
+  it('should not navigate when Read Guide button is clicked', async () => {
     const user = userEvent.setup();
 
     render(
       <FeaturedTip tip={mockTip} loading={false} error={null} onRetry={vi.fn()} />
     );
 
-    const saveButton = screen.getByRole('button', { name: /save/i });
-    await user.click(saveButton);
+    const readGuideButton = screen.getByRole('button', { name: /read guide/i });
+    await user.click(readGuideButton);
 
-    // Save button should not trigger navigation
+    // Read Guide button should not trigger navigation
     expect(mockPush).not.toHaveBeenCalled();
   });
 
@@ -172,7 +172,8 @@ describe('FeaturedTip', () => {
 
     const image = screen.getByRole('img', { name: mockTip.title });
     expect(image).toBeInTheDocument();
-    expect(image).toHaveAttribute('src', mockTip.image?.imageUrl);
+    // Next.js Image component transforms the src URL, so check it contains the original URL
+    expect(image.getAttribute('src')).toContain(encodeURIComponent(mockTip.image?.imageUrl || ''));
   });
 
   it('should not render image section when image is not provided', () => {

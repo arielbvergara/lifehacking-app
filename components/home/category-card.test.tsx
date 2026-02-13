@@ -113,7 +113,8 @@ describe('CategoryCard', () => {
     
     const image = screen.getByAltText('Kitchen');
     expect(image).toBeInTheDocument();
-    expect(image).toHaveAttribute('src', 'https://example.com/kitchen.jpg');
+    // Next.js Image component transforms the src URL, so check it contains the original URL
+    expect(image.getAttribute('src')).toContain(encodeURIComponent('https://example.com/kitchen.jpg'));
   });
 
   it('should render white text when image is provided', () => {

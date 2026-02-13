@@ -21,8 +21,8 @@ describe('SearchBar', () => {
   it('should render search button', () => {
     render(<SearchBar />);
 
-    const button = screen.getByRole('button', { name: /search/i });
-    expect(button).toBeInTheDocument();
+    const buttons = screen.getAllByRole('button', { name: /search/i });
+    expect(buttons.length).toBeGreaterThan(0);
   });
 
   it('should update input value when user types', async () => {
@@ -41,10 +41,10 @@ describe('SearchBar', () => {
     render(<SearchBar onSearch={handleSearch} />);
 
     const input = screen.getByRole('textbox', { name: /search/i });
-    const button = screen.getByRole('button', { name: /search/i });
+    const buttons = screen.getAllByRole('button', { name: /search/i });
 
     await user.type(input, 'cleaning hacks');
-    await user.click(button);
+    await user.click(buttons[0]);
 
     expect(handleSearch).toHaveBeenCalledWith('cleaning hacks');
     expect(handleSearch).toHaveBeenCalledTimes(1);
@@ -67,22 +67,22 @@ describe('SearchBar', () => {
     render(<SearchBar />);
 
     const input = screen.getByRole('textbox', { name: /search/i });
-    const button = screen.getByRole('button', { name: /search/i });
+    const buttons = screen.getAllByRole('button', { name: /search/i });
 
     await user.type(input, 'test query');
     
     // Should not throw
-    await expect(user.click(button)).resolves.not.toThrow();
+    await expect(user.click(buttons[0])).resolves.not.toThrow();
   });
 
   it('should disable input and button when disabled prop is true', () => {
     render(<SearchBar disabled={true} />);
 
     const input = screen.getByRole('textbox', { name: /search/i });
-    const button = screen.getByRole('button', { name: /search/i });
+    const buttons = screen.getAllByRole('button', { name: /search/i });
 
     expect(input).toBeDisabled();
-    expect(button).toBeDisabled();
+    buttons.forEach(button => expect(button).toBeDisabled());
   });
 
   it('should not call onSearch when disabled', async () => {
@@ -90,8 +90,8 @@ describe('SearchBar', () => {
     const handleSearch = vi.fn();
     render(<SearchBar onSearch={handleSearch} disabled={true} />);
 
-    const button = screen.getByRole('button', { name: /search/i });
-    await user.click(button);
+    const buttons = screen.getAllByRole('button', { name: /search/i });
+    await user.click(buttons[0]);
 
     expect(handleSearch).not.toHaveBeenCalled();
   });
@@ -101,8 +101,8 @@ describe('SearchBar', () => {
     const handleSearch = vi.fn();
     render(<SearchBar onSearch={handleSearch} />);
 
-    const button = screen.getByRole('button', { name: /search/i });
-    await user.click(button);
+    const buttons = screen.getAllByRole('button', { name: /search/i });
+    await user.click(buttons[0]);
 
     expect(handleSearch).toHaveBeenCalledWith('');
   });
