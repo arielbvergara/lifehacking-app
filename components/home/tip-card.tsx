@@ -34,11 +34,11 @@ export function TipCard({ tip }: TipCardProps) {
 
   return (
     <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-      {/* Tip Image */}
+      {/* Tip Image with Category Badge Overlay */}
       <div className="relative w-full h-48 bg-gray-200">
-        {tip.videoUrl ? (
+        {tip.image?.imageUrl ? (
           <Image
-            src={tip.videoUrl}
+            src={tip.image.imageUrl}
             alt={tip.title}
             fill
             className="object-cover"
@@ -49,17 +49,17 @@ export function TipCard({ tip }: TipCardProps) {
             <span className="text-4xl">📝</span>
           </div>
         )}
+        
+        {/* Category Badge - Overlaid on top-right */}
+        <div className="absolute top-3 right-3">
+          <span className="inline-block px-3 py-1 bg-white text-gray-800 text-xs font-medium rounded-full shadow-sm">
+            {tip.categoryName}
+          </span>
+        </div>
       </div>
 
       {/* Card Content */}
       <div className="p-5">
-        {/* Category Badge */}
-        <div className="mb-3">
-          <span className="inline-block px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
-            {tip.categoryName}
-          </span>
-        </div>
-
         {/* Title */}
         <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
           {truncatedTitle}
