@@ -1,4 +1,4 @@
-import { TipSummary } from '@/lib/types/api';
+import { TipSummary, TipDetail } from '@/lib/types/api';
 
 /**
  * SEO Structured Data Utilities
@@ -30,6 +30,29 @@ export interface ArticleStructuredData {
     '@type': string;
     name: string;
   };
+}
+
+export interface HowToStructuredData {
+  '@context': string;
+  '@type': 'HowTo';
+  name: string;
+  description: string;
+  image?: string;
+  video?: {
+    '@type': 'VideoObject';
+    name: string;
+    description: string;
+    thumbnailUrl: string;
+    contentUrl: string;
+    uploadDate: string;
+  };
+  step: Array<{
+    '@type': 'HowToStep';
+    position: number;
+    name: string;
+    text: string;
+  }>;
+  totalTime?: string;
 }
 
 /**
@@ -72,4 +95,41 @@ export function generateTipStructuredData(tip: TipSummary): ArticleStructuredDat
  */
 export function structuredDataToScript(data: WebsiteStructuredData | ArticleStructuredData): string {
   return JSON.stringify(data);
+}
+
+/**
+ * Generates HowTo structured data for a tip detail page
+ * Follows Schema.org HowTo specification for step-by-step instructions
+ * 
+ * @param tip - The tip detail object containing all tip information
+ * @returns HowTo structured data object ready for JSON-LD embedding
+ */
+export function generateHowToStructuredData(tip: TipDetail): HowToStructuredData {
+  const data: HowToStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: tip.title,
+    description: tip.description,
+    image: tip.image?.imageUrl || undefined,
+    step: tip.steps.map((step) => ({
+      '@type': 'HowToStep',
+      position: step.stepNumber,
+      name: `Step ${step.stepNumber}`,
+      text: step.description,
+    })),
+  };
+
+  // Add video object if both videoUrl and image are available
+  if (tip.videoUrl && tip.image?.imageUrl) {
+    data.video = {
+      '@type': 'VideoObject',
+      name: tip.title,
+      description: tip.description,
+      thumbnailUrl: tip.image.imageUrl,
+      contentUrl: tip.videoUrl,
+      uploadDate: tip.createdAt,
+    };
+  }
+
+  return data;
 }
