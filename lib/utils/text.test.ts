@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { fc, test } from '@fast-check/vitest';
-import { truncateText } from './text';
+import { truncateText, truncateForBreadcrumb } from './text';
 
 describe('truncateText', () => {
   it('should return the original text if it is shorter than maxLength', () => {
@@ -141,4 +141,70 @@ describe('truncateText - Property-Based Tests', () => {
       expect(result2).toBe(result3);
     }
   );
+});
+
+describe('truncateForBreadcrumb', () => {
+  it('should return the original text if it is shorter than maxLength', () => {
+    const text = 'Short title';
+    const result = truncateForBreadcrumb(text, 30);
+    expect(result).toBe('Short title');
+  });
+
+  it('should return the original text if it equals maxLength', () => {
+    const text = 'Exactly thirty characters!!';
+    const result = truncateForBreadcrumb(text, 27);
+    expect(result).toBe('Exactly thirty characters!!');
+  });
+
+  it('should truncate text and add ellipsis if it exceeds maxLength', () => {
+    const text = 'How to Peel Garlic in 10 Seconds Using a Simple Trick';
+    const result = truncateForBreadcrumb(text, 30);
+    expect(result).toBe('How to Peel Garlic in 10 Se...');
+    expect(result.length).toBe(30);
+  });
+
+  it('should use default maxLength of 30 when not specified', () => {
+    const text = 'This is a very long breadcrumb title that needs truncation';
+    const result = truncateForBreadcrumb(text);
+    expect(result).toBe('This is a very long breadcr...');
+    expect(result.length).toBe(30);
+  });
+
+  it('should handle empty strings', () => {
+    const result = truncateForBreadcrumb('', 30);
+    expect(result).toBe('');
+  });
+
+  it('should handle single character strings', () => {
+    const result = truncateForBreadcrumb('A', 30);
+    expect(result).toBe('A');
+  });
+
+  it('should truncate correctly with custom maxLength', () => {
+    const text = 'Kitchen Tips and Tricks';
+    const result = truncateForBreadcrumb(text, 15);
+    expect(result).toBe('Kitchen Tips...');
+    expect(result.length).toBe(15);
+  });
+
+  it('should handle text with special characters', () => {
+    const text = 'How to Cook 🍳 Perfect Eggs Every Time!';
+    const result = truncateForBreadcrumb(text, 20);
+    expect(result).toBe('How to Cook 🍳 Pe...');
+    expect(result.length).toBe(20);
+  });
+
+  it('should handle text with spaces at truncation point', () => {
+    const text = 'This is a test string for breadcrumb';
+    const result = truncateForBreadcrumb(text, 20);
+    expect(result).toBe('This is a test st...');
+    expect(result.length).toBe(20);
+  });
+
+  it('should preserve exact characters before ellipsis', () => {
+    const text = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const result = truncateForBreadcrumb(text, 15);
+    expect(result).toBe('0123456789AB...');
+    expect(result.substring(0, 12)).toBe('0123456789AB');
+  });
 });

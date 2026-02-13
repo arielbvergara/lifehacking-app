@@ -23,3 +23,18 @@ export function truncateText(text: string, maxLength: number = 100): string {
   // Truncate and add ellipsis
   return text.substring(0, maxLength) + '...';
 }
+
+/**
+ * Truncates text for breadcrumb display
+ * @param text - Text to truncate
+ * @param maxLength - Maximum length (default: 30)
+ * @returns Truncated text with ellipsis
+ * 
+ * @example
+ * truncateForBreadcrumb("How to Peel Garlic in 10 Seconds", 20) // "How to Peel Garlic..."
+ * truncateForBreadcrumb("Short", 30) // "Short"
+ */
+export function truncateForBreadcrumb(text: string, maxLength: number = 30): string {
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength - 3) + '...';
+}
