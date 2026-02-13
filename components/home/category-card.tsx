@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Category } from '@/lib/types/api';
 import { getCategoryIcon, formatTipCount } from '@/lib/utils/category';
+import { generateCategoryImageAlt } from '@/lib/utils/seo';
 
 export interface CategoryCardProps {
   category: Category;
@@ -25,6 +26,7 @@ export function CategoryCard({ category, tipCount = 0, priority = false }: Categ
   const icon = getCategoryIcon(category.name);
   const formattedCount = formatTipCount(tipCount);
   const imageUrl = category.image?.imageUrl;
+  const imageAlt = generateCategoryImageAlt(category);
 
   if (imageUrl) {
     return (
@@ -39,10 +41,11 @@ export function CategoryCard({ category, tipCount = 0, priority = false }: Categ
             handleClick();
           }
         }}
+        aria-label={`View ${category.name} category with ${formattedCount}`}
       >
         <Image
           src={imageUrl}
-          alt={category.name}
+          alt={imageAlt}
           fill
           className="object-cover"
           priority={priority}
@@ -71,8 +74,9 @@ export function CategoryCard({ category, tipCount = 0, priority = false }: Categ
           handleClick();
         }
       }}
+      aria-label={`View ${category.name} category with ${formattedCount}`}
     >
-      <div className="text-4xl mb-3">{icon}</div>
+      <div className="text-4xl mb-3" aria-hidden="true">{icon}</div>
       <h3 className="text-lg font-semibold text-gray-900 mb-1">
         {category.name}
       </h3>

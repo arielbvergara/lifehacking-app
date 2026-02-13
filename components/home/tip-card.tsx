@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { TipSummary } from '@/lib/types/api';
 import { truncateText } from '@/lib/utils/text';
+import { generateTipImageAlt } from '@/lib/utils/seo';
+import { generateTipStructuredData } from '@/lib/seo/structured-data';
 
 export interface TipCardProps {
   tip: TipSummary;
@@ -12,6 +14,8 @@ export interface TipCardProps {
 /**
  * TipCard displays a tip summary with image, title, description, and category badge.
  * Clicking "Read tip >" navigates to the tip detail page.
+ * 
+ * Implements semantic HTML with <article> tag and includes structured data (JSON-LD).
  */
 export function TipCard({ tip }: TipCardProps) {
   const router = useRouter();
@@ -31,22 +35,31 @@ export function TipCard({ tip }: TipCardProps) {
   
   // Truncate description to 3 lines (approximately 120 characters)
   const truncatedDescription = truncateText(tip.description, 120);
+  
+  const imageAlt = generateTipImageAlt(tip);
+  const structuredData = generateTipStructuredData(tip);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+    <article className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+      {/* Structured Data (JSON-LD) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      
       {/* Tip Image with Category Badge Overlay */}
-      <div className="relative w-full h-48 bg-gray-200">
+      <div className="relative w-full aspect-[16/9] bg-gray-200">
         {tip.image?.imageUrl ? (
           <Image
             src={tip.image.imageUrl}
-            alt={tip.title}
+            alt={imageAlt}
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-400">
-            <span className="text-4xl">📝</span>
+            <span className="text-4xl" aria-hidden="true">📝</span>
           </div>
         )}
         
@@ -75,14 +88,15 @@ export function TipCard({ tip }: TipCardProps) {
           <button
             onClick={handleReadTip}
             className="text-green-600 hover:text-green-700 font-medium text-sm transition-colors"
+            aria-label={`Read tip: ${tip.title}`}
           >
             Read tip &gt;
           </button>
           
           <button
             onClick={handleFavorite}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            aria-label="Add to favorites"
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+            aria-label={`Add ${tip.title} to favorites`}
           >
             <svg
               className="w-5 h-5 text-gray-400"
@@ -90,6 +104,7 @@ export function TipCard({ tip }: TipCardProps) {
               stroke="currentColor"
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -101,6 +116,6 @@ export function TipCard({ tip }: TipCardProps) {
           </button>
         </div>
       </div>
-    </div>
+    </article>
   );
 }

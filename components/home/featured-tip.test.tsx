@@ -170,7 +170,7 @@ describe('FeaturedTip', () => {
       <FeaturedTip tip={mockTip} loading={false} error={null} onRetry={vi.fn()} />
     );
 
-    const image = screen.getByRole('img', { name: mockTip.title });
+    const image = screen.getByRole('img', { name: `${mockTip.title} - ${mockTip.categoryName} life hack with step-by-step guide` });
     expect(image).toBeInTheDocument();
     // Next.js Image component transforms the src URL, so check it contains the original URL
     expect(image.getAttribute('src')).toContain(encodeURIComponent(mockTip.image?.imageUrl || ''));

@@ -111,7 +111,7 @@ describe('CategoryCard', () => {
   it('should render image when imageUrl is provided', () => {
     render(<CategoryCard category={mockCategoryWithImage} />);
     
-    const image = screen.getByAltText('Kitchen');
+    const image = screen.getByAltText('Kitchen category - Browse life hacks and tips');
     expect(image).toBeInTheDocument();
     // Next.js Image component transforms the src URL, so check it contains the original URL
     expect(image.getAttribute('src')).toContain(encodeURIComponent('https://example.com/kitchen.jpg'));

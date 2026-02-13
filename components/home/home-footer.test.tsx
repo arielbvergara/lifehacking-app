@@ -145,7 +145,7 @@ describe('HomeFooter', () => {
       render(<HomeFooter />);
 
       const currentYear = new Date().getFullYear();
-      expect(screen.getByText(new RegExp(`© ${currentYear} LifeHackBuddy`))).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(`© ${currentYear} LifeHacking`))).toBeInTheDocument();
     });
 
     it('should include "All rights reserved" in copyright', () => {

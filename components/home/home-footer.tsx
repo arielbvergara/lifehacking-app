@@ -167,7 +167,7 @@ export function HomeFooter() {
 
             {/* Copyright Notice */}
             <p className="text-sm text-gray-600">
-              © {new Date().getFullYear()} LifeHackBuddy. All rights reserved.
+              © {new Date().getFullYear()} LifeHacking. All rights reserved.
             </p>
           </div>
         </div>
