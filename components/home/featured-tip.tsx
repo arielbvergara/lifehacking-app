@@ -12,9 +12,9 @@ export interface FeaturedTipProps {
 }
 
 const DESCRIPTION_MAX_LENGTH = 200;
-const LIFEHACK_BADGE_TEXT = 'LIFEHACK';
-const READ_MORE_TEXT = 'Read More';
-const SAVE_TEXT = 'Save';
+const TIP_OF_THE_DAY_BADGE_TEXT = 'TIP OF THE DAY';
+const WATCH_VIDEO_TEXT = 'Watch Video';
+const READ_GUIDE_TEXT = 'Read Guide';
 
 /**
  * FeaturedTip Component
@@ -25,21 +25,21 @@ const SAVE_TEXT = 'Save';
 export function FeaturedTip({ tip, loading, error, onRetry }: FeaturedTipProps) {
   const router = useRouter();
 
-  const handleReadMore = () => {
+  const handleWatchVideo = () => {
     if (tip) {
       router.push(`/tip/${tip.id}`);
     }
   };
 
-  const handleSave = () => {
+  const handleReadGuide = () => {
     // Placeholder for future implementation
     // This button is intentionally non-functional
   };
 
   if (loading) {
     return (
-      <section className="py-12 md:py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
+      <section className="py-12 md:py-16 bg-gradient-to-r from-[#e8f5e8] via-[#f0f9f0] to-white">
+        <div className="container mx-auto px-4 max-w-6xl">
           <FeaturedTipSkeleton />
         </div>
       </section>
@@ -48,13 +48,13 @@ export function FeaturedTip({ tip, loading, error, onRetry }: FeaturedTipProps) 
 
   if (error) {
     return (
-      <section className="py-12 md:py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center py-12">
+      <section className="py-12 md:py-16 bg-gradient-to-r from-[#e8f5e8] via-[#f0f9f0] to-white">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="bg-gradient-to-br from-[#e8f5e8] to-[#f0f9f0] rounded-3xl p-12 text-center">
             <p className="text-red-600 mb-4">{error}</p>
             <button
               onClick={onRetry}
-              className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              className="px-6 py-3 bg-black text-white font-semibold rounded-2xl hover:bg-gray-800 transition-all focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 shadow-md"
             >
               Try Again
             </button>
@@ -71,49 +71,55 @@ export function FeaturedTip({ tip, loading, error, onRetry }: FeaturedTipProps) 
   const truncatedDescription = truncateText(tip.description, DESCRIPTION_MAX_LENGTH);
 
   return (
-    <section className="py-12 md:py-16 bg-gray-50">
-      <div className="container mx-auto px-4">
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div className="flex flex-col lg:flex-row">
+    <section className="py-12 md:py-16 bg-gradient-to-r from-[#e8f5e8] via-[#f0f9f0] to-white">
+      <div className="container mx-auto px-4 max-w-6xl">
+        <div className="bg-gradient-to-br from-[#e8f5e8] to-[#f0f9f0] rounded-3xl p-8 md:p-12 lg:p-16">
+          <div className="flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-12">
             {/* Content Section */}
-            <div className="flex-1 p-8 md:p-12">
-              <div className="inline-block px-3 py-1 bg-primary text-white text-xs font-bold rounded-full mb-4">
-                {LIFEHACK_BADGE_TEXT}
+            <div className="flex-1">
+              <div className="inline-block px-4 py-2 bg-[#2BEE2B] text-black text-xs font-bold rounded-full mb-6">
+                {TIP_OF_THE_DAY_BADGE_TEXT}
               </div>
               
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
                 {tip.title}
               </h2>
               
-              <p className="text-gray-600 mb-6 leading-relaxed">
+              <p className="text-gray-600 text-base md:text-lg mb-8 leading-relaxed">
                 {truncatedDescription}
               </p>
               
-              <div className="flex gap-4">
+              <div className="flex flex-wrap gap-4">
                 <button
-                  onClick={handleReadMore}
-                  className="px-6 py-3 bg-primary text-white font-semibold rounded-xl hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                  onClick={handleWatchVideo}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-black text-white font-semibold rounded-2xl hover:bg-gray-800 transition-all focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 shadow-md hover:shadow-lg"
                 >
-                  {READ_MORE_TEXT}
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" fill="white" />
+                    <path d="M10 8.5v7l6-3.5-6-3.5z" fill="black" />
+                  </svg>
+                  {WATCH_VIDEO_TEXT}
                 </button>
                 
                 <button
-                  onClick={handleSave}
-                  className="px-6 py-3 bg-white border-2 border-gray-200 text-gray-700 font-semibold rounded-xl hover:border-primary hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                  onClick={handleReadGuide}
+                  className="px-6 py-3 bg-white text-gray-900 font-semibold rounded-2xl hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 shadow-sm hover:shadow-md"
                 >
-                  {SAVE_TEXT}
+                  {READ_GUIDE_TEXT}
                 </button>
               </div>
             </div>
 
             {/* Image Section */}
             {tip.image?.imageUrl && (
-              <div className="lg:w-1/2 h-64 lg:h-auto">
-                <img
-                  src={tip.image.imageUrl}
-                  alt={tip.title}
-                  className="w-full h-full object-cover"
-                />
+              <div className="lg:w-1/2 flex justify-center lg:justify-end">
+                <div className="relative w-full max-w-md">
+                  <img
+                    src={tip.image.imageUrl}
+                    alt={tip.title}
+                    className="w-full h-auto object-cover rounded-[24px] shadow-[0_8px_30px_rgba(0,0,0,0.12)] transform rotate-[-6deg] hover:rotate-[-3deg] transition-transform duration-300"
+                  />
+                </div>
               </div>
             )}
           </div>
@@ -125,20 +131,23 @@ export function FeaturedTip({ tip, loading, error, onRetry }: FeaturedTipProps) 
 
 function FeaturedTipSkeleton() {
   return (
-    <div className="bg-white rounded-2xl shadow-lg overflow-hidden animate-pulse">
-      <div className="flex flex-col lg:flex-row">
-        <div className="flex-1 p-8 md:p-12">
-          <div className="w-24 h-6 bg-gray-200 rounded-full mb-4"></div>
-          <div className="h-8 bg-gray-200 rounded mb-4 w-3/4"></div>
-          <div className="h-4 bg-gray-200 rounded mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded mb-2 w-5/6"></div>
-          <div className="h-4 bg-gray-200 rounded mb-6 w-4/6"></div>
+    <div className="bg-gradient-to-br from-[#e8f5e8] to-[#f0f9f0] rounded-3xl p-8 md:p-12 lg:p-16 animate-pulse">
+      <div className="flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-12">
+        <div className="flex-1">
+          <div className="w-32 h-7 bg-gray-200 rounded-full mb-6"></div>
+          <div className="h-10 bg-gray-200 rounded mb-4 w-3/4"></div>
+          <div className="h-10 bg-gray-200 rounded mb-6 w-2/3"></div>
+          <div className="h-5 bg-gray-200 rounded mb-2"></div>
+          <div className="h-5 bg-gray-200 rounded mb-2 w-5/6"></div>
+          <div className="h-5 bg-gray-200 rounded mb-8 w-4/6"></div>
           <div className="flex gap-4">
-            <div className="w-32 h-12 bg-gray-200 rounded-xl"></div>
-            <div className="w-24 h-12 bg-gray-200 rounded-xl"></div>
+            <div className="w-40 h-12 bg-gray-200 rounded-2xl"></div>
+            <div className="w-32 h-12 bg-gray-200 rounded-2xl"></div>
           </div>
         </div>
-        <div className="lg:w-1/2 h-64 lg:h-auto bg-gray-200"></div>
+        <div className="lg:w-1/2 flex justify-center lg:justify-end">
+          <div className="w-full max-w-md h-64 lg:h-80 bg-gray-200 rounded-[24px] transform rotate-[-6deg]"></div>
+        </div>
       </div>
     </div>
   );
