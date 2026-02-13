@@ -52,7 +52,7 @@ export function generateWebsiteStructuredData(baseUrl: string = 'https://lifehac
 /**
  * Generates article structured data for a tip
  */
-export function generateTipStructuredData(tip: TipSummary, baseUrl: string = 'https://lifehackbuddy.com'): ArticleStructuredData {
+export function generateTipStructuredData(tip: TipSummary): ArticleStructuredData {
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
