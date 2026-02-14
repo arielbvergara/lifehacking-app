@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { CategoryCard } from './category-card';
+import { CategoryCard } from '../../home/category-card';
 import { Category } from '@/lib/types/api';
 
 // Mock Next.js router

@@ -7,7 +7,7 @@ import { HeroSection } from '@/components/home/hero-section';
 import { ExploreCategories } from '@/components/home/explore-categories';
 import { FeaturedTip } from '@/components/home/featured-tip';
 import { LatestLifehacks } from '@/components/home/latest-lifehacks';
-import { HomeFooter } from '@/components/home/home-footer';
+import { HomeFooter } from '@/components/layout/footer';
 
 /**
  * Home Page Client Component

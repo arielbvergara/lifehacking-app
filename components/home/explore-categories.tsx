@@ -1,7 +1,7 @@
 'use client';
 
 import { Category } from '@/lib/types/api';
-import { CategoryCard } from './category-card';
+import { CategoryCard } from '../shared/category/category-card';
 
 export interface ExploreCategoriesProps {
   categories: Category[] | null;

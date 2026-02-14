@@ -1,7 +1,7 @@
 'use client';
 
 import { SearchBar } from './search-bar';
-import { CategoryTags } from './category-tags';
+import { CategoryTags } from '../shared/category/category-tags';
 
 export interface HeroSectionProps {
   onSearch?: (query: string) => void;

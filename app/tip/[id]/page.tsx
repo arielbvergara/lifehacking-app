@@ -4,7 +4,7 @@ import { fetchTipById } from '@/lib/api/tips';
 import { generateHowToStructuredData } from '@/lib/seo/structured-data';
 import { truncateForBreadcrumb } from '@/lib/utils/text';
 import { HomeHeader } from '@/components/layout/home-header';
-import { HomeFooter } from '@/components/home/home-footer';
+import { HomeFooter } from '@/components/layout/footer';
 import { Breadcrumb } from '@/components/shared/breadcrumb';
 import { TipHeader } from '@/components/tip/tip-header';
 import { TipHero } from '@/components/tip/tip-hero';

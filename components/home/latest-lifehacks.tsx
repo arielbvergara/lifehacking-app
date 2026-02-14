@@ -1,7 +1,7 @@
 'use client';
 
 import { TipSummary } from '@/lib/types/api';
-import { TipCard } from './tip-card';
+import { TipCard } from '../shared/tip/tip-card';
 
 export interface LatestLifehacksProps {
   tips: TipSummary[];

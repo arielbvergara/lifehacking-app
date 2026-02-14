@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { HomeHeader } from '@/components/layout/home-header';
-import { HomeFooter } from '@/components/home/home-footer';
+import { HomeFooter } from '@/components/layout/footer';
 
 export default function TipNotFound() {
   return (
