@@ -33,7 +33,7 @@ export function Header({ user }: HomeHeaderProps) {
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/categories', label: 'Categories' },
-    { href: '/popular', label: 'Popular' },
+    { href: '/tips/popular', label: 'Popular' },
     { href: '/about', label: 'About' },
   ];
 
