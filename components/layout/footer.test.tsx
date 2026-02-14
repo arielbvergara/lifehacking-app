@@ -37,7 +37,7 @@ describe('HomeFooter', () => {
 
       const link = screen.getByRole('link', { name: /latest tips/i });
       expect(link).toBeInTheDocument();
-      expect(link).toHaveAttribute('href', '/latest');
+      expect(link).toHaveAttribute('href', '/tip/latest');
     });
 
     it('should render Popular link', () => {
@@ -45,7 +45,7 @@ describe('HomeFooter', () => {
 
       const link = screen.getByRole('link', { name: /popular/i });
       expect(link).toBeInTheDocument();
-      expect(link).toHaveAttribute('href', '/popular');
+      expect(link).toHaveAttribute('href', '/tip/popular');
     });
   });
 

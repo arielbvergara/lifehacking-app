@@ -30,7 +30,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/latest"
+                  href="/tip/latest"
                   className="text-sm text-gray-600 hover:text-primary transition-colors"
                 >
                   Latest Tips
@@ -38,7 +38,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/popular"
+                  href="/tip/popular"
                   className="text-sm text-gray-600 hover:text-primary transition-colors"
                 >
                   Popular
