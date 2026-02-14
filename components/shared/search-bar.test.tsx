@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import { SearchBar } from './search-bar';
+import { SearchBar } from '../shared/search-bar';
 
 describe('SearchBar', () => {
   it('should render input with default placeholder', () => {

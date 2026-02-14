@@ -1,6 +1,6 @@
 'use client';
 
-import { SearchBar } from './search-bar';
+import { SearchBar } from '../shared/search-bar';
 import { CategoryTags } from '../shared/category/category-tags';
 
 export interface HeroSectionProps {
