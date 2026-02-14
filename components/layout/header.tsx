@@ -21,9 +21,9 @@ export interface HomeHeaderProps {
  * - Responsive mobile menu for smaller screens
  * 
  * @example
- * <HomeHeader user={currentUser} />
+ * <Header user={currentUser} />
  */
-export function HomeHeader({ user }: HomeHeaderProps) {
+export function Header({ user }: HomeHeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { signOut } = useAuth();

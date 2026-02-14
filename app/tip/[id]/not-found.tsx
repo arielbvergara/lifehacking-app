@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { HomeHeader } from '@/components/layout/home-header';
-import { HomeFooter } from '@/components/layout/footer';
+import { Footer } from '@/components/layout/footer';
 
 export default function TipNotFound() {
   return (
@@ -25,7 +25,7 @@ export default function TipNotFound() {
         </div>
       </main>
       
-      <HomeFooter />
+      <Footer />
     </div>
   );
 }

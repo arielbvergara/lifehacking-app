@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { HomeHeader } from '@/components/layout/home-header';
-import { HomeFooter } from '@/components/layout/footer';
+import { Footer } from '@/components/layout/footer';
 
 export default function TipError({
   error,
@@ -46,7 +46,7 @@ export default function TipError({
         </div>
       </main>
       
-      <HomeFooter />
+      <Footer />
     </div>
   );
 }
