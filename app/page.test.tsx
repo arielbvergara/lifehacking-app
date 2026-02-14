@@ -32,9 +32,9 @@ vi.mock('@/lib/hooks/use-home-data', () => ({
 
 // Mock child components
 vi.mock('@/components/layout/home-header', () => ({
-  HomeHeader: ({ user }: { user: FirebaseUser | null }) => (
+  HomeHeader: () => (
     <div data-testid="home-header">
-      Header {user ? 'authenticated' : 'anonymous'}
+      Header {mockUser ? 'authenticated' : 'anonymous'}
     </div>
   ),
 }));
@@ -85,6 +85,10 @@ vi.mock('@/components/home/latest-lifehacks', () => ({
 
 vi.mock('@/components/home/home-footer', () => ({
   HomeFooter: () => <div data-testid="home-footer">Footer</div>,
+}));
+
+vi.mock('@/components/layout/footer', () => ({
+  Footer: () => <div data-testid="home-footer">Footer</div>,
 }));
 
 describe('Home Page', () => {
