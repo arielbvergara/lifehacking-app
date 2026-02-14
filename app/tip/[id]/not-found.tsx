@@ -1,11 +1,11 @@
 import Link from 'next/link';
-import { HomeHeader } from '@/components/layout/home-header';
+import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 
 export default function TipNotFound() {
   return (
     <div className="min-h-screen flex flex-col bg-background-light">
-      <HomeHeader user={null} />
+      <Header user={null} />
       
       <main className="flex-grow flex items-center justify-center px-4">
         <div className="text-center max-w-md">
