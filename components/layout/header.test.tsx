@@ -16,10 +16,9 @@ vi.mock('next/navigation', () => ({
 
 // Mock auth context
 const mockSignOut = vi.fn();
+const mockUseAuth = vi.fn();
 vi.mock('@/lib/auth/auth-context', () => ({
-  useAuth: () => ({
-    signOut: mockSignOut,
-  }),
+  useAuth: () => mockUseAuth(),
 }));
 
 // Mock child components
@@ -38,36 +37,41 @@ vi.mock('@/components/layout/user-avatar', () => ({
 describe('Header', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Default to anonymous user
+    mockUseAuth.mockReturnValue({
+      user: null,
+      signOut: mockSignOut,
+    });
   });
 
   describe('Anonymous User UI', () => {
     it('should display Login button for anonymous users', () => {
-      render(<Header user={null} />);
+      render(<Header />);
 
       expect(screen.getByRole('link', { name: /login/i })).toBeInTheDocument();
     });
 
     it('should display Join for Free button for anonymous users', () => {
-      render(<Header user={null} />);
+      render(<Header />);
 
       expect(screen.getByRole('link', { name: /join for free/i })).toBeInTheDocument();
     });
 
     it('should not display UserAvatar for anonymous users', () => {
-      render(<Header user={null} />);
+      render(<Header />);
 
       expect(screen.queryByTestId('user-avatar')).not.toBeInTheDocument();
     });
 
     it('should navigate to login page when Login button is clicked', () => {
-      render(<Header user={null} />);
+      render(<Header />);
 
       const loginLink = screen.getByRole('link', { name: /login/i });
       expect(loginLink).toHaveAttribute('href', '/login');
     });
 
     it('should navigate to signup page when Join for Free button is clicked', () => {
-      render(<Header user={null} />);
+      render(<Header />);
 
       const signupLink = screen.getByRole('link', { name: /join for free/i });
       expect(signupLink).toHaveAttribute('href', '/signup');
@@ -81,20 +85,27 @@ describe('Header', () => {
       email: 'john@example.com',
     } as FirebaseUser;
 
+    beforeEach(() => {
+      mockUseAuth.mockReturnValue({
+        user: mockUser,
+        signOut: mockSignOut,
+      });
+    });
+
     it('should display UserAvatar for authenticated users', () => {
-      render(<Header user={mockUser} />);
+      render(<Header />);
 
       expect(screen.getByTestId('user-avatar')).toBeInTheDocument();
     });
 
     it('should not display Login button for authenticated users', () => {
-      render(<Header user={mockUser} />);
+      render(<Header />);
 
       expect(screen.queryByRole('link', { name: /login/i })).not.toBeInTheDocument();
     });
 
     it('should not display Join for Free button for authenticated users', () => {
-      render(<Header user={mockUser} />);
+      render(<Header />);
 
       expect(screen.queryByRole('link', { name: /join for free/i })).not.toBeInTheDocument();
     });
@@ -107,9 +118,16 @@ describe('Header', () => {
       email: 'john@example.com',
     } as FirebaseUser;
 
+    beforeEach(() => {
+      mockUseAuth.mockReturnValue({
+        user: mockUser,
+        signOut: mockSignOut,
+      });
+    });
+
     it('should open dropdown menu when avatar is clicked', async () => {
       const user = userEvent.setup();
-      render(<Header user={mockUser} />);
+      render(<Header />);
 
       const avatar = screen.getByTestId('user-avatar');
       await user.click(avatar);
@@ -120,7 +138,7 @@ describe('Header', () => {
 
     it('should close dropdown menu when avatar is clicked again', async () => {
       const user = userEvent.setup();
-      render(<Header user={mockUser} />);
+      render(<Header />);
 
       const avatar = screen.getByTestId('user-avatar');
       
@@ -135,7 +153,7 @@ describe('Header', () => {
 
     it('should navigate to profile page when Profile is clicked', async () => {
       const user = userEvent.setup();
-      render(<Header user={mockUser} />);
+      render(<Header />);
 
       const avatar = screen.getByTestId('user-avatar');
       await user.click(avatar);
@@ -150,7 +168,7 @@ describe('Header', () => {
       const user = userEvent.setup();
       mockSignOut.mockResolvedValue(undefined);
       
-      render(<Header user={mockUser} />);
+      render(<Header />);
 
       const avatar = screen.getByTestId('user-avatar');
       await user.click(avatar);
@@ -166,7 +184,7 @@ describe('Header', () => {
 
     it('should close dropdown after navigating to profile', async () => {
       const user = userEvent.setup();
-      render(<Header user={mockUser} />);
+      render(<Header />);
 
       const avatar = screen.getByTestId('user-avatar');
       await user.click(avatar);
@@ -182,7 +200,7 @@ describe('Header', () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       mockSignOut.mockRejectedValue(new Error('Sign out failed'));
       
-      render(<Header user={mockUser} />);
+      render(<Header />);
 
       const avatar = screen.getByTestId('user-avatar');
       await user.click(avatar);
@@ -207,7 +225,7 @@ describe('Header', () => {
 
     it('should toggle mobile menu when menu button is clicked', async () => {
       const user = userEvent.setup();
-      render(<Header user={null} />);
+      render(<Header />);
 
       const menuButton = screen.getByRole('button', { name: /toggle menu/i });
       
@@ -220,8 +238,13 @@ describe('Header', () => {
     });
 
     it('should display user info in mobile menu for authenticated users', async () => {
+      mockUseAuth.mockReturnValue({
+        user: mockUser,
+        signOut: mockSignOut,
+      });
+      
       const user = userEvent.setup();
-      render(<Header user={mockUser} />);
+      render(<Header />);
 
       const menuButton = screen.getByRole('button', { name: /toggle menu/i });
       await user.click(menuButton);
@@ -233,7 +256,7 @@ describe('Header', () => {
 
     it('should close mobile menu when login link is clicked', async () => {
       const user = userEvent.setup();
-      render(<Header user={null} />);
+      render(<Header />);
 
       const menuButton = screen.getByRole('button', { name: /toggle menu/i });
       await user.click(menuButton);
@@ -253,8 +276,13 @@ describe('Header', () => {
     });
 
     it('should display Profile and Sign Out in mobile menu for authenticated users', async () => {
+      mockUseAuth.mockReturnValue({
+        user: mockUser,
+        signOut: mockSignOut,
+      });
+      
       const user = userEvent.setup();
-      render(<Header user={mockUser} />);
+      render(<Header />);
 
       const menuButton = screen.getByRole('button', { name: /toggle menu/i });
       await user.click(menuButton);
@@ -270,7 +298,7 @@ describe('Header', () => {
 
   describe('Logo Display', () => {
     it('should display logo', () => {
-      render(<Header user={null} />);
+      render(<Header />);
 
       expect(screen.getByTestId('logo')).toBeInTheDocument();
     });
@@ -278,7 +306,7 @@ describe('Header', () => {
 
   describe('Responsive Behavior', () => {
     it('should have sticky positioning', () => {
-      const { container } = render(<Header user={null} />);
+      const { container } = render(<Header />);
       
       const header = container.querySelector('header');
       expect(header).toHaveClass('sticky');
@@ -286,7 +314,7 @@ describe('Header', () => {
     });
 
     it('should have z-index for layering', () => {
-      const { container } = render(<Header user={null} />);
+      const { container } = render(<Header />);
       
       const header = container.querySelector('header');
       expect(header).toHaveClass('z-50');
@@ -295,7 +323,7 @@ describe('Header', () => {
 
   describe('Navigation Links', () => {
     it('NavigationLinks_ShouldDisplayAllLinks_WhenRendered', () => {
-      render(<Header user={null} />);
+      render(<Header />);
 
       expect(screen.getByRole('link', { name: /^home$/i })).toBeInTheDocument();
       expect(screen.getByRole('link', { name: /^categories$/i })).toBeInTheDocument();
@@ -304,17 +332,17 @@ describe('Header', () => {
     });
 
     it('NavigationLinks_ShouldHaveCorrectHrefs_WhenRendered', () => {
-      render(<Header user={null} />);
+      render(<Header />);
 
       expect(screen.getByRole('link', { name: /^home$/i })).toHaveAttribute('href', '/');
       expect(screen.getByRole('link', { name: /^categories$/i })).toHaveAttribute('href', '/categories');
-      expect(screen.getByRole('link', { name: /^popular$/i })).toHaveAttribute('href', '/popular');
+      expect(screen.getByRole('link', { name: /^popular$/i })).toHaveAttribute('href', '/tips/popular');
       expect(screen.getByRole('link', { name: /^about$/i })).toHaveAttribute('href', '/about');
     });
 
     it('NavigationLinks_ShouldHighlightActiveLink_WhenOnHomePage', () => {
       mockPathname.mockReturnValue('/');
-      render(<Header user={null} />);
+      render(<Header />);
 
       const homeLink = screen.getByRole('link', { name: /^home$/i });
       expect(homeLink).toHaveClass('text-primary');
@@ -322,15 +350,15 @@ describe('Header', () => {
 
     it('NavigationLinks_ShouldHighlightActiveLink_WhenOnCategoriesPage', () => {
       mockPathname.mockReturnValue('/categories');
-      render(<Header user={null} />);
+      render(<Header />);
 
       const categoriesLink = screen.getByRole('link', { name: /^categories$/i });
       expect(categoriesLink).toHaveClass('text-primary');
     });
 
     it('NavigationLinks_ShouldHighlightActiveLink_WhenOnPopularPage', () => {
-      mockPathname.mockReturnValue('/popular');
-      render(<Header user={null} />);
+      mockPathname.mockReturnValue('/tips/popular');
+      render(<Header />);
 
       const popularLink = screen.getByRole('link', { name: /^popular$/i });
       expect(popularLink).toHaveClass('text-primary');
@@ -338,14 +366,14 @@ describe('Header', () => {
 
     it('NavigationLinks_ShouldHighlightActiveLink_WhenOnAboutPage', () => {
       mockPathname.mockReturnValue('/about');
-      render(<Header user={null} />);
+      render(<Header />);
 
       const aboutLink = screen.getByRole('link', { name: /^about$/i });
       expect(aboutLink).toHaveClass('text-primary');
     });
 
     it('NavigationLinks_ShouldNotBeVisibleOnMobile_WhenMenuClosed', () => {
-      render(<Header user={null} />);
+      render(<Header />);
 
       // Desktop links should be hidden on mobile (md:flex class)
       const homeLinks = screen.getAllByRole('link', { name: /^home$/i });
@@ -357,7 +385,7 @@ describe('Header', () => {
 
     it('NavigationLinks_ShouldAppearInMobileMenu_WhenMenuOpened', async () => {
       const user = userEvent.setup();
-      render(<Header user={null} />);
+      render(<Header />);
 
       const menuButton = screen.getByRole('button', { name: /toggle menu/i });
       await user.click(menuButton);
@@ -369,7 +397,7 @@ describe('Header', () => {
 
     it('NavigationLinks_ShouldCloseMobileMenu_WhenLinkClicked', async () => {
       const user = userEvent.setup();
-      render(<Header user={null} />);
+      render(<Header />);
 
       const menuButton = screen.getByRole('button', { name: /toggle menu/i });
       await user.click(menuButton);
@@ -395,7 +423,12 @@ describe('Header', () => {
         email: 'john@example.com',
       } as FirebaseUser;
 
-      render(<Header user={mockUser} />);
+      mockUseAuth.mockReturnValue({
+        user: mockUser,
+        signOut: mockSignOut,
+      });
+
+      render(<Header />);
 
       expect(screen.getByRole('link', { name: /^home$/i })).toBeInTheDocument();
       expect(screen.getByRole('link', { name: /^categories$/i })).toBeInTheDocument();

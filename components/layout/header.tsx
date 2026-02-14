@@ -3,30 +3,25 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { User as FirebaseUser } from 'firebase/auth';
 import { Logo } from '@/components/shared/logo';
 import { UserAvatar } from '@/components/layout/user-avatar';
 import { useAuth } from '@/lib/auth/auth-context';
 
-export interface HomeHeaderProps {
-  user: FirebaseUser | null;
-}
-
 /**
- * HomeHeader Component
+ * Header Component
  * 
- * Navigation header for the home page with authentication-aware UI.
+ * Navigation header with authentication-aware UI.
  * - Anonymous users see "Login" and "Join for Free" buttons
  * - Authenticated users see UserAvatar with dropdown menu
  * - Responsive mobile menu for smaller screens
  * 
  * @example
- * <Header user={currentUser} />
+ * <Header />
  */
-export function Header({ user }: HomeHeaderProps) {
+export function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 

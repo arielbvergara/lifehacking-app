@@ -18,7 +18,7 @@ export default function TipError({
 
   return (
     <div className="min-h-screen flex flex-col bg-background-light">
-      <Header user={null} />
+      <Header />
       
       <main className="flex-grow flex items-center justify-center px-4">
         <div className="text-center max-w-md">

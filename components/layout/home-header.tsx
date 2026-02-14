@@ -3,14 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { User as FirebaseUser } from 'firebase/auth';
 import { Logo } from '@/components/shared/logo';
 import { UserAvatar } from '@/components/layout/user-avatar';
 import { useAuth } from '@/lib/auth/auth-context';
-
-export interface HomeHeaderProps {
-  user: FirebaseUser | null;
-}
 
 /**
  * HomeHeader Component
@@ -21,19 +16,19 @@ export interface HomeHeaderProps {
  * - Responsive mobile menu for smaller screens
  * 
  * @example
- * <HomeHeader user={currentUser} />
+ * <HomeHeader />
  */
-export function HomeHeader({ user }: HomeHeaderProps) {
+export function HomeHeader() {
   const router = useRouter();
   const pathname = usePathname();
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/categories', label: 'Categories' },
-    { href: '/tip/popular', label: 'Popular' },
+    { href: '/tips/popular', label: 'Popular' },
     { href: '/about', label: 'About' },
   ];
 

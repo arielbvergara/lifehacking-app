@@ -96,7 +96,7 @@ export default async function TipDetailPage({ params }: Props) {
 
       {/* Page Layout */}
       <div className="min-h-screen flex flex-col bg-background-light">
-        <Header user={null} />
+        <Header />
         
         <main className="flex-grow w-full max-w-7xl mx-auto px-4 md:px-8 py-8">
           {/* Breadcrumb Navigation */}
