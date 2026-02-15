@@ -51,7 +51,7 @@ describe('Signup Navigation Property-Based Tests', () => {
         password: fc.string({ minLength: 8, maxLength: 128 }),
         displayName: fc.option(fc.string({ minLength: 1, maxLength: 100 }), { nil: null }),
       })
-    ], { numRuns: 100 })('SignupSuccess_ShouldNavigateToWelcome_WhenSignupCompletes', async (userData) => {
+    ], { numRuns: 100 })('SignupSuccess_ShouldNavigateToWelcome_WhenSignupCompletes', async () => {
       // Arrange
       mockPush.mockClear(); // Clear before each iteration
       const { useRouter } = await import('next/navigation');
@@ -80,7 +80,7 @@ describe('Signup Navigation Property-Based Tests', () => {
     test.prop([
       fc.emailAddress(),
       fc.string({ minLength: 8, maxLength: 128 }),
-    ], { numRuns: 100 })('SignupSuccess_ShouldNavigateToWelcomeOnlyOnce_WhenCalledOnce', async (email, password) => {
+    ], { numRuns: 100 })('SignupSuccess_ShouldNavigateToWelcomeOnlyOnce_WhenCalledOnce', async () => {
       // Arrange
       mockPush.mockClear(); // Clear before each iteration
       const { useRouter } = await import('next/navigation');
@@ -115,7 +115,7 @@ describe('Signup Navigation Property-Based Tests', () => {
         password: fc.string({ minLength: 8, maxLength: 128 }),
         name: fc.option(fc.string({ minLength: 1, maxLength: 100 }), { nil: null }),
       })
-    ], { numRuns: 100 })('SignupSuccess_ShouldNavigateToWelcomePath_NotOtherPaths', async (userData) => {
+    ], { numRuns: 100 })('SignupSuccess_ShouldNavigateToWelcomePath_NotOtherPaths', async () => {
       // Arrange
       const { useRouter } = await import('next/navigation');
       const router = useRouter();

@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { Header } from '@/components/layout/header';
+import { HomeHeader } from '@/components/layout/home-header';
 import { Footer } from '@/components/layout/footer';
 
 export default function TipError({
@@ -18,7 +18,7 @@ export default function TipError({
 
   return (
     <div className="min-h-screen flex flex-col bg-background-light">
-      <Header />
+      <HomeHeader />
       
       <main className="flex-grow flex items-center justify-center px-4">
         <div className="text-center max-w-md">
@@ -27,7 +27,7 @@ export default function TipError({
             Something went wrong
           </h2>
           <p className="text-gray-600 mb-8">
-            We encountered an error while loading this tip.
+            We encountered an error while loading this page.
           </p>
           <div className="flex gap-4 justify-center">
             <button

@@ -78,7 +78,7 @@ export function FeaturedTip({ tip, loading, error, onRetry }: FeaturedTipProps) 
   const imageAlt = generateTipImageAlt(tip);
 
   return (
-    <section className="py-12 md:py-16 bg-gradient-to-r from-[#e8f5e8] via-[#f0f9f0] to-[#FCFCFC]" aria-label="Featured tip of the day">
+    <section className="px-4 py-16 sm:p-16 md:py-16 bg-gradient-to-r from-[#e8f5e8] via-[#f0f9f0] to-[#FCFCFC]" aria-label="Featured tip of the day">
       <div className="container mx-auto px-4 max-w-6xl">
         <article>
           {/* Structured Data (JSON-LD) */}

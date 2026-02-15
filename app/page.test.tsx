@@ -32,9 +32,9 @@ vi.mock('@/lib/hooks/use-home-data', () => ({
 
 // Mock child components
 vi.mock('@/components/layout/home-header', () => ({
-  HomeHeader: ({ user }: { user: FirebaseUser | null }) => (
+  HomeHeader: () => (
     <div data-testid="home-header">
-      Header {user ? 'authenticated' : 'anonymous'}
+      Header {mockUser ? 'authenticated' : 'anonymous'}
     </div>
   ),
 }));
@@ -87,6 +87,10 @@ vi.mock('@/components/home/home-footer', () => ({
   HomeFooter: () => <div data-testid="home-footer">Footer</div>,
 }));
 
+vi.mock('@/components/layout/footer', () => ({
+  Footer: () => <div data-testid="home-footer">Footer</div>,
+}));
+
 describe('Home Page', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -108,7 +112,8 @@ describe('Home Page', () => {
 
       render(<Home />);
 
-      expect(screen.getByText(/loading/i)).toBeInTheDocument();
+      // When auth is loading, the page still renders with data loading states
+      expect(screen.getAllByText(/loading/i).length).toBeGreaterThan(0);
     });
   });
 

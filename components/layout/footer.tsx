@@ -8,9 +8,9 @@ import Link from 'next/link';
  * Responsive layout that stacks on mobile and displays in columns on desktop.
  * 
  * @example
- * <HomeFooter />
+ * <Footer />
  */
-export function HomeFooter() {
+export function Footer() {
   return (
     <footer className="w-full bg-gray-50 border-t border-gray-100 mt-16">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-12">
@@ -30,7 +30,7 @@ export function HomeFooter() {
               </li>
               <li>
                 <Link
-                  href="/latest"
+                  href="/tips/latest"
                   className="text-sm text-gray-600 hover:text-primary transition-colors"
                 >
                   Latest Tips
@@ -38,7 +38,7 @@ export function HomeFooter() {
               </li>
               <li>
                 <Link
-                  href="/popular"
+                  href="/tips/popular"
                   className="text-sm text-gray-600 hover:text-primary transition-colors"
                 >
                   Popular

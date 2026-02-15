@@ -8,17 +8,17 @@ import { UserAvatar } from '@/components/layout/user-avatar';
 import { useAuth } from '@/lib/auth/auth-context';
 
 /**
- * HomeHeader Component
+ * Header Component
  * 
- * Navigation header for the home page with authentication-aware UI.
+ * Navigation header with authentication-aware UI.
  * - Anonymous users see "Login" and "Join for Free" buttons
  * - Authenticated users see UserAvatar with dropdown menu
  * - Responsive mobile menu for smaller screens
  * 
  * @example
- * <HomeHeader />
+ * <Header />
  */
-export function HomeHeader() {
+export function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const { user, signOut } = useAuth();

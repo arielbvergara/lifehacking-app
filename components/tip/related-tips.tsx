@@ -1,6 +1,6 @@
 import { fetchTipsByCategory } from '@/lib/api/tips';
 import { TipSortField, SortDirection } from '@/lib/types/api';
-import { TipCard } from '@/components/home/tip-card';
+import { TipCard } from '@/components/shared/tip/tip-card';
 
 /**
  * RelatedTipsProps Interface

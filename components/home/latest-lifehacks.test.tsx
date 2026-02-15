@@ -157,7 +157,7 @@ describe('LatestLifehacks', () => {
   });
 
   it('should render grid with correct number of tip cards', () => {
-    const { container } = render(
+    render(
       <LatestLifehacks
         tips={mockTips}
         loading={false}

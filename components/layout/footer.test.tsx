@@ -1,23 +1,23 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { HomeFooter } from './home-footer';
+import { Footer } from './footer';
 
-describe('HomeFooter', () => {
+describe('Footer', () => {
   describe('Section Rendering', () => {
     it('should render Discover section with heading', () => {
-      render(<HomeFooter />);
+      render(<Footer />);
 
       expect(screen.getByRole('heading', { name: /discover/i })).toBeInTheDocument();
     });
 
     it('should render Company section with heading', () => {
-      render(<HomeFooter />);
+      render(<Footer />);
 
       expect(screen.getByRole('heading', { name: /company/i })).toBeInTheDocument();
     });
 
     it('should render Legal section with heading', () => {
-      render(<HomeFooter />);
+      render(<Footer />);
 
       expect(screen.getByRole('heading', { name: /legal/i })).toBeInTheDocument();
     });
@@ -25,7 +25,7 @@ describe('HomeFooter', () => {
 
   describe('Discover Section Links', () => {
     it('should render Categories link', () => {
-      render(<HomeFooter />);
+      render(<Footer />);
 
       const link = screen.getByRole('link', { name: /categories/i });
       expect(link).toBeInTheDocument();
@@ -33,25 +33,25 @@ describe('HomeFooter', () => {
     });
 
     it('should render Latest Tips link', () => {
-      render(<HomeFooter />);
+      render(<Footer />);
 
       const link = screen.getByRole('link', { name: /latest tips/i });
       expect(link).toBeInTheDocument();
-      expect(link).toHaveAttribute('href', '/latest');
+      expect(link).toHaveAttribute('href', '/tips/latest');
     });
 
     it('should render Popular link', () => {
-      render(<HomeFooter />);
+      render(<Footer />);
 
       const link = screen.getByRole('link', { name: /popular/i });
       expect(link).toBeInTheDocument();
-      expect(link).toHaveAttribute('href', '/popular');
+      expect(link).toHaveAttribute('href', '/tips/popular');
     });
   });
 
   describe('Company Section Links', () => {
     it('should render About link', () => {
-      render(<HomeFooter />);
+      render(<Footer />);
 
       const link = screen.getByRole('link', { name: /about/i });
       expect(link).toBeInTheDocument();
@@ -59,7 +59,7 @@ describe('HomeFooter', () => {
     });
 
     it('should render Contact link', () => {
-      render(<HomeFooter />);
+      render(<Footer />);
 
       const link = screen.getByRole('link', { name: /contact/i });
       expect(link).toBeInTheDocument();
@@ -67,7 +67,7 @@ describe('HomeFooter', () => {
     });
 
     it('should render Blog link', () => {
-      render(<HomeFooter />);
+      render(<Footer />);
 
       const link = screen.getByRole('link', { name: /blog/i });
       expect(link).toBeInTheDocument();
@@ -77,7 +77,7 @@ describe('HomeFooter', () => {
 
   describe('Legal Section Links', () => {
     it('should render Privacy Policy link', () => {
-      render(<HomeFooter />);
+      render(<Footer />);
 
       const link = screen.getByRole('link', { name: /privacy policy/i });
       expect(link).toBeInTheDocument();
@@ -85,7 +85,7 @@ describe('HomeFooter', () => {
     });
 
     it('should render Terms of Service link', () => {
-      render(<HomeFooter />);
+      render(<Footer />);
 
       const link = screen.getByRole('link', { name: /terms of service/i });
       expect(link).toBeInTheDocument();
@@ -95,7 +95,7 @@ describe('HomeFooter', () => {
 
   describe('Social Media Icons', () => {
     it('should render Twitter icon link', () => {
-      render(<HomeFooter />);
+      render(<Footer />);
 
       const link = screen.getByRole('link', { name: /twitter/i });
       expect(link).toBeInTheDocument();
@@ -105,7 +105,7 @@ describe('HomeFooter', () => {
     });
 
     it('should render Facebook icon link', () => {
-      render(<HomeFooter />);
+      render(<Footer />);
 
       const link = screen.getByRole('link', { name: /facebook/i });
       expect(link).toBeInTheDocument();
@@ -115,7 +115,7 @@ describe('HomeFooter', () => {
     });
 
     it('should render Instagram icon link', () => {
-      render(<HomeFooter />);
+      render(<Footer />);
 
       const link = screen.getByRole('link', { name: /instagram/i });
       expect(link).toBeInTheDocument();
@@ -125,7 +125,7 @@ describe('HomeFooter', () => {
     });
 
     it('should render all three social media icons', () => {
-      render(<HomeFooter />);
+      render(<Footer />);
 
       const socialLinks = [
         screen.getByRole('link', { name: /twitter/i }),
@@ -142,14 +142,14 @@ describe('HomeFooter', () => {
 
   describe('Copyright Notice', () => {
     it('should render copyright notice with current year', () => {
-      render(<HomeFooter />);
+      render(<Footer />);
 
       const currentYear = new Date().getFullYear();
       expect(screen.getByText(new RegExp(`© ${currentYear} LifeHacking`))).toBeInTheDocument();
     });
 
     it('should include "All rights reserved" in copyright', () => {
-      render(<HomeFooter />);
+      render(<Footer />);
 
       expect(screen.getByText(/all rights reserved/i)).toBeInTheDocument();
     });
@@ -157,7 +157,7 @@ describe('HomeFooter', () => {
 
   describe('Responsive Layout', () => {
     it('should have responsive grid classes', () => {
-      const { container } = render(<HomeFooter />);
+      const { container } = render(<Footer />);
 
       const grid = container.querySelector('.grid');
       expect(grid).toHaveClass('grid-cols-1');
@@ -165,7 +165,7 @@ describe('HomeFooter', () => {
     });
 
     it('should have responsive flex classes for social and copyright', () => {
-      const { container } = render(<HomeFooter />);
+      const { container } = render(<Footer />);
 
       const flexContainer = container.querySelector('.flex.flex-col.md\\:flex-row');
       expect(flexContainer).toBeInTheDocument();
@@ -174,7 +174,7 @@ describe('HomeFooter', () => {
 
   describe('Styling', () => {
     it('should have footer background styling', () => {
-      const { container } = render(<HomeFooter />);
+      const { container } = render(<Footer />);
 
       const footer = container.querySelector('footer');
       expect(footer).toHaveClass('bg-gray-50');
@@ -183,14 +183,14 @@ describe('HomeFooter', () => {
     });
 
     it('should have hover states on links', () => {
-      render(<HomeFooter />);
+      render(<Footer />);
 
       const link = screen.getByRole('link', { name: /categories/i });
       expect(link).toHaveClass('hover:text-primary');
     });
 
     it('should have transition classes on links', () => {
-      render(<HomeFooter />);
+      render(<Footer />);
 
       const link = screen.getByRole('link', { name: /categories/i });
       expect(link).toHaveClass('transition-colors');
@@ -199,14 +199,14 @@ describe('HomeFooter', () => {
 
   describe('Accessibility', () => {
     it('should have proper heading hierarchy', () => {
-      render(<HomeFooter />);
+      render(<Footer />);
 
       const headings = screen.getAllByRole('heading', { level: 3 });
       expect(headings).toHaveLength(3);
     });
 
     it('should have aria-labels on social media links', () => {
-      render(<HomeFooter />);
+      render(<Footer />);
 
       expect(screen.getByRole('link', { name: /twitter/i })).toHaveAttribute('aria-label', 'Twitter');
       expect(screen.getByRole('link', { name: /facebook/i })).toHaveAttribute('aria-label', 'Facebook');
@@ -214,7 +214,7 @@ describe('HomeFooter', () => {
     });
 
     it('should have aria-hidden on social media SVG icons', () => {
-      const { container } = render(<HomeFooter />);
+      const { container } = render(<Footer />);
 
       const svgs = container.querySelectorAll('svg[aria-hidden="true"]');
       expect(svgs).toHaveLength(3);
@@ -223,21 +223,21 @@ describe('HomeFooter', () => {
 
   describe('Structure', () => {
     it('should render as a footer element', () => {
-      const { container } = render(<HomeFooter />);
+      const { container } = render(<Footer />);
 
       const footer = container.querySelector('footer');
       expect(footer).toBeInTheDocument();
     });
 
     it('should have max-width container', () => {
-      const { container } = render(<HomeFooter />);
+      const { container } = render(<Footer />);
 
       const maxWidthContainer = container.querySelector('.max-w-7xl');
       expect(maxWidthContainer).toBeInTheDocument();
     });
 
     it('should have border separator between content and copyright', () => {
-      const { container } = render(<HomeFooter />);
+      const { container } = render(<Footer />);
 
       const separator = container.querySelector('.border-t.border-gray-200');
       expect(separator).toBeInTheDocument();

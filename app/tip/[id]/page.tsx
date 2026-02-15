@@ -3,8 +3,8 @@ import { notFound } from 'next/navigation';
 import { fetchTipById } from '@/lib/api/tips';
 import { generateHowToStructuredData } from '@/lib/seo/structured-data';
 import { truncateForBreadcrumb } from '@/lib/utils/text';
-import { HomeHeader } from '@/components/layout/home-header';
-import { HomeFooter } from '@/components/home/home-footer';
+import { Header } from '@/components/layout/header';
+import { Footer } from '@/components/layout/footer';
 import { Breadcrumb } from '@/components/shared/breadcrumb';
 import { TipHeader } from '@/components/tip/tip-header';
 import { TipHero } from '@/components/tip/tip-hero';
@@ -96,7 +96,7 @@ export default async function TipDetailPage({ params }: Props) {
 
       {/* Page Layout */}
       <div className="min-h-screen flex flex-col bg-background-light">
-        <HomeHeader user={null} />
+        <Header />
         
         <main className="flex-grow w-full max-w-7xl mx-auto px-4 md:px-8 py-8">
           {/* Breadcrumb Navigation */}
@@ -128,7 +128,7 @@ export default async function TipDetailPage({ params }: Props) {
           />
         </main>
 
-        <HomeFooter />
+        <Footer />
       </div>
     </>
   );

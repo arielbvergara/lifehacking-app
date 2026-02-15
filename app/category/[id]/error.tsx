@@ -27,7 +27,7 @@ export default function TipError({
             Something went wrong
           </h2>
           <p className="text-gray-600 mb-8">
-            We encountered an error while loading this tip.
+            We encountered an error while loading this page.
           </p>
           <div className="flex gap-4 justify-center">
             <button
