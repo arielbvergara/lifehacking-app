@@ -313,7 +313,11 @@ describe('Header', () => {
     it('should display logo', () => {
       render(<Header />);
 
-      expect(screen.getByTestId('logo')).toBeInTheDocument();
+      // Should have both mobile and desktop logos
+      const logos = screen.getAllByTestId('logo');
+      expect(logos).toHaveLength(2);
+      expect(logos[0]).toBeInTheDocument();
+      expect(logos[1]).toBeInTheDocument();
     });
   });
 
@@ -551,12 +555,13 @@ describe('Header', () => {
       const nav = container.querySelector('nav');
       const children = Array.from(nav?.children[0]?.children || []);
       
-      // Verify order: Logo, Desktop Navigation (with SearchBar), Mobile Menu Button
+      // Verify order: Logo containers (mobile + desktop), Desktop Navigation (with SearchBar), Mobile Menu Button
       expect(children.length).toBeGreaterThan(0);
       
-      // Logo should be first
-      const logo = screen.getByTestId('logo');
-      expect(logo).toBeInTheDocument();
+      // Logos should be present (both mobile and desktop)
+      const logos = screen.getAllByTestId('logo');
+      expect(logos).toHaveLength(2);
+      expect(logos[0]).toBeInTheDocument();
       
       // SearchBar should exist
       const searchBar = screen.getByTestId('search-bar');

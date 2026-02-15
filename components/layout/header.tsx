@@ -82,14 +82,19 @@ export function Header({ showSearchBar = true }: HeaderProps) {
     <header className="w-full bg-white border-b border-gray-100 sticky top-0 z-50">
       <nav className="max-w-7xl mx-auto px-4 md:px-8 py-4">
         <div className="flex justify-between items-center">
-          {/* Logo */}
-          <Logo />
+          {/* Logo - Smaller on mobile */}
+          <div className="md:hidden">
+            <Logo size="sm" />
+          </div>
+          <div className="hidden md:block">
+            <Logo />
+          </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
             {/* SearchBar - Desktop Only */}
             {showSearchBar && (
-              <div className="flex-1 max-w-md ml-6 w-80">
+              <div className="flex-1 max-w-md ml-6 w-80 animate-slide-down">
                 <SearchBar 
                   variant="compact"
                   onSearch={handleSearch}
@@ -197,7 +202,7 @@ export function Header({ showSearchBar = true }: HeaderProps) {
 
         {/* Mobile Search Interface */}
         {showSearchBar && isSearchOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t border-gray-100 pt-4">
+          <div className="md:hidden mt-4 pb-4 border-t border-gray-100 pt-4 animate-slide-down">
             <SearchBar 
               variant="compact"
               onSearch={handleSearch}
