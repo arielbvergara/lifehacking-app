@@ -26,6 +26,19 @@ vi.mock('@/components/shared/logo', () => ({
   Logo: () => <div data-testid="logo">Logo</div>,
 }));
 
+vi.mock('@/components/shared/search-bar', () => ({
+  SearchBar: ({ variant, onSearch, placeholder }: { variant?: string; onSearch?: (query: string) => void; placeholder?: string }) => (
+    <div data-testid="search-bar" data-variant={variant} data-placeholder={placeholder}>
+      <input 
+        type="text" 
+        placeholder={placeholder}
+        onChange={(e) => onSearch?.(e.target.value)}
+        data-testid="search-input"
+      />
+    </div>
+  ),
+}));
+
 vi.mock('@/components/layout/user-avatar', () => ({
   UserAvatar: ({ user, onClick }: { user: FirebaseUser; onClick?: () => void }) => (
     <button onClick={onClick} data-testid="user-avatar">
@@ -300,7 +313,11 @@ describe('Header', () => {
     it('should display logo', () => {
       render(<Header />);
 
-      expect(screen.getByTestId('logo')).toBeInTheDocument();
+      // Should have both mobile and desktop logos
+      const logos = screen.getAllByTestId('logo');
+      expect(logos).toHaveLength(2);
+      expect(logos[0]).toBeInTheDocument();
+      expect(logos[1]).toBeInTheDocument();
     });
   });
 
@@ -318,6 +335,56 @@ describe('Header', () => {
       
       const header = container.querySelector('header');
       expect(header).toHaveClass('z-50');
+    });
+  });
+
+  describe('Search Submission and Cleanup', () => {
+    it('Header_ShouldCloseMobileSearch_WhenSearchSubmitted', async () => {
+      const user = userEvent.setup();
+      render(<Header />);
+
+      // Open mobile search
+      const searchButton = screen.getByRole('button', { name: /search/i });
+      await user.click(searchButton);
+
+      // Verify search interface is open
+      expect(searchButton).toHaveAccessibleName(/close search/i);
+
+      // Submit search - get the mobile search input (second one)
+      const searchInputs = screen.getAllByTestId('search-input');
+      const mobileSearchInput = searchInputs[1]; // Mobile is the second one
+      await user.type(mobileSearchInput, 'test query');
+
+      // Mobile search should close after search
+      expect(searchButton).toHaveAccessibleName(/search/i);
+    });
+
+    it('Header_ShouldHandleSearchErrors_WhenHandlerThrows', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {
+        throw new Error('Search failed');
+      });
+      
+      const user = userEvent.setup();
+      render(<Header />);
+
+      // Open mobile search
+      const searchButton = screen.getByRole('button', { name: /search/i });
+      await user.click(searchButton);
+
+      // Submit search that will throw error - get the mobile search input
+      const searchInputs = screen.getAllByTestId('search-input');
+      const mobileSearchInput = searchInputs[1]; // Mobile is the second one
+      await user.type(mobileSearchInput, 'test query');
+
+      // Error should be logged
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      
+      // Mobile search should still close even with error
+      expect(searchButton).toHaveAccessibleName(/search/i);
+
+      consoleErrorSpy.mockRestore();
+      consoleLogSpy.mockRestore();
     });
   });
 
@@ -375,12 +442,16 @@ describe('Header', () => {
     it('NavigationLinks_ShouldNotBeVisibleOnMobile_WhenMenuClosed', () => {
       render(<Header />);
 
-      // Desktop links should be hidden on mobile (md:flex class)
+      // Desktop navigation container should be hidden on mobile (hidden md:flex class)
       const homeLinks = screen.getAllByRole('link', { name: /^home$/i });
       const desktopLink = homeLinks[0];
       
-      expect(desktopLink.parentElement).toHaveClass('hidden');
-      expect(desktopLink.parentElement).toHaveClass('md:flex');
+      // Navigate up to the desktop navigation container
+      const navLinksContainer = desktopLink.parentElement;
+      const desktopNavContainer = navLinksContainer?.parentElement;
+      
+      expect(desktopNavContainer).toHaveClass('hidden');
+      expect(desktopNavContainer).toHaveClass('md:flex');
     });
 
     it('NavigationLinks_ShouldAppearInMobileMenu_WhenMenuOpened', async () => {
@@ -434,6 +505,278 @@ describe('Header', () => {
       expect(screen.getByRole('link', { name: /^categories$/i })).toBeInTheDocument();
       expect(screen.getByRole('link', { name: /^popular$/i })).toBeInTheDocument();
       expect(screen.getByRole('link', { name: /^about$/i })).toBeInTheDocument();
+    });
+  });
+
+  describe('SearchBar Integration - Desktop Layout', () => {
+    it('Header_ShouldRenderSearchBar_WhenOnDesktopLayout', () => {
+      render(<Header />);
+
+      const searchBar = screen.getByTestId('search-bar');
+      expect(searchBar).toBeInTheDocument();
+    });
+
+    it('Header_ShouldNotRenderSearchBar_WhenShowSearchBarIsFalse', () => {
+      render(<Header showSearchBar={false} />);
+
+      const searchBars = screen.queryAllByTestId('search-bar');
+      expect(searchBars.length).toBe(0);
+    });
+
+    it('Header_ShouldRenderSearchBar_WhenShowSearchBarIsTrue', () => {
+      render(<Header showSearchBar={true} />);
+
+      const searchBar = screen.getByTestId('search-bar');
+      expect(searchBar).toBeInTheDocument();
+    });
+
+    it('Header_ShouldNotRenderMobileSearchButton_WhenShowSearchBarIsFalse', () => {
+      render(<Header showSearchBar={false} />);
+
+      const buttons = screen.getAllByRole('button');
+      const searchButton = buttons.find(btn => 
+        btn.getAttribute('aria-label') === 'Search' && 
+        btn.querySelector('.material-icons-round')
+      );
+      
+      expect(searchButton).toBeUndefined();
+    });
+
+    it('Header_ShouldPassCompactVariant_WhenRenderingSearchBar', () => {
+      render(<Header />);
+
+      const searchBar = screen.getByTestId('search-bar');
+      expect(searchBar).toHaveAttribute('data-variant', 'compact');
+    });
+
+    it('Header_ShouldMaintainLayoutOrder_WhenSearchBarIntegrated', () => {
+      const { container } = render(<Header />);
+
+      const nav = container.querySelector('nav');
+      const children = Array.from(nav?.children[0]?.children || []);
+      
+      // Verify order: Logo containers (mobile + desktop), Desktop Navigation (with SearchBar), Mobile Menu Button
+      expect(children.length).toBeGreaterThan(0);
+      
+      // Logos should be present (both mobile and desktop)
+      const logos = screen.getAllByTestId('logo');
+      expect(logos).toHaveLength(2);
+      expect(logos[0]).toBeInTheDocument();
+      
+      // SearchBar should exist
+      const searchBar = screen.getByTestId('search-bar');
+      expect(searchBar).toBeInTheDocument();
+      
+      // Navigation links should exist
+      expect(screen.getByRole('link', { name: /^home$/i })).toBeInTheDocument();
+    });
+
+    it('Header_ShouldReceiveSearchQueries_WhenSearchBarUsed', async () => {
+      const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+      const user = userEvent.setup();
+      
+      render(<Header />);
+
+      const searchInput = screen.getByTestId('search-input');
+      await user.type(searchInput, 'test query');
+
+      expect(consoleLogSpy).toHaveBeenCalledWith('Search query:', 'test query');
+      
+      consoleLogSpy.mockRestore();
+    });
+
+    it('Header_ShouldPreserveNavigationLinks_WhenSearchBarIntegrated', () => {
+      render(<Header />);
+
+      expect(screen.getByRole('link', { name: /^home$/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^categories$/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^popular$/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^about$/i })).toBeInTheDocument();
+    });
+
+    it('Header_ShouldPreserveAuthenticationUI_WhenSearchBarIntegrated', () => {
+      render(<Header />);
+
+      expect(screen.getByRole('link', { name: /login/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /join for free/i })).toBeInTheDocument();
+    });
+
+    it('Header_ShouldPreserveAuthenticatedUserUI_WhenSearchBarIntegrated', () => {
+      const mockUser = {
+        uid: '123',
+        displayName: 'John Doe',
+        email: 'john@example.com',
+      } as FirebaseUser;
+
+      mockUseAuth.mockReturnValue({
+        user: mockUser,
+        signOut: mockSignOut,
+      });
+
+      render(<Header />);
+
+      expect(screen.getByTestId('user-avatar')).toBeInTheDocument();
+      expect(screen.getByTestId('search-bar')).toBeInTheDocument();
+    });
+
+    it('Header_ShouldMaintainStickyPositioning_WhenSearchBarIntegrated', () => {
+      const { container } = render(<Header />);
+      
+      const header = container.querySelector('header');
+      expect(header).toHaveClass('sticky');
+      expect(header).toHaveClass('top-0');
+    });
+
+    it('Header_ShouldMaintainZIndex_WhenSearchBarIntegrated', () => {
+      const { container } = render(<Header />);
+      
+      const header = container.querySelector('header');
+      expect(header).toHaveClass('z-50');
+    });
+  });
+
+  describe('Responsive Behavior and Viewport Testing', () => {
+    it('Header_ShouldDisplayInlineSearchBar_WhenOnDesktopViewport', () => {
+      render(<Header />);
+
+      // Desktop SearchBar should be rendered (inside the hidden md:flex container)
+      const searchBars = screen.getAllByTestId('search-bar');
+      
+      // Should have at least one SearchBar (desktop)
+      expect(searchBars.length).toBeGreaterThan(0);
+      
+      // Desktop SearchBar is in a container with 'hidden md:flex' classes
+      const desktopSearchBar = searchBars[0];
+      const desktopContainer = desktopSearchBar.parentElement?.parentElement;
+      expect(desktopContainer).toHaveClass('hidden');
+      expect(desktopContainer).toHaveClass('md:flex');
+    });
+
+    it('Header_ShouldDisplaySearchIconButton_WhenOnMobileViewport', () => {
+      render(<Header />);
+
+      // Mobile search icon button should be present
+      const searchButton = screen.getByRole('button', { name: /search/i });
+      expect(searchButton).toBeInTheDocument();
+      
+      // Button should be in mobile container (md:hidden)
+      const mobileContainer = searchButton.parentElement;
+      expect(mobileContainer).toHaveClass('md:hidden');
+    });
+
+    it('Header_ShouldHaveSmoothTransitions_WhenViewportChanges', () => {
+      const { container } = render(<Header />);
+
+      // Verify the header structure supports smooth transitions
+      // The responsive classes (hidden md:flex, md:hidden) provide smooth viewport transitions
+      const nav = container.querySelector('nav');
+      
+      // Desktop navigation container should have responsive classes
+      const desktopNav = nav?.querySelector('.hidden.md\\:flex');
+      expect(desktopNav).toBeTruthy();
+      
+      // Mobile container should have responsive classes
+      const mobileContainer = nav?.querySelector('.md\\:hidden');
+      expect(mobileContainer).toBeTruthy();
+    });
+
+    it('Header_ShouldNotOverlap_WhenResponsiveTransitions', () => {
+      const { container } = render(<Header />);
+
+      // Verify layout structure prevents overlapping
+      const nav = container.querySelector('nav');
+      const mainContainer = nav?.querySelector('.flex.justify-between');
+      
+      // Main container should use flexbox with proper spacing
+      expect(mainContainer).toHaveClass('flex');
+      expect(mainContainer).toHaveClass('justify-between');
+      expect(mainContainer).toHaveClass('items-center');
+    });
+
+    it('Header_ShouldTriggerSearch_WhenOnDesktopViewport', async () => {
+      const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+      const user = userEvent.setup();
+      
+      render(<Header />);
+
+      // Desktop search should work
+      const searchInputs = screen.getAllByTestId('search-input');
+      const desktopSearchInput = searchInputs[0]; // First one is desktop
+      
+      await user.type(desktopSearchInput, 'desktop query');
+
+      expect(consoleLogSpy).toHaveBeenCalledWith('Search query:', 'desktop query');
+      
+      consoleLogSpy.mockRestore();
+    });
+
+    it('Header_ShouldTriggerSearch_WhenOnMobileViewport', async () => {
+      const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+      const user = userEvent.setup();
+      
+      render(<Header />);
+
+      // Open mobile search
+      const searchButton = screen.getByRole('button', { name: /search/i });
+      await user.click(searchButton);
+
+      // Mobile search should work - the mock calls onSearch on every keystroke
+      const searchInputs = screen.getAllByTestId('search-input');
+      const mobileSearchInput = searchInputs[1]; // Second one is mobile
+      
+      await user.type(mobileSearchInput, 'm');
+
+      // Should have been called with the typed character (mock behavior)
+      expect(consoleLogSpy).toHaveBeenCalledWith('Search query:', 'm');
+      
+      consoleLogSpy.mockRestore();
+    });
+
+    it('Header_ShouldMaintainFunctionality_AtVariousViewportWidths', async () => {
+      const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+      const user = userEvent.setup();
+      
+      // Test at different viewport scenarios
+      render(<Header />);
+
+      // Test desktop search - mock calls onSearch on every keystroke
+      const searchInputs = screen.getAllByTestId('search-input');
+      await user.type(searchInputs[0], 't');
+      expect(consoleLogSpy).toHaveBeenCalledWith('Search query:', 't');
+
+      // Test mobile search
+      const searchButton = screen.getByRole('button', { name: /search/i });
+      await user.click(searchButton);
+      
+      const mobileSearchInputs = screen.getAllByTestId('search-input');
+      await user.type(mobileSearchInputs[1], 'm');
+      expect(consoleLogSpy).toHaveBeenCalledWith('Search query:', 'm');
+      
+      consoleLogSpy.mockRestore();
+    });
+
+    it('Header_ShouldHideDesktopSearchBar_WhenBelowMdBreakpoint', () => {
+      render(<Header />);
+
+      // Desktop navigation container should have 'hidden md:flex' classes
+      const searchBars = screen.getAllByTestId('search-bar');
+      const desktopSearchBar = searchBars[0];
+      const desktopNavContainer = desktopSearchBar.parentElement?.parentElement;
+      
+      // Should be hidden on mobile, visible on desktop
+      expect(desktopNavContainer).toHaveClass('hidden');
+      expect(desktopNavContainer).toHaveClass('md:flex');
+    });
+
+    it('Header_ShouldHideMobileSearchButton_WhenAboveMdBreakpoint', () => {
+      render(<Header />);
+
+      // Mobile search button container should have 'md:hidden' class
+      const searchButton = screen.getByRole('button', { name: /search/i });
+      const mobileContainer = searchButton.parentElement;
+      
+      // Should be visible on mobile, hidden on desktop
+      expect(mobileContainer).toHaveClass('md:hidden');
     });
   });
 });

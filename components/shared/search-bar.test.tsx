@@ -113,6 +113,58 @@ describe('SearchBar', () => {
     const input = screen.getByRole('textbox', { name: /search/i });
     expect(input).toHaveAccessibleName();
   });
+
+  it('SearchBar_ShouldClearInput_WhenSearchSubmitted', async () => {
+    const user = userEvent.setup();
+    const handleSearch = vi.fn();
+    render(<SearchBar onSearch={handleSearch} />);
+
+    const input = screen.getByRole('textbox', { name: /search/i });
+    const buttons = screen.getAllByRole('button', { name: /search/i });
+
+    await user.type(input, 'test query');
+    expect(input).toHaveValue('test query');
+
+    await user.click(buttons[0]);
+
+    // Input should be cleared after search
+    expect(input).toHaveValue('');
+  });
+
+  it('SearchBar_ShouldMaintainFocus_WhenInputClearedAfterSearch', async () => {
+    const user = userEvent.setup();
+    const handleSearch = vi.fn();
+    render(<SearchBar onSearch={handleSearch} />);
+
+    const input = screen.getByRole('textbox', { name: /search/i });
+    const buttons = screen.getAllByRole('button', { name: /search/i });
+
+    await user.type(input, 'first query');
+    await user.click(buttons[0]);
+
+    // Input should still be focused after search
+    expect(input).toHaveFocus();
+
+    // Should be able to type immediately for consecutive searches
+    await user.type(input, 'second query');
+    expect(input).toHaveValue('second query');
+  });
+
+  it('SearchBar_ShouldClearAndMaintainFocus_WhenEnterKeyPressed', async () => {
+    const user = userEvent.setup();
+    const handleSearch = vi.fn();
+    render(<SearchBar onSearch={handleSearch} />);
+
+    const input = screen.getByRole('textbox', { name: /search/i });
+
+    await user.type(input, 'test query{Enter}');
+
+    // Input should be cleared
+    expect(input).toHaveValue('');
+    
+    // Input should maintain focus
+    expect(input).toHaveFocus();
+  });
 });
 
 /**

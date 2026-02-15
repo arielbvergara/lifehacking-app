@@ -5,7 +5,12 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { Logo } from '@/components/shared/logo';
 import { UserAvatar } from '@/components/layout/user-avatar';
+import { SearchBar } from '@/components/shared/search-bar';
 import { useAuth } from '@/lib/auth/auth-context';
+
+export interface HeaderProps {
+  showSearchBar?: boolean;
+}
 
 /**
  * Header Component
@@ -14,16 +19,19 @@ import { useAuth } from '@/lib/auth/auth-context';
  * - Anonymous users see "Login" and "Join for Free" buttons
  * - Authenticated users see UserAvatar with dropdown menu
  * - Responsive mobile menu for smaller screens
+ * - Optional search bar display (controlled via showSearchBar prop)
  * 
  * @example
  * <Header />
+ * <Header showSearchBar={false} />
  */
-export function Header() {
+export function Header({ showSearchBar = true }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, signOut } = useAuth();
+  const { user, signOut, loading: authLoading } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -51,17 +59,52 @@ export function Header() {
     router.push('/profile');
   };
 
+  const handleSearch = (query: string) => {
+    try {
+      // For now, log the search query
+      // Future: Navigate to search results page or trigger search API
+      console.log('Search query:', query);
+      
+      // Close mobile search interface if open
+      if (isSearchOpen) {
+        setIsSearchOpen(false);
+      }
+    } catch (error) {
+      console.error('Search error:', error);
+      // Ensure mobile search interface closes even if handler throws
+      if (isSearchOpen) {
+        setIsSearchOpen(false);
+      }
+    }
+  };
+
   return (
     <header className="w-full bg-white border-b border-gray-100 sticky top-0 z-50">
       <nav className="max-w-7xl mx-auto px-4 md:px-8 py-4">
         <div className="flex justify-between items-center">
-          {/* Logo */}
-          <Logo />
+          {/* Logo - Smaller on mobile */}
+          <div className="md:hidden">
+            <Logo size="sm" />
+          </div>
+          <div className="hidden md:block">
+            <Logo />
+          </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
+            {/* SearchBar - Desktop Only */}
+            {showSearchBar && (
+              <div className="flex-1 max-w-md ml-6 w-80 animate-slide-down">
+                <SearchBar 
+                  variant="compact"
+                  onSearch={handleSearch}
+                  placeholder="Search for tips..."
+                />
+              </div>
+            )}
+
             {/* Desktop Navigation Links */}
-            <div className="hidden md:flex items-center gap-8">
+            <div className="flex items-center gap-8">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -76,7 +119,10 @@ export function Header() {
                 </Link>
               ))}
             </div>
-            {user ? (
+            {authLoading ? (
+              /* Loading Skeleton - Avatar skeleton for better UX */
+              <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse" />
+            ) : user ? (
               /* Authenticated User UI */
               <div className="relative">
                 <UserAvatar user={user} onClick={handleAvatarClick} />
@@ -127,18 +173,46 @@ export function Header() {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-lg"
-            aria-label="Toggle menu"
-            type="button"
-          >
-            <span className="material-icons-round">
-              {isMenuOpen ? 'close' : 'menu'}
-            </span>
-          </button>
+          {/* Mobile Search and Menu Buttons */}
+          <div className="md:hidden flex items-center gap-2">
+            {/* Mobile Search Icon Button */}
+            {showSearchBar && (
+              <button
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+                className="p-2 text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-lg"
+                aria-label={isSearchOpen ? "Close search" : "Search"}
+                type="button"
+              >
+                <span className="material-icons-round">
+                  {isSearchOpen ? 'close' : 'search'}
+                </span>
+              </button>
+            )}
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2 text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-lg"
+              aria-label="Toggle menu"
+              type="button"
+            >
+              <span className="material-icons-round">
+                {isMenuOpen ? 'close' : 'menu'}
+              </span>
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Search Interface */}
+        {showSearchBar && isSearchOpen && (
+          <div className="md:hidden mt-4 pb-4 border-t border-gray-100 pt-4 animate-slide-down">
+            <SearchBar 
+              variant="compact"
+              onSearch={handleSearch}
+              placeholder="Search for tips..."
+            />
+          </div>
+        )}
 
         {/* Mobile Menu */}
         {isMenuOpen && (
@@ -164,7 +238,17 @@ export function Header() {
             {/* Divider */}
             <div className="border-t border-gray-100 mb-4" />
 
-            {user ? (
+            {authLoading ? (
+              /* Loading Skeleton - Avatar skeleton for better UX */
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-3 px-4 py-2">
+                  <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse" />
+                  <div className="w-32 h-5 bg-gray-200 rounded animate-pulse" />
+                </div>
+                <div className="w-full h-9 bg-gray-200 rounded-lg animate-pulse" />
+                <div className="w-full h-9 bg-gray-200 rounded-lg animate-pulse" />
+              </div>
+            ) : user ? (
               /* Authenticated User Mobile Menu */
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3 px-4 py-2">

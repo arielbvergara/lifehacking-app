@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 export interface SearchBarProps {
   placeholder?: string;
   onSearch?: (query: string) => void;
   disabled?: boolean;
+  variant?: 'default' | 'compact';
 }
 
 /**
@@ -20,13 +21,20 @@ export interface SearchBarProps {
 export function SearchBar({ 
   placeholder = 'Search for tips...', 
   onSearch,
-  disabled = false 
+  disabled = false,
+  variant = 'default'
 }: SearchBarProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const isCompact = variant === 'compact';
 
   const handleSearch = () => {
     if (onSearch) {
       onSearch(searchQuery);
+      setSearchQuery('');
+      // Maintain focus after clearing for consecutive searches
+      inputRef.current?.focus();
     }
   };
 
@@ -55,13 +63,18 @@ export function SearchBar({
           />
         </svg>
         <input
+          ref={inputRef}
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           disabled={disabled}
-          className="w-full pl-12 pr-16 py-4 bg-white rounded-full shadow-lg outline-none transition-all text-gray-900 placeholder-gray-400 focus:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed md:pr-4 md:py-3 md:border md:border-gray-200 md:rounded-xl md:shadow-none md:focus:border-primary md:focus:ring-2 md:focus:ring-primary md:focus:shadow-none"
+          className={`w-full pl-12 pr-16 py-4 bg-white rounded-full shadow-lg outline-none transition-all text-gray-900 placeholder-gray-400 focus:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed md:pr-4 md:rounded-xl md:focus:border-primary md:focus:ring-2 md:focus:ring-primary md:focus:shadow-none ${
+            isCompact 
+              ? 'md:py-2 md:shadow-sm md:border md:border-gray-200' 
+              : 'md:py-3 md:border md:border-gray-200 md:shadow-none'
+          }`}
           aria-label="Search"
         />
         {/* Mobile: Circular arrow button inside input */}
@@ -88,15 +101,17 @@ export function SearchBar({
           </svg>
         </button>
       </div>
-      {/* Desktop: Separate Search button */}
-      <button
-        onClick={handleSearch}
-        disabled={disabled}
-        className="hidden md:block px-8 py-3 bg-primary text-white font-semibold rounded-xl hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-        type="button"
-      >
-        Search
-      </button>
+      {/* Desktop: Separate Search button (hidden for compact variant) */}
+      {!isCompact && (
+        <button
+          onClick={handleSearch}
+          disabled={disabled}
+          className="hidden md:block px-8 py-3 bg-primary text-white font-semibold rounded-xl hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          type="button"
+        >
+          Search
+        </button>
+      )}
     </div>
   );
 }

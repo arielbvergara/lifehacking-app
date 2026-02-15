@@ -26,11 +26,21 @@ const config: Config = {
       },
       animation: {
         "pulse-slow": "pulse-slow 4s ease-in-out infinite",
+        "fade-in": "fade-in 0.3s ease-out",
+        "slide-down": "slide-down 0.3s ease-out",
       },
       keyframes: {
         "pulse-slow": {
           "0%, 100%": { opacity: "0.5" },
           "50%": { opacity: "0.7" },
+        },
+        "fade-in": {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        "slide-down": {
+          "0%": { opacity: "0", transform: "translateY(-8px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
         },
       },
     },
