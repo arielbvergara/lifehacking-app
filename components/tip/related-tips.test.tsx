@@ -4,12 +4,20 @@ import { RelatedTips } from './related-tips';
 import { fetchTipsByCategory } from '@/lib/api/tips';
 import type { PagedTipsResponse, TipSummary } from '@/lib/types/api';
 
+// Mock Next.js router
+const mockPush = vi.fn();
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockPush,
+  }),
+}));
+
 // Mock the API client
 vi.mock('@/lib/api/tips');
 const mockFetchTipsByCategory = vi.mocked(fetchTipsByCategory);
 
 // Mock the TipCard component
-vi.mock('@/components/home/tip-card', () => ({
+vi.mock('@/components/shared/tip/tip-card', () => ({
   TipCard: ({ tip }: { tip: TipSummary }) => (
     <div data-testid={`tip-card-${tip.id}`}>{tip.title}</div>
   ),

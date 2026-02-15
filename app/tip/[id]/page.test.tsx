@@ -5,9 +5,29 @@ import TipDetailPage, { generateMetadata } from './page';
 import { fetchTipById } from '@/lib/api/tips';
 import { TipDetail } from '@/lib/types/api';
 
+// Mock Firebase to avoid API key errors
+vi.mock('@/lib/firebase', () => ({
+  auth: {
+    currentUser: null,
+  },
+}));
+
+// Mock auth context
+vi.mock('@/lib/auth/auth-context', () => ({
+  useAuth: () => ({
+    user: null,
+    loading: false,
+    signOut: vi.fn(),
+  }),
+}));
+
 // Mock Next.js navigation
 vi.mock('next/navigation', () => ({
   notFound: vi.fn(),
+  useRouter: () => ({
+    push: vi.fn(),
+  }),
+  usePathname: () => '/',
 }));
 
 // Mock API functions
@@ -16,6 +36,12 @@ vi.mock('@/lib/api/tips', () => ({
 }));
 
 // Mock components
+vi.mock('@/components/layout/header', () => ({
+  Header: () => (
+    <header data-testid="home-header">Header</header>
+  ),
+}));
+
 vi.mock('@/components/layout/home-header', () => ({
   HomeHeader: () => (
     <header data-testid="home-header">Home Header</header>
@@ -24,6 +50,10 @@ vi.mock('@/components/layout/home-header', () => ({
 
 vi.mock('@/components/home/home-footer', () => ({
   HomeFooter: () => <footer data-testid="home-footer">Home Footer</footer>,
+}));
+
+vi.mock('@/components/layout/footer', () => ({
+  Footer: () => <footer data-testid="home-footer">Footer</footer>,
 }));
 
 vi.mock('@/components/shared/breadcrumb', () => ({

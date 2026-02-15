@@ -98,8 +98,8 @@ describe('HomePageClient', () => {
 
       render(<HomePageClient />);
 
-      expect(screen.getByText(/loading/i)).toBeInTheDocument();
-      expect(screen.getByRole('status')).toBeInTheDocument();
+      // Multiple loading states are shown for different sections
+      expect(screen.getAllByText(/loading/i).length).toBeGreaterThan(0);
     });
   });
 

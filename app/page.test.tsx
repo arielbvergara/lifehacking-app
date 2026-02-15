@@ -112,7 +112,8 @@ describe('Home Page', () => {
 
       render(<Home />);
 
-      expect(screen.getByText(/loading/i)).toBeInTheDocument();
+      // When auth is loading, the page still renders with data loading states
+      expect(screen.getAllByText(/loading/i).length).toBeGreaterThan(0);
     });
   });
 
