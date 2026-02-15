@@ -28,7 +28,7 @@ export interface HeaderProps {
 export function Header({ showSearchBar = true }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, signOut } = useAuth();
+  const { user, signOut, loading: authLoading } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -119,7 +119,10 @@ export function Header({ showSearchBar = true }: HeaderProps) {
                 </Link>
               ))}
             </div>
-            {user ? (
+            {authLoading ? (
+              /* Loading Skeleton - Avatar skeleton for better UX */
+              <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse" />
+            ) : user ? (
               /* Authenticated User UI */
               <div className="relative">
                 <UserAvatar user={user} onClick={handleAvatarClick} />
@@ -235,7 +238,17 @@ export function Header({ showSearchBar = true }: HeaderProps) {
             {/* Divider */}
             <div className="border-t border-gray-100 mb-4" />
 
-            {user ? (
+            {authLoading ? (
+              /* Loading Skeleton - Avatar skeleton for better UX */
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-3 px-4 py-2">
+                  <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse" />
+                  <div className="w-32 h-5 bg-gray-200 rounded animate-pulse" />
+                </div>
+                <div className="w-full h-9 bg-gray-200 rounded-lg animate-pulse" />
+                <div className="w-full h-9 bg-gray-200 rounded-lg animate-pulse" />
+              </div>
+            ) : user ? (
               /* Authenticated User Mobile Menu */
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3 px-4 py-2">
