@@ -512,6 +512,32 @@ describe('Header', () => {
       expect(searchBar).toBeInTheDocument();
     });
 
+    it('Header_ShouldNotRenderSearchBar_WhenShowSearchBarIsFalse', () => {
+      render(<Header showSearchBar={false} />);
+
+      const searchBars = screen.queryAllByTestId('search-bar');
+      expect(searchBars.length).toBe(0);
+    });
+
+    it('Header_ShouldRenderSearchBar_WhenShowSearchBarIsTrue', () => {
+      render(<Header showSearchBar={true} />);
+
+      const searchBar = screen.getByTestId('search-bar');
+      expect(searchBar).toBeInTheDocument();
+    });
+
+    it('Header_ShouldNotRenderMobileSearchButton_WhenShowSearchBarIsFalse', () => {
+      render(<Header showSearchBar={false} />);
+
+      const buttons = screen.getAllByRole('button');
+      const searchButton = buttons.find(btn => 
+        btn.getAttribute('aria-label') === 'Search' && 
+        btn.querySelector('.material-icons-round')
+      );
+      
+      expect(searchButton).toBeUndefined();
+    });
+
     it('Header_ShouldPassCompactVariant_WhenRenderingSearchBar', () => {
       render(<Header />);
 

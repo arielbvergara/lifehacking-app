@@ -8,6 +8,10 @@ import { UserAvatar } from '@/components/layout/user-avatar';
 import { SearchBar } from '@/components/shared/search-bar';
 import { useAuth } from '@/lib/auth/auth-context';
 
+export interface HeaderProps {
+  showSearchBar?: boolean;
+}
+
 /**
  * Header Component
  * 
@@ -15,11 +19,13 @@ import { useAuth } from '@/lib/auth/auth-context';
  * - Anonymous users see "Login" and "Join for Free" buttons
  * - Authenticated users see UserAvatar with dropdown menu
  * - Responsive mobile menu for smaller screens
+ * - Optional search bar display (controlled via showSearchBar prop)
  * 
  * @example
  * <Header />
+ * <Header showSearchBar={false} />
  */
-export function Header() {
+export function Header({ showSearchBar = true }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { user, signOut } = useAuth();
@@ -82,13 +88,15 @@ export function Header() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
             {/* SearchBar - Desktop Only */}
-            <div className="flex-1 max-w-md ml-6 w-80">
-              <SearchBar 
-                variant="compact"
-                onSearch={handleSearch}
-                placeholder="Search for tips..."
-              />
-            </div>
+            {showSearchBar && (
+              <div className="flex-1 max-w-md ml-6 w-80">
+                <SearchBar 
+                  variant="compact"
+                  onSearch={handleSearch}
+                  placeholder="Search for tips..."
+                />
+              </div>
+            )}
 
             {/* Desktop Navigation Links */}
             <div className="flex items-center gap-8">
@@ -160,16 +168,18 @@ export function Header() {
           {/* Mobile Search and Menu Buttons */}
           <div className="md:hidden flex items-center gap-2">
             {/* Mobile Search Icon Button */}
-            <button
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="p-2 text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-lg"
-              aria-label={isSearchOpen ? "Close search" : "Search"}
-              type="button"
-            >
-              <span className="material-icons-round">
-                {isSearchOpen ? 'close' : 'search'}
-              </span>
-            </button>
+            {showSearchBar && (
+              <button
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+                className="p-2 text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-lg"
+                aria-label={isSearchOpen ? "Close search" : "Search"}
+                type="button"
+              >
+                <span className="material-icons-round">
+                  {isSearchOpen ? 'close' : 'search'}
+                </span>
+              </button>
+            )}
 
             {/* Mobile Menu Button */}
             <button
@@ -186,7 +196,7 @@ export function Header() {
         </div>
 
         {/* Mobile Search Interface */}
-        {isSearchOpen && (
+        {showSearchBar && isSearchOpen && (
           <div className="md:hidden mt-4 pb-4 border-t border-gray-100 pt-4">
             <SearchBar 
               variant="compact"
