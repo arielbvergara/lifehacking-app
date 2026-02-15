@@ -31,10 +31,10 @@ vi.mock('@/lib/hooks/use-home-data', () => ({
 }));
 
 // Mock child components
-vi.mock('@/components/layout/home-header', () => ({
-  HomeHeader: () => (
+vi.mock('@/components/layout/header', () => ({
+  Header: ({ showSearchBar }: { showSearchBar?: boolean }) => (
     <div data-testid="home-header">
-      Header {mockUser ? 'authenticated' : 'anonymous'}
+      Header {mockUser ? 'authenticated' : 'anonymous'} {showSearchBar !== undefined ? `search:${showSearchBar}` : ''}
     </div>
   ),
 }));
