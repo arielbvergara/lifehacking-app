@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { userEvent } from '@testing-library/user-event';
 import { ExploreCategories } from './explore-categories';
 import { Category } from '@/lib/types/api';
 
@@ -34,14 +33,7 @@ const mockCategories: Category[] = [
 
 describe('ExploreCategories', () => {
   it('should render section title and subtitle', () => {
-    render(
-      <ExploreCategories
-        categories={mockCategories}
-        loading={false}
-        error={null}
-        onRetry={vi.fn()}
-      />
-    );
+    render(<ExploreCategories categories={mockCategories} />);
 
     expect(screen.getByText('Explore Categories')).toBeInTheDocument();
     expect(
@@ -50,124 +42,23 @@ describe('ExploreCategories', () => {
   });
 
   it('should render "View all" link', () => {
-    render(
-      <ExploreCategories
-        categories={mockCategories}
-        loading={false}
-        error={null}
-        onRetry={vi.fn()}
-      />
-    );
+    render(<ExploreCategories categories={mockCategories} />);
 
     const viewAllLink = screen.getByText(/view all/i);
     expect(viewAllLink).toBeInTheDocument();
     expect(viewAllLink).toHaveAttribute('href', '/categories');
   });
 
-  it('should display loading state with skeleton cards', () => {
-    render(
-      <ExploreCategories
-        categories={null}
-        loading={true}
-        error={null}
-        onRetry={vi.fn()}
-      />
-    );
-
-    // Should show skeleton loaders (6 by default)
-    const skeletons = screen.getAllByRole('generic').filter((el) =>
-      el.className.includes('animate-pulse')
-    );
-    expect(skeletons.length).toBeGreaterThan(0);
-  });
-
-  it('should display error state with retry button', () => {
-    const errorMessage = 'Failed to load categories';
-    render(
-      <ExploreCategories
-        categories={null}
-        loading={false}
-        error={errorMessage}
-        onRetry={vi.fn()}
-      />
-    );
-
-    expect(screen.getByText(errorMessage)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /try again/i })).toBeInTheDocument();
-  });
-
-  it('should call onRetry when retry button is clicked', async () => {
-    const user = userEvent.setup();
-    const handleRetry = vi.fn();
-
-    render(
-      <ExploreCategories
-        categories={null}
-        loading={false}
-        error="Failed to load"
-        onRetry={handleRetry}
-      />
-    );
-
-    const retryButton = screen.getByRole('button', { name: /try again/i });
-    await user.click(retryButton);
-
-    expect(handleRetry).toHaveBeenCalledTimes(1);
-  });
-
   it('should display category cards when data is loaded', () => {
-    render(
-      <ExploreCategories
-        categories={mockCategories}
-        loading={false}
-        error={null}
-        onRetry={vi.fn()}
-      />
-    );
+    render(<ExploreCategories categories={mockCategories} />);
 
     expect(screen.getByText('Kitchen')).toBeInTheDocument();
     expect(screen.getByText('Cleaning')).toBeInTheDocument();
     expect(screen.getByText('Tech Help')).toBeInTheDocument();
   });
 
-  it('should not display loading state when data is present', () => {
-    render(
-      <ExploreCategories
-        categories={mockCategories}
-        loading={false}
-        error={null}
-        onRetry={vi.fn()}
-      />
-    );
-
-    const skeletons = screen.queryAllByRole('generic').filter((el) =>
-      el.className.includes('animate-pulse')
-    );
-    expect(skeletons.length).toBe(0);
-  });
-
-  it('should not display error state when data is present', () => {
-    render(
-      <ExploreCategories
-        categories={mockCategories}
-        loading={false}
-        error={null}
-        onRetry={vi.fn()}
-      />
-    );
-
-    expect(screen.queryByText(/try again/i)).not.toBeInTheDocument();
-  });
-
   it('should render empty grid when categories array is empty', () => {
-    render(
-      <ExploreCategories
-        categories={[]}
-        loading={false}
-        error={null}
-        onRetry={vi.fn()}
-      />
-    );
+    render(<ExploreCategories categories={[]} />);
 
     // Section should still render with title
     expect(screen.getByText('Explore Categories')).toBeInTheDocument();
@@ -197,12 +88,7 @@ describe('ExploreCategories - Property Tests', () => {
     'should render exactly one CategoryCard for each category in the list',
     (categories) => {
       const { container, unmount } = render(
-        <ExploreCategories
-          categories={categories}
-          loading={false}
-          error={null}
-          onRetry={vi.fn()}
-        />
+        <ExploreCategories categories={categories} />
       );
 
       // Count the number of category cards rendered (using role="button" which is unique to cards)
@@ -227,12 +113,7 @@ describe('ExploreCategories - Property Tests', () => {
     'should render the same number of cards as items in the categories array',
     (categories) => {
       const { container, unmount } = render(
-        <ExploreCategories
-          categories={categories}
-          loading={false}
-          error={null}
-          onRetry={vi.fn()}
-        />
+        <ExploreCategories categories={categories} />
       );
 
       // Count the number of category cards rendered
@@ -261,12 +142,7 @@ describe('ExploreCategories - Responsive Grid Property Tests', () => {
     'should apply responsive grid classes for all viewport sizes',
     (categories) => {
       const { container } = render(
-        <ExploreCategories
-          categories={categories}
-          loading={false}
-          error={null}
-          onRetry={vi.fn()}
-        />
+        <ExploreCategories categories={categories} />
       );
 
       // Find the grid container
@@ -296,12 +172,7 @@ describe('ExploreCategories - Responsive Grid Property Tests', () => {
     ];
 
     const { container } = render(
-      <ExploreCategories
-        categories={testCategories}
-        loading={false}
-        error={null}
-        onRetry={vi.fn()}
-      />
+      <ExploreCategories categories={testCategories} />
     );
 
     const gridContainer = container.querySelector('.grid');

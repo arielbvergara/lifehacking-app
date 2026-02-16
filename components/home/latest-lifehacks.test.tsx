@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { userEvent } from '@testing-library/user-event';
 import { LatestLifehacks } from './latest-lifehacks';
 import { TipSummary } from '@/lib/types/api';
+import { fc, test } from '@fast-check/vitest';
 
 // Mock next/navigation
 vi.mock('next/navigation', () => ({
@@ -46,73 +46,13 @@ const mockTips: TipSummary[] = [
 
 describe('LatestLifehacks', () => {
   it('should render section title', () => {
-    render(
-      <LatestLifehacks
-        tips={mockTips}
-        loading={false}
-        error={null}
-        onRetry={vi.fn()}
-      />
-    );
+    render(<LatestLifehacks tips={mockTips} />);
 
     expect(screen.getByText('Latest Lifehacks')).toBeInTheDocument();
   });
 
-  it('should display loading state with skeleton cards', () => {
-    render(
-      <LatestLifehacks tips={[]} loading={true} error={null} onRetry={vi.fn()} />
-    );
-
-    // Should show skeleton loaders (6 by default)
-    const skeletons = screen.getAllByRole('generic').filter((el) =>
-      el.className.includes('animate-pulse')
-    );
-    expect(skeletons.length).toBeGreaterThan(0);
-  });
-
-  it('should display error state with retry button', () => {
-    const errorMessage = 'Failed to load tips';
-    render(
-      <LatestLifehacks
-        tips={[]}
-        loading={false}
-        error={errorMessage}
-        onRetry={vi.fn()}
-      />
-    );
-
-    expect(screen.getByText(errorMessage)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /try again/i })).toBeInTheDocument();
-  });
-
-  it('should call onRetry when retry button is clicked', async () => {
-    const user = userEvent.setup();
-    const handleRetry = vi.fn();
-
-    render(
-      <LatestLifehacks
-        tips={[]}
-        loading={false}
-        error="Failed to load"
-        onRetry={handleRetry}
-      />
-    );
-
-    const retryButton = screen.getByRole('button', { name: /try again/i });
-    await user.click(retryButton);
-
-    expect(handleRetry).toHaveBeenCalledTimes(1);
-  });
-
   it('should display tip cards when data is loaded', () => {
-    render(
-      <LatestLifehacks
-        tips={mockTips}
-        loading={false}
-        error={null}
-        onRetry={vi.fn()}
-      />
-    );
+    render(<LatestLifehacks tips={mockTips} />);
 
     expect(screen.getByText('Kitchen Hack 1')).toBeInTheDocument();
     expect(screen.getByText('Cleaning Hack 2')).toBeInTheDocument();
@@ -172,37 +112,20 @@ describe('LatestLifehacks', () => {
   });
 
   it('should render as a section element', () => {
-    const { container } = render(
-      <LatestLifehacks
-        tips={mockTips}
-        loading={false}
-        error={null}
-        onRetry={vi.fn()}
-      />
-    );
+    const { container } = render(<LatestLifehacks tips={mockTips} />);
 
     const section = container.querySelector('section');
     expect(section).toBeInTheDocument();
   });
 
   it('should display category badges for each tip', () => {
-    render(
-      <LatestLifehacks
-        tips={mockTips}
-        loading={false}
-        error={null}
-        onRetry={vi.fn()}
-      />
-    );
+    render(<LatestLifehacks tips={mockTips} />);
 
     expect(screen.getByText('Kitchen')).toBeInTheDocument();
     expect(screen.getByText('Cleaning')).toBeInTheDocument();
     expect(screen.getByText('Tech Help')).toBeInTheDocument();
   });
 });
-
-// Property-Based Tests
-import { fc, test } from '@fast-check/vitest';
 
 // Feature: home-page-implementation, Property 2: List Rendering Completeness
 // **Validates: Requirements 5.3**
@@ -230,14 +153,7 @@ describe('LatestLifehacks - Property Tests', () => {
   ])(
     'should render exactly one TipCard for each tip in the list',
     (tips) => {
-      const { unmount } = render(
-        <LatestLifehacks
-          tips={tips}
-          loading={false}
-          error={null}
-          onRetry={vi.fn()}
-        />
-      );
+      const { unmount } = render(<LatestLifehacks tips={tips} />);
 
       // Verify the count matches by checking "Read tip >" buttons (one per card)
       const readTipButtons = screen.getAllByText(/read tip/i);
@@ -270,14 +186,7 @@ describe('LatestLifehacks - Property Tests', () => {
   ])(
     'should render the same number of cards as items in the tips array',
     (tips) => {
-      const { unmount } = render(
-        <LatestLifehacks
-          tips={tips}
-          loading={false}
-          error={null}
-          onRetry={vi.fn()}
-        />
-      );
+      const { unmount } = render(<LatestLifehacks tips={tips} />);
 
       // Count the number of "Read tip >" buttons (one per card)
       const readTipButtons = screen.getAllByText(/read tip/i);
@@ -314,14 +223,7 @@ describe('LatestLifehacks - Responsive Grid Property Tests', () => {
   ])(
     'should apply responsive grid classes for all viewport sizes',
     (tips) => {
-      const { container } = render(
-        <LatestLifehacks
-          tips={tips}
-          loading={false}
-          error={null}
-          onRetry={vi.fn()}
-        />
-      );
+      const { container } = render(<LatestLifehacks tips={tips} />);
 
       // Find the grid container
       const gridContainer = container.querySelector('.grid');
@@ -353,14 +255,7 @@ describe('LatestLifehacks - Responsive Grid Property Tests', () => {
       },
     ];
 
-    const { container } = render(
-      <LatestLifehacks
-        tips={testTips}
-        loading={false}
-        error={null}
-        onRetry={vi.fn()}
-      />
-    );
+    const { container } = render(<LatestLifehacks tips={testTips} />);
 
     const gridContainer = container.querySelector('.grid');
     

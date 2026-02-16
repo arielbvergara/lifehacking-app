@@ -9,9 +9,6 @@ import { generateTipStructuredData } from '@/lib/seo/structured-data';
 
 export interface FeaturedTipProps {
   tip: TipSummary | null;
-  loading: boolean;
-  error: string | null;
-  onRetry: () => void;
 }
 
 const DESCRIPTION_MAX_LENGTH = 200;
@@ -25,9 +22,10 @@ const READ_GUIDE_TEXT = 'Read Guide';
  * Displays the most recent tip in a prominent card format with image,
  * badge, title, description, and action buttons.
  * 
+ * Server-rendered with cached data for optimal performance.
  * Implements semantic HTML with <article> tag and includes structured data (JSON-LD).
  */
-export function FeaturedTip({ tip, loading, error, onRetry }: FeaturedTipProps) {
+export function FeaturedTip({ tip }: FeaturedTipProps) {
   const router = useRouter();
 
   const handleWatchVideo = () => {
@@ -40,34 +38,6 @@ export function FeaturedTip({ tip, loading, error, onRetry }: FeaturedTipProps) 
     // Placeholder for future implementation
     // This button is intentionally non-functional
   };
-
-  if (loading) {
-    return (
-      <section className="py-12 md:py-16 bg-gradient-to-r from-[#e8f5e8] via-[#f0f9f0] to-white" aria-label="Featured tip loading">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <FeaturedTipSkeleton />
-        </div>
-      </section>
-    );
-  }
-
-  if (error) {
-    return (
-      <section className="py-12 md:py-16 bg-gradient-to-r from-[#e8f5e8] via-[#f0f9f0] to-white" aria-label="Featured tip error">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div className="bg-gradient-to-br from-[#e8f5e8] to-[#f0f9f0] rounded-3xl p-12 text-center">
-            <p className="text-red-600 mb-4">{error}</p>
-            <button
-              onClick={onRetry}
-              className="px-6 py-3 bg-black text-white font-semibold rounded-2xl hover:bg-gray-800 transition-all focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 shadow-md"
-            >
-              Try Again
-            </button>
-          </div>
-        </div>
-      </section>
-    );
-  }
 
   if (!tip) {
     return null;
@@ -144,30 +114,5 @@ export function FeaturedTip({ tip, loading, error, onRetry }: FeaturedTipProps) 
         </article>
       </div>
     </section>
-  );
-}
-
-function FeaturedTipSkeleton() {
-  return (
-    <div className="bg-gradient-to-br from-[#e8f5e8] to-[#f0f9f0] rounded-3xl p-8 md:p-12 lg:p-16 animate-pulse" role="status" aria-label="Loading featured tip">
-      <div className="flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-12">
-        <div className="flex-1">
-          <div className="w-32 h-7 bg-gray-200 rounded-full mb-6"></div>
-          <div className="h-10 bg-gray-200 rounded mb-4 w-3/4"></div>
-          <div className="h-10 bg-gray-200 rounded mb-6 w-2/3"></div>
-          <div className="h-5 bg-gray-200 rounded mb-2"></div>
-          <div className="h-5 bg-gray-200 rounded mb-2 w-5/6"></div>
-          <div className="h-5 bg-gray-200 rounded mb-8 w-4/6"></div>
-          <div className="flex gap-4">
-            <div className="w-40 h-12 bg-gray-200 rounded-2xl"></div>
-            <div className="w-32 h-12 bg-gray-200 rounded-2xl"></div>
-          </div>
-        </div>
-        <div className="lg:w-1/2 flex justify-center lg:justify-end">
-          <div className="w-full max-w-md h-64 lg:h-80 bg-gray-200 rounded-[24px] transform rotate-[-6deg]"></div>
-        </div>
-      </div>
-      <span className="sr-only">Loading...</span>
-    </div>
   );
 }

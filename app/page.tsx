@@ -1,6 +1,13 @@
 import type { Metadata } from 'next';
-import { HomePageClient } from './page.client';
+import { connection } from 'next/server';
 import { generateWebsiteStructuredData } from '@/lib/seo/structured-data';
+import { getHomePageData } from '@/lib/data/home-data';
+import { PageScrollWrapper } from './page-scroll-wrapper';
+import { HeroSection } from '@/components/home/hero-section';
+import { ExploreCategories } from '@/components/home/explore-categories';
+import { FeaturedTip } from '@/components/home/featured-tip';
+import { LatestLifehacks } from '@/components/home/latest-lifehacks';
+import { Footer } from '@/components/layout/footer';
 
 /**
  * Home Page Metadata
@@ -46,10 +53,20 @@ export const metadata: Metadata = {
  * - Featured tip (most recent)
  * - Latest lifehacks grid
  * 
- * Implements hybrid SSR pattern with client component for interactivity.
+ * Uses Next.js 16 "use cache" directive for optimal performance.
+ * Data is fetched on the server and cached for 5 minutes.
  * Includes structured data (JSON-LD) for enhanced SEO.
+ * 
+ * Note: Uses connection() to defer to request time, preventing build
+ * failures when API is unavailable during static generation.
  */
-export default function Home() {
+export default async function Home() {
+  // Defer to request time to avoid build-time API dependency
+  await connection();
+  
+  // Fetch all data on server with caching
+  const { categories, featuredTip, latestTips } = await getHomePageData();
+  
   const structuredData = generateWebsiteStructuredData();
 
   return (
@@ -60,8 +77,23 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       
-      {/* Client Component with Interactive Features */}
-      <HomePageClient />
+      {/* Page with scroll-based header */}
+      <PageScrollWrapper>
+        {/* Hero Section */}
+        <HeroSection />
+
+        {/* Explore Categories Section */}
+        <ExploreCategories categories={categories} />
+
+        {/* Featured Tip Section */}
+        <FeaturedTip tip={featuredTip} />
+
+        {/* Latest Lifehacks Section */}
+        <LatestLifehacks tips={latestTips} />
+      </PageScrollWrapper>
+      
+      {/* Footer */}
+      <Footer />
     </>
   );
 }
