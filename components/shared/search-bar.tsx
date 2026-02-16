@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
 export interface SearchBarProps {
   placeholder?: string;
@@ -26,15 +27,22 @@ export function SearchBar({
 }: SearchBarProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   const isCompact = variant === 'compact';
 
   const handleSearch = () => {
     if (onSearch) {
+      // Use custom handler if provided (for SearchPage)
       onSearch(searchQuery);
       setSearchQuery('');
       // Maintain focus after clearing for consecutive searches
       inputRef.current?.focus();
+    } else {
+      // Default behavior: navigate to search page
+      if (searchQuery.trim()) {
+        router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      }
     }
   };
 

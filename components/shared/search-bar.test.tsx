@@ -1,9 +1,20 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { SearchBar } from '../shared/search-bar';
 
+// Mock Next.js router
+const mockPush = vi.fn();
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockPush,
+  }),
+}));
+
 describe('SearchBar', () => {
+  beforeEach(() => {
+    mockPush.mockClear();
+  });
   it('should render input with default placeholder', () => {
     render(<SearchBar />);
 
@@ -62,7 +73,7 @@ describe('SearchBar', () => {
     expect(handleSearch).toHaveBeenCalledWith('cooking tips');
   });
 
-  it('should not throw error when onSearch is not provided', async () => {
+  it('should navigate to search page when onSearch is not provided', async () => {
     const user = userEvent.setup();
     render(<SearchBar />);
 
@@ -70,9 +81,10 @@ describe('SearchBar', () => {
     const buttons = screen.getAllByRole('button', { name: /search/i });
 
     await user.type(input, 'test query');
+    await user.click(buttons[0]);
     
-    // Should not throw
-    await expect(user.click(buttons[0])).resolves.not.toThrow();
+    // Should navigate to search page with query parameter
+    expect(mockPush).toHaveBeenCalledWith('/search?q=test%20query');
   });
 
   it('should disable input and button when disabled prop is true', () => {
@@ -105,6 +117,17 @@ describe('SearchBar', () => {
     await user.click(buttons[0]);
 
     expect(handleSearch).toHaveBeenCalledWith('');
+  });
+
+  it('should not navigate when search is empty and no onSearch provided', async () => {
+    const user = userEvent.setup();
+    render(<SearchBar />);
+
+    const buttons = screen.getAllByRole('button', { name: /search/i });
+    await user.click(buttons[0]);
+
+    // Should not navigate with empty query
+    expect(mockPush).not.toHaveBeenCalled();
   });
 
   it('should have accessible label for input', () => {
@@ -164,6 +187,74 @@ describe('SearchBar', () => {
     
     // Input should maintain focus
     expect(input).toHaveFocus();
+  });
+
+  it('SearchBar_ShouldNavigateToSearchPage_WhenNoOnSearchProvided', async () => {
+    const user = userEvent.setup();
+    render(<SearchBar />);
+
+    const input = screen.getByRole('textbox', { name: /search/i });
+    const buttons = screen.getAllByRole('button', { name: /search/i });
+
+    await user.type(input, 'kitchen tips');
+    await user.click(buttons[0]);
+
+    expect(mockPush).toHaveBeenCalledWith('/search?q=kitchen%20tips');
+  });
+
+  it('SearchBar_ShouldNavigateWithEncodedQuery_WhenSpecialCharactersPresent', async () => {
+    const user = userEvent.setup();
+    render(<SearchBar />);
+
+    const input = screen.getByRole('textbox', { name: /search/i });
+    const buttons = screen.getAllByRole('button', { name: /search/i });
+
+    await user.type(input, 'tips & tricks');
+    await user.click(buttons[0]);
+
+    expect(mockPush).toHaveBeenCalledWith('/search?q=tips%20%26%20tricks');
+  });
+
+  it('SearchBar_ShouldTrimWhitespace_WhenNavigating', async () => {
+    const user = userEvent.setup();
+    render(<SearchBar />);
+
+    const input = screen.getByRole('textbox', { name: /search/i });
+    const buttons = screen.getAllByRole('button', { name: /search/i });
+
+    await user.type(input, '  cooking tips  ');
+    await user.click(buttons[0]);
+
+    expect(mockPush).toHaveBeenCalledWith('/search?q=cooking%20tips');
+  });
+
+  it('SearchBar_ShouldNotNavigate_WhenQueryIsOnlyWhitespace', async () => {
+    const user = userEvent.setup();
+    render(<SearchBar />);
+
+    const input = screen.getByRole('textbox', { name: /search/i });
+    const buttons = screen.getAllByRole('button', { name: /search/i });
+
+    await user.type(input, '   ');
+    await user.click(buttons[0]);
+
+    expect(mockPush).not.toHaveBeenCalled();
+  });
+
+  it('SearchBar_ShouldUseCustomHandler_WhenOnSearchProvided', async () => {
+    const user = userEvent.setup();
+    const handleSearch = vi.fn();
+    render(<SearchBar onSearch={handleSearch} />);
+
+    const input = screen.getByRole('textbox', { name: /search/i });
+    const buttons = screen.getAllByRole('button', { name: /search/i });
+
+    await user.type(input, 'test query');
+    await user.click(buttons[0]);
+
+    // Should use custom handler, not navigate
+    expect(handleSearch).toHaveBeenCalledWith('test query');
+    expect(mockPush).not.toHaveBeenCalled();
   });
 });
 
