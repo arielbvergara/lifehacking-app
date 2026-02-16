@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { connection } from 'next/server';
 import { generateWebsiteStructuredData } from '@/lib/seo/structured-data';
 import { getHomePageData } from '@/lib/data/home-data';
 import { PageScrollWrapper } from './page-scroll-wrapper';
@@ -55,8 +56,14 @@ export const metadata: Metadata = {
  * Uses Next.js 16 "use cache" directive for optimal performance.
  * Data is fetched on the server and cached for 5 minutes.
  * Includes structured data (JSON-LD) for enhanced SEO.
+ * 
+ * Note: Uses connection() to defer to request time, preventing build
+ * failures when API is unavailable during static generation.
  */
 export default async function Home() {
+  // Defer to request time to avoid build-time API dependency
+  await connection();
+  
   // Fetch all data on server with caching
   const { categories, featuredTip, latestTips } = await getHomePageData();
   

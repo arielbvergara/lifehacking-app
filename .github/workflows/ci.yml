@@ -62,34 +62,6 @@ jobs:
       - name: Run unit tests
         run: pnpm test:run
 
-      # Start mock API server for Next.js 16 Cache Components build
-      # Next.js 16 with cacheComponents tries to prerender pages at build time
-      # and needs the API to be available to fetch cached data
-      - name: Start mock API server
-        run: |
-          # Create a simple mock API server
-          cat > mock-api.js << 'EOF'
-          const http = require('http');
-          const server = http.createServer((req, res) => {
-            res.setHeader('Content-Type', 'application/json');
-            res.setHeader('Access-Control-Allow-Origin', '*');
-            
-            if (req.url.includes('/categories')) {
-              res.writeHead(200);
-              res.end(JSON.stringify({ items: [], metadata: { totalItems: 0 } }));
-            } else if (req.url.includes('/tips')) {
-              res.writeHead(200);
-              res.end(JSON.stringify({ items: [], metadata: { totalItems: 0 } }));
-            } else {
-              res.writeHead(404);
-              res.end(JSON.stringify({ error: 'Not found' }));
-            }
-          });
-          server.listen(8080, () => console.log('Mock API running on port 8080'));
-          EOF
-          node mock-api.js &
-          sleep 2
-
       # - name: Run E2E tests
       #   run: pnpm test:e2e
       #   env:
