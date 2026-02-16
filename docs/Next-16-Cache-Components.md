@@ -40,60 +40,60 @@ This project has been migrated to use Next.js 16's Cache Components feature for 
 
 ## Build Requirements
 
-### ⚠️ IMPORTANT: API Server Required for Production Builds
+### ✅ Build Process Simplified
 
-With Next.js 16 Cache Components, pages that use `"use cache"` will attempt to prerender at build time. This means:
+The home page uses Next.js `connection()` API to defer rendering to request time, which means:
 
-**The API server MUST be running during production builds.**
+**No API server required during builds!**
 
-#### Why?
-- Next.js tries to execute cached functions during build to generate static HTML
-- If the API isn't available, the build will fail with connection errors
-- This is expected behavior for SSR/SSG applications
+The build will complete successfully without the API being available. The page will:
+1. Skip prerendering during build (no static HTML generated)
+2. Render dynamically on first request when API is available
+3. Use cached data (5-minute cache) for subsequent requests
 
-#### Solutions
+### How It Works
 
-**Option 1: Run API During Build (Recommended for Production)**
+```typescript
+// app/page.tsx
+export default async function Home() {
+  // Defer to request time - no build-time rendering
+  await connection();
+  
+  // Fetch data with caching at runtime
+  const { categories, featuredTip, latestTips } = await getHomePageData();
+  // ...
+}
+```
+
+This approach:
+- ✅ **Build-time**: No API required, build succeeds
+- ✅ **Runtime**: Uses cached data for performance
+- ✅ **Compatible**: Works with Cache Components
+- ✅ **Simple**: No mock servers or complex setup needed
+
+### Alternative Approaches (Not Needed)
+
+These were considered but aren't necessary with the `connection()` approach:
+
+**~~Option 1: Run API During Build~~**
 ```bash
-# Terminal 1: Start API server
-npm run api:start
-
-# Terminal 2: Build application
+# Not needed anymore
+npm run api:start &
 npm run build
 ```
 
-**Option 2: Mock API Server (Recommended for CI/CD)**
-For CI/CD pipelines, use a lightweight mock API server. See `.github/workflows/ci.yml` for the implementation:
-
+**~~Option 2: Mock API Server~~**
 ```javascript
-// Simple mock API that returns empty data
-const http = require('http');
-const server = http.createServer((req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  
-  if (req.url.includes('/categories') || req.url.includes('/tips')) {
-    res.writeHead(200);
-    res.end(JSON.stringify({ items: [], metadata: { totalItems: 0 } }));
-  } else {
-    res.writeHead(404);
-    res.end(JSON.stringify({ error: 'Not found' }));
-  }
-});
-server.listen(8080);
+// Not needed anymore - connection() handles this
 ```
 
-This allows the build to complete with empty data, which is fine since the actual data will be fetched at runtime.
+### For Production Deployments
 
-**Option 3: Development Builds**
-For development, you can skip the build step and use:
-```bash
-npm run dev
-```
-The dev server doesn't prerender pages, so the API isn't required.
-
-**Option 4: CI/CD Pipeline (Automated)**
-Our CI/CD pipeline automatically starts a mock API server before building. See `.github/workflows/ci.yml` for the complete implementation.
+The `connection()` approach works perfectly for production:
+1. Build completes without API (CI/CD friendly)
+2. First request renders the page dynamically
+3. Cached data serves subsequent requests quickly
+4. Cache refreshes every 5 minutes automatically
 
 ## Performance Benefits
 
