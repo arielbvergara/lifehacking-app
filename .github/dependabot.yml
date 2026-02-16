@@ -7,6 +7,9 @@ updates:
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "tailwindcss"
+        update-types: ["version-update:semver-major"]
     groups:
       minor-and-patch:
         patterns:
