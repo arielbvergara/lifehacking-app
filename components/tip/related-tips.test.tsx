@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { RelatedTips } from './related-tips';
-import { fetchTipsByCategory } from '@/lib/api/tips';
-import type { PagedTipsResponse, TipSummary } from '@/lib/types/api';
+import { getCachedRelatedTips } from '@/lib/data/tip-data';
+import type { TipSummary } from '@/lib/types/api';
 
 // Mock Next.js router
 const mockPush = vi.fn();
@@ -12,9 +12,9 @@ vi.mock('next/navigation', () => ({
   }),
 }));
 
-// Mock the API client
-vi.mock('@/lib/api/tips');
-const mockFetchTipsByCategory = vi.mocked(fetchTipsByCategory);
+// Mock the cached data function
+vi.mock('@/lib/data/tip-data');
+const mockGetCachedRelatedTips = vi.mocked(getCachedRelatedTips);
 
 // Mock the TipCard component
 vi.mock('@/components/shared/tip/tip-card', () => ({
@@ -44,20 +44,12 @@ describe('RelatedTips', () => {
   });
 
   it('Should_FetchRelatedTips_When_ComponentRenders', async () => {
-    const mockResponse: PagedTipsResponse = {
-      items: [
-        createMockTip('tip-1', 'Tip 1'),
-        createMockTip('tip-2', 'Tip 2'),
-      ],
-      metadata: {
-        totalItems: 2,
-        pageNumber: 1,
-        pageSize: 5,
-        totalPages: 1,
-      },
-    };
+    const mockTips = [
+      createMockTip('tip-1', 'Tip 1'),
+      createMockTip('tip-2', 'Tip 2'),
+    ];
 
-    mockFetchTipsByCategory.mockResolvedValue(mockResponse);
+    mockGetCachedRelatedTips.mockResolvedValue(mockTips);
 
     const component = await RelatedTips({
       categoryId: mockCategoryId,
@@ -67,29 +59,20 @@ describe('RelatedTips', () => {
 
     render(component as React.ReactElement);
 
-    expect(mockFetchTipsByCategory).toHaveBeenCalledWith(mockCategoryId, {
-      pageSize: 5,
-      orderBy: 0, // TipSortField.CreatedAt
-      sortDirection: 1, // SortDirection.Descending
-    });
+    expect(mockGetCachedRelatedTips).toHaveBeenCalledWith(
+      mockCategoryId,
+      mockCurrentTipId
+    );
   });
 
   it('Should_FilterOutCurrentTip_When_CurrentTipInResults', async () => {
-    const mockResponse: PagedTipsResponse = {
-      items: [
-        createMockTip(mockCurrentTipId, 'Current Tip'),
-        createMockTip('tip-1', 'Tip 1'),
-        createMockTip('tip-2', 'Tip 2'),
-      ],
-      metadata: {
-        totalItems: 3,
-        pageNumber: 1,
-        pageSize: 5,
-        totalPages: 1,
-      },
-    };
+    // The cached function already filters out the current tip
+    const mockTips = [
+      createMockTip('tip-1', 'Tip 1'),
+      createMockTip('tip-2', 'Tip 2'),
+    ];
 
-    mockFetchTipsByCategory.mockResolvedValue(mockResponse);
+    mockGetCachedRelatedTips.mockResolvedValue(mockTips);
 
     const component = await RelatedTips({
       categoryId: mockCategoryId,
@@ -105,23 +88,15 @@ describe('RelatedTips', () => {
   });
 
   it('Should_LimitToFourTips_When_MoreThanFourAvailable', async () => {
-    const mockResponse: PagedTipsResponse = {
-      items: [
-        createMockTip('tip-1', 'Tip 1'),
-        createMockTip('tip-2', 'Tip 2'),
-        createMockTip('tip-3', 'Tip 3'),
-        createMockTip('tip-4', 'Tip 4'),
-        createMockTip('tip-5', 'Tip 5'),
-      ],
-      metadata: {
-        totalItems: 5,
-        pageNumber: 1,
-        pageSize: 5,
-        totalPages: 1,
-      },
-    };
+    // The cached function already limits to 4 tips
+    const mockTips = [
+      createMockTip('tip-1', 'Tip 1'),
+      createMockTip('tip-2', 'Tip 2'),
+      createMockTip('tip-3', 'Tip 3'),
+      createMockTip('tip-4', 'Tip 4'),
+    ];
 
-    mockFetchTipsByCategory.mockResolvedValue(mockResponse);
+    mockGetCachedRelatedTips.mockResolvedValue(mockTips);
 
     const component = await RelatedTips({
       categoryId: mockCategoryId,
@@ -135,21 +110,10 @@ describe('RelatedTips', () => {
     expect(screen.getByTestId('tip-card-tip-2')).toBeInTheDocument();
     expect(screen.getByTestId('tip-card-tip-3')).toBeInTheDocument();
     expect(screen.getByTestId('tip-card-tip-4')).toBeInTheDocument();
-    expect(screen.queryByTestId('tip-card-tip-5')).not.toBeInTheDocument();
   });
 
   it('Should_ReturnNull_When_NoRelatedTipsAfterFiltering', async () => {
-    const mockResponse: PagedTipsResponse = {
-      items: [createMockTip(mockCurrentTipId, 'Current Tip')],
-      metadata: {
-        totalItems: 1,
-        pageNumber: 1,
-        pageSize: 5,
-        totalPages: 1,
-      },
-    };
-
-    mockFetchTipsByCategory.mockResolvedValue(mockResponse);
+    mockGetCachedRelatedTips.mockResolvedValue([]);
 
     const component = await RelatedTips({
       categoryId: mockCategoryId,
@@ -161,17 +125,7 @@ describe('RelatedTips', () => {
   });
 
   it('Should_ReturnNull_When_NoTipsInCategory', async () => {
-    const mockResponse: PagedTipsResponse = {
-      items: [],
-      metadata: {
-        totalItems: 0,
-        pageNumber: 1,
-        pageSize: 5,
-        totalPages: 0,
-      },
-    };
-
-    mockFetchTipsByCategory.mockResolvedValue(mockResponse);
+    mockGetCachedRelatedTips.mockResolvedValue([]);
 
     const component = await RelatedTips({
       categoryId: mockCategoryId,
@@ -183,20 +137,12 @@ describe('RelatedTips', () => {
   });
 
   it('Should_RenderSectionHeading_When_RelatedTipsExist', async () => {
-    const mockResponse: PagedTipsResponse = {
-      items: [
-        createMockTip('tip-1', 'Tip 1'),
-        createMockTip('tip-2', 'Tip 2'),
-      ],
-      metadata: {
-        totalItems: 2,
-        pageNumber: 1,
-        pageSize: 5,
-        totalPages: 1,
-      },
-    };
+    const mockTips = [
+      createMockTip('tip-1', 'Tip 1'),
+      createMockTip('tip-2', 'Tip 2'),
+    ];
 
-    mockFetchTipsByCategory.mockResolvedValue(mockResponse);
+    mockGetCachedRelatedTips.mockResolvedValue(mockTips);
 
     const component = await RelatedTips({
       categoryId: mockCategoryId,
@@ -211,20 +157,12 @@ describe('RelatedTips', () => {
   });
 
   it('Should_RenderResponsiveGrid_When_RelatedTipsExist', async () => {
-    const mockResponse: PagedTipsResponse = {
-      items: [
-        createMockTip('tip-1', 'Tip 1'),
-        createMockTip('tip-2', 'Tip 2'),
-      ],
-      metadata: {
-        totalItems: 2,
-        pageNumber: 1,
-        pageSize: 5,
-        totalPages: 1,
-      },
-    };
+    const mockTips = [
+      createMockTip('tip-1', 'Tip 1'),
+      createMockTip('tip-2', 'Tip 2'),
+    ];
 
-    mockFetchTipsByCategory.mockResolvedValue(mockResponse);
+    mockGetCachedRelatedTips.mockResolvedValue(mockTips);
 
     const component = await RelatedTips({
       categoryId: mockCategoryId,
@@ -241,7 +179,8 @@ describe('RelatedTips', () => {
   });
 
   it('Should_ReturnNull_When_APIFails', async () => {
-    mockFetchTipsByCategory.mockRejectedValue(new Error('API Error'));
+    // The cached function returns empty array on error
+    mockGetCachedRelatedTips.mockResolvedValue([]);
 
     const component = await RelatedTips({
       categoryId: mockCategoryId,
@@ -252,17 +191,9 @@ describe('RelatedTips', () => {
   });
 
   it('Should_RenderAriaLabel_When_RelatedTipsExist', async () => {
-    const mockResponse: PagedTipsResponse = {
-      items: [createMockTip('tip-1', 'Tip 1')],
-      metadata: {
-        totalItems: 1,
-        pageNumber: 1,
-        pageSize: 5,
-        totalPages: 1,
-      },
-    };
+    const mockTips = [createMockTip('tip-1', 'Tip 1')];
 
-    mockFetchTipsByCategory.mockResolvedValue(mockResponse);
+    mockGetCachedRelatedTips.mockResolvedValue(mockTips);
 
     const component = await RelatedTips({
       categoryId: mockCategoryId,

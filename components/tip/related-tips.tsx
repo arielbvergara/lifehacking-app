@@ -1,5 +1,4 @@
-import { fetchTipsByCategory } from '@/lib/api/tips';
-import { TipSortField, SortDirection } from '@/lib/types/api';
+import { getCachedRelatedTips } from '@/lib/data/tip-data';
 import { TipCard } from '@/components/shared/tip/tip-card';
 
 /**
@@ -16,10 +15,11 @@ interface RelatedTipsProps {
  * RelatedTips Component
  * 
  * Async Server Component that fetches and displays related tips from the same category.
+ * Uses Next.js 16 Cache Components with 5-minute cache.
  * Filters out the current tip and shows up to 4 related tips in a responsive grid.
  * 
  * Features:
- * - Server-side data fetching
+ * - Server-side data fetching with caching
  * - Fetches 5 tips to ensure 4 remain after filtering
  * - Filters out the current tip being viewed
  * - Responsive grid layout (1 column mobile, 2 tablet, 4 desktop)
@@ -39,24 +39,8 @@ export async function RelatedTips({
   categoryId,
   currentTipId,
 }: RelatedTipsProps) {
-  // Fetch 5 tips to ensure we have 4 after filtering out current tip
-  let relatedTips;
-  
-  try {
-    const response = await fetchTipsByCategory(categoryId, {
-      pageSize: 5,
-      orderBy: TipSortField.CreatedAt,
-      sortDirection: SortDirection.Descending,
-    });
-
-    // Filter out the current tip
-    relatedTips = response.items
-      .filter((tip) => tip.id !== currentTipId)
-      .slice(0, 4);
-  } catch {
-    // Gracefully handle API failures by hiding the section
-    return null;
-  }
+  // Fetch related tips with caching (5-minute cache)
+  const relatedTips = await getCachedRelatedTips(categoryId, currentTipId);
 
   // Hide section if no related tips
   if (!relatedTips || relatedTips.length === 0) {

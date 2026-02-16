@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
+import { connection } from 'next/server';
 import { notFound } from 'next/navigation';
-import { fetchTipById } from '@/lib/api/tips';
+import { getCachedTipById } from '@/lib/data/tip-data';
 import { generateHowToStructuredData } from '@/lib/seo/structured-data';
 import { truncateForBreadcrumb } from '@/lib/utils/text';
 import { Header } from '@/components/layout/header';
@@ -19,7 +20,7 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const { id } = await params;
-    const tip = await fetchTipById(id);
+    const tip = await getCachedTipById(id);
     
     const description = tip.description.slice(0, 160);
     const imageUrl = tip.image?.imageUrl || '/default.png';
@@ -64,11 +65,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function TipDetailPage({ params }: Props) {
-  // Fetch tip data
+  // Defer to request time to avoid build-time API dependency
+  await connection();
+  
+  // Fetch tip data with caching
   const { id } = await params;
   let tip;
   try {
-    tip = await fetchTipById(id);
+    tip = await getCachedTipById(id);
   } catch {
     notFound();
   }

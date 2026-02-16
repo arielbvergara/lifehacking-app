@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { notFound } from 'next/navigation';
 import TipDetailPage, { generateMetadata } from './page';
-import { fetchTipById } from '@/lib/api/tips';
+import { getCachedTipById } from '@/lib/data/tip-data';
 import { TipDetail } from '@/lib/types/api';
 
 // Mock Firebase to avoid API key errors
@@ -21,7 +21,7 @@ vi.mock('@/lib/auth/auth-context', () => ({
   }),
 }));
 
-// Mock Next.js navigation
+// Mock Next.js navigation and server APIs
 vi.mock('next/navigation', () => ({
   notFound: vi.fn(),
   useRouter: () => ({
@@ -30,9 +30,13 @@ vi.mock('next/navigation', () => ({
   usePathname: () => '/',
 }));
 
-// Mock API functions
-vi.mock('@/lib/api/tips', () => ({
-  fetchTipById: vi.fn(),
+vi.mock('next/server', () => ({
+  connection: vi.fn().mockResolvedValue(undefined),
+}));
+
+// Mock cached data functions
+vi.mock('@/lib/data/tip-data', () => ({
+  getCachedTipById: vi.fn(),
 }));
 
 // Mock components
@@ -158,15 +162,15 @@ describe('TipDetailPage', () => {
 
   describe('Data Fetching', () => {
     it('Should_FetchTipData_When_PageLoads', async () => {
-      vi.mocked(fetchTipById).mockResolvedValue(mockTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(mockTip);
 
       await TipDetailPage({ params: { id: mockTip.id } });
 
-      expect(fetchTipById).toHaveBeenCalledWith(mockTip.id);
+      expect(getCachedTipById).toHaveBeenCalledWith(mockTip.id);
     });
 
     it('Should_CallNotFound_When_TipFetchFails', async () => {
-      vi.mocked(fetchTipById).mockRejectedValue(new Error('Tip not found'));
+      vi.mocked(getCachedTipById).mockRejectedValue(new Error('Tip not found'));
 
       // notFound() should be called, which throws in Next.js but we need to catch it in tests
       try {
@@ -179,7 +183,7 @@ describe('TipDetailPage', () => {
     });
 
     it('Should_CallNotFound_When_TipDoesNotExist', async () => {
-      vi.mocked(fetchTipById).mockRejectedValue(new Error('404'));
+      vi.mocked(getCachedTipById).mockRejectedValue(new Error('404'));
 
       // notFound() should be called, which throws in Next.js but we need to catch it in tests
       try {
@@ -194,7 +198,7 @@ describe('TipDetailPage', () => {
 
   describe('Page Rendering', () => {
     it('Should_RenderAllPageSections_When_TipDataLoaded', async () => {
-      vi.mocked(fetchTipById).mockResolvedValue(mockTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(mockTip);
 
       const page = await TipDetailPage({ params: { id: mockTip.id } });
       render(page);
@@ -210,7 +214,7 @@ describe('TipDetailPage', () => {
     });
 
     it('Should_RenderTipTitle_When_TipDataLoaded', async () => {
-      vi.mocked(fetchTipById).mockResolvedValue(mockTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(mockTip);
 
       const page = await TipDetailPage({ params: { id: mockTip.id } });
       render(page);
@@ -219,7 +223,7 @@ describe('TipDetailPage', () => {
     });
 
     it('Should_RenderTipDescription_When_TipDataLoaded', async () => {
-      vi.mocked(fetchTipById).mockResolvedValue(mockTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(mockTip);
 
       const page = await TipDetailPage({ params: { id: mockTip.id } });
       render(page);
@@ -228,7 +232,7 @@ describe('TipDetailPage', () => {
     });
 
     it('Should_RenderAllSteps_When_TipDataLoaded', async () => {
-      vi.mocked(fetchTipById).mockResolvedValue(mockTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(mockTip);
 
       const page = await TipDetailPage({ params: { id: mockTip.id } });
       render(page);
@@ -239,7 +243,7 @@ describe('TipDetailPage', () => {
     });
 
     it('Should_RenderCategoryName_When_TipDataLoaded', async () => {
-      vi.mocked(fetchTipById).mockResolvedValue(mockTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(mockTip);
 
       const page = await TipDetailPage({ params: { id: mockTip.id } });
       render(page);
@@ -252,7 +256,7 @@ describe('TipDetailPage', () => {
 
   describe('Breadcrumb Navigation', () => {
     it('Should_RenderBreadcrumbWithCorrectItems_When_PageLoads', async () => {
-      vi.mocked(fetchTipById).mockResolvedValue(mockTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(mockTip);
 
       const page = await TipDetailPage({ params: { id: mockTip.id } });
       render(page);
@@ -268,7 +272,7 @@ describe('TipDetailPage', () => {
 
   describe('Structured Data', () => {
     it('Should_IncludeStructuredDataScript_When_PageRenders', async () => {
-      vi.mocked(fetchTipById).mockResolvedValue(mockTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(mockTip);
 
       const page = await TipDetailPage({ params: { id: mockTip.id } });
       const { container } = render(page);
@@ -278,7 +282,7 @@ describe('TipDetailPage', () => {
     });
 
     it('Should_IncludeCorrectStructuredData_When_PageRenders', async () => {
-      vi.mocked(fetchTipById).mockResolvedValue(mockTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(mockTip);
 
       const page = await TipDetailPage({ params: { id: mockTip.id } });
       const { container } = render(page);
@@ -295,7 +299,7 @@ describe('TipDetailPage', () => {
 
   describe('Related Tips Integration', () => {
     it('Should_PassCorrectPropsToRelatedTips_When_PageRenders', async () => {
-      vi.mocked(fetchTipById).mockResolvedValue(mockTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(mockTip);
 
       const page = await TipDetailPage({ params: { id: mockTip.id } });
       render(page);
@@ -308,7 +312,7 @@ describe('TipDetailPage', () => {
 
   describe('Semantic HTML', () => {
     it('Should_WrapTipContentInArticleTag_When_PageRenders', async () => {
-      vi.mocked(fetchTipById).mockResolvedValue(mockTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(mockTip);
 
       const page = await TipDetailPage({ params: { id: mockTip.id } });
       const { container } = render(page);
@@ -318,7 +322,7 @@ describe('TipDetailPage', () => {
     });
 
     it('Should_WrapPageContentInMainTag_When_PageRenders', async () => {
-      vi.mocked(fetchTipById).mockResolvedValue(mockTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(mockTip);
 
       const page = await TipDetailPage({ params: { id: mockTip.id } });
       const { container } = render(page);
@@ -360,7 +364,7 @@ describe('generateMetadata', () => {
 
   describe('Title Generation', () => {
     it('Should_GenerateCorrectTitle_When_TipDataProvided', async () => {
-      vi.mocked(fetchTipById).mockResolvedValue(mockTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(mockTip);
 
       const metadata = await generateMetadata({ params: { id: mockTip.id } });
 
@@ -370,7 +374,7 @@ describe('generateMetadata', () => {
 
   describe('Description Generation', () => {
     it('Should_TruncateDescriptionTo160Characters_When_DescriptionIsLong', async () => {
-      vi.mocked(fetchTipById).mockResolvedValue(mockTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(mockTip);
 
       const metadata = await generateMetadata({ params: { id: mockTip.id } });
 
@@ -383,7 +387,7 @@ describe('generateMetadata', () => {
         ...mockTip,
         description: 'Short description',
       };
-      vi.mocked(fetchTipById).mockResolvedValue(shortDescriptionTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(shortDescriptionTip);
 
       const metadata = await generateMetadata({ params: { id: mockTip.id } });
 
@@ -393,7 +397,7 @@ describe('generateMetadata', () => {
 
   describe('Keywords Generation', () => {
     it('Should_IncludeCategoryAndTags_When_GeneratingKeywords', async () => {
-      vi.mocked(fetchTipById).mockResolvedValue(mockTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(mockTip);
 
       const metadata = await generateMetadata({ params: { id: mockTip.id } });
 
@@ -408,7 +412,7 @@ describe('generateMetadata', () => {
 
   describe('Canonical URL', () => {
     it('Should_GenerateCanonicalUrl_When_MetadataGenerated', async () => {
-      vi.mocked(fetchTipById).mockResolvedValue(mockTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(mockTip);
 
       const metadata = await generateMetadata({ params: { id: mockTip.id } });
 
@@ -418,7 +422,7 @@ describe('generateMetadata', () => {
 
   describe('Open Graph Tags', () => {
     it('Should_GenerateOpenGraphTags_When_MetadataGenerated', async () => {
-      vi.mocked(fetchTipById).mockResolvedValue(mockTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(mockTip);
 
       const metadata = await generateMetadata({ params: { id: mockTip.id } });
 
@@ -429,7 +433,7 @@ describe('generateMetadata', () => {
     });
 
     it('Should_IncludeImageInOpenGraph_When_TipHasImage', async () => {
-      vi.mocked(fetchTipById).mockResolvedValue(mockTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(mockTip);
 
       const metadata = await generateMetadata({ params: { id: mockTip.id } });
 
@@ -444,7 +448,7 @@ describe('generateMetadata', () => {
 
     it('Should_UseDefaultImage_When_TipHasNoImage', async () => {
       const tipWithoutImage = { ...mockTip, image: null };
-      vi.mocked(fetchTipById).mockResolvedValue(tipWithoutImage);
+      vi.mocked(getCachedTipById).mockResolvedValue(tipWithoutImage);
 
       const metadata = await generateMetadata({ params: { id: mockTip.id } });
 
@@ -452,7 +456,7 @@ describe('generateMetadata', () => {
     });
 
     it('Should_IncludePublishedTime_When_TipHasCreatedAt', async () => {
-      vi.mocked(fetchTipById).mockResolvedValue(mockTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(mockTip);
 
       const metadata = await generateMetadata({ params: { id: mockTip.id } });
 
@@ -460,7 +464,7 @@ describe('generateMetadata', () => {
     });
 
     it('Should_IncludeModifiedTime_When_TipHasUpdatedAt', async () => {
-      vi.mocked(fetchTipById).mockResolvedValue(mockTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(mockTip);
 
       const metadata = await generateMetadata({ params: { id: mockTip.id } });
 
@@ -469,7 +473,7 @@ describe('generateMetadata', () => {
 
     it('Should_UseCreatedAtForModifiedTime_When_NoUpdatedAt', async () => {
       const tipWithoutUpdatedAt = { ...mockTip, updatedAt: null };
-      vi.mocked(fetchTipById).mockResolvedValue(tipWithoutUpdatedAt);
+      vi.mocked(getCachedTipById).mockResolvedValue(tipWithoutUpdatedAt);
 
       const metadata = await generateMetadata({ params: { id: mockTip.id } });
 
@@ -479,7 +483,7 @@ describe('generateMetadata', () => {
 
   describe('Twitter Card Tags', () => {
     it('Should_GenerateTwitterCardTags_When_MetadataGenerated', async () => {
-      vi.mocked(fetchTipById).mockResolvedValue(mockTip);
+      vi.mocked(getCachedTipById).mockResolvedValue(mockTip);
 
       const metadata = await generateMetadata({ params: { id: mockTip.id } });
 
@@ -491,7 +495,7 @@ describe('generateMetadata', () => {
 
     it('Should_UseDefaultImageInTwitterCard_When_TipHasNoImage', async () => {
       const tipWithoutImage = { ...mockTip, image: null };
-      vi.mocked(fetchTipById).mockResolvedValue(tipWithoutImage);
+      vi.mocked(getCachedTipById).mockResolvedValue(tipWithoutImage);
 
       const metadata = await generateMetadata({ params: { id: mockTip.id } });
 
@@ -501,7 +505,7 @@ describe('generateMetadata', () => {
 
   describe('Error Handling', () => {
     it('Should_ReturnFallbackMetadata_When_FetchFails', async () => {
-      vi.mocked(fetchTipById).mockRejectedValue(new Error('Tip not found'));
+      vi.mocked(getCachedTipById).mockRejectedValue(new Error('Tip not found'));
 
       const metadata = await generateMetadata({ params: { id: 'invalid-id' } });
 
