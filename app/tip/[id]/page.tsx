@@ -16,9 +16,6 @@ interface Props {
   params: { id: string };
 }
 
-// Revalidate page every hour (3600 seconds)
-export const revalidate = 3600;
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const { id } = await params;
