@@ -36,72 +36,20 @@ describe('FeaturedTip', () => {
     mockPush.mockClear();
   });
 
-  it('should display loading state with skeleton', () => {
-    render(
-      <FeaturedTip tip={null} loading={true} error={null} onRetry={vi.fn()} />
-    );
-
-    // Check for skeleton animation
-    const skeleton = document.querySelector('.animate-pulse');
-    expect(skeleton).toBeInTheDocument();
-  });
-
-  it('should display error state with retry button', () => {
-    const errorMessage = 'Failed to load featured tip';
-    const handleRetry = vi.fn();
-
-    render(
-      <FeaturedTip
-        tip={null}
-        loading={false}
-        error={errorMessage}
-        onRetry={handleRetry}
-      />
-    );
-
-    expect(screen.getByText(errorMessage)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /try again/i })).toBeInTheDocument();
-  });
-
-  it('should call onRetry when retry button is clicked', async () => {
-    const user = userEvent.setup();
-    const handleRetry = vi.fn();
-
-    render(
-      <FeaturedTip
-        tip={null}
-        loading={false}
-        error="Error occurred"
-        onRetry={handleRetry}
-      />
-    );
-
-    const retryButton = screen.getByRole('button', { name: /try again/i });
-    await user.click(retryButton);
-
-    expect(handleRetry).toHaveBeenCalledTimes(1);
-  });
-
   it('should render tip with TIP OF THE DAY badge', () => {
-    render(
-      <FeaturedTip tip={mockTip} loading={false} error={null} onRetry={vi.fn()} />
-    );
+    render(<FeaturedTip tip={mockTip} />);
 
     expect(screen.getByText('TIP OF THE DAY')).toBeInTheDocument();
   });
 
   it('should render tip title', () => {
-    render(
-      <FeaturedTip tip={mockTip} loading={false} error={null} onRetry={vi.fn()} />
-    );
+    render(<FeaturedTip tip={mockTip} />);
 
     expect(screen.getByText(mockTip.title)).toBeInTheDocument();
   });
 
   it('should render tip description', () => {
-    render(
-      <FeaturedTip tip={mockTip} loading={false} error={null} onRetry={vi.fn()} />
-    );
+    render(<FeaturedTip tip={mockTip} />);
 
     expect(screen.getByText(mockTip.description)).toBeInTheDocument();
   });
@@ -112,9 +60,7 @@ describe('FeaturedTip', () => {
       description: 'A'.repeat(250), // Longer than 200 character limit
     };
 
-    render(
-      <FeaturedTip tip={longTip} loading={false} error={null} onRetry={vi.fn()} />
-    );
+    render(<FeaturedTip tip={longTip} />);
 
     const displayedText = screen.getByText(/A+\.\.\./);
     expect(displayedText).toBeInTheDocument();
@@ -122,17 +68,13 @@ describe('FeaturedTip', () => {
   });
 
   it('should render Watch Video button', () => {
-    render(
-      <FeaturedTip tip={mockTip} loading={false} error={null} onRetry={vi.fn()} />
-    );
+    render(<FeaturedTip tip={mockTip} />);
 
     expect(screen.getByRole('button', { name: /watch video/i })).toBeInTheDocument();
   });
 
   it('should render Read Guide button', () => {
-    render(
-      <FeaturedTip tip={mockTip} loading={false} error={null} onRetry={vi.fn()} />
-    );
+    render(<FeaturedTip tip={mockTip} />);
 
     expect(screen.getByRole('button', { name: /read guide/i })).toBeInTheDocument();
   });
@@ -140,9 +82,7 @@ describe('FeaturedTip', () => {
   it('should navigate to tip detail page when Watch Video is clicked', async () => {
     const user = userEvent.setup();
 
-    render(
-      <FeaturedTip tip={mockTip} loading={false} error={null} onRetry={vi.fn()} />
-    );
+    render(<FeaturedTip tip={mockTip} />);
 
     const watchVideoButton = screen.getByRole('button', { name: /watch video/i });
     await user.click(watchVideoButton);
@@ -154,9 +94,7 @@ describe('FeaturedTip', () => {
   it('should not navigate when Read Guide button is clicked', async () => {
     const user = userEvent.setup();
 
-    render(
-      <FeaturedTip tip={mockTip} loading={false} error={null} onRetry={vi.fn()} />
-    );
+    render(<FeaturedTip tip={mockTip} />);
 
     const readGuideButton = screen.getByRole('button', { name: /read guide/i });
     await user.click(readGuideButton);
@@ -166,9 +104,7 @@ describe('FeaturedTip', () => {
   });
 
   it('should render tip image when image is provided', () => {
-    render(
-      <FeaturedTip tip={mockTip} loading={false} error={null} onRetry={vi.fn()} />
-    );
+    render(<FeaturedTip tip={mockTip} />);
 
     const image = screen.getByRole('img', { name: `${mockTip.title} - ${mockTip.categoryName} life hack with step-by-step guide` });
     expect(image).toBeInTheDocument();
@@ -182,31 +118,14 @@ describe('FeaturedTip', () => {
       image: undefined,
     };
 
-    render(
-      <FeaturedTip
-        tip={tipWithoutImage}
-        loading={false}
-        error={null}
-        onRetry={vi.fn()}
-      />
-    );
+    render(<FeaturedTip tip={tipWithoutImage} />);
 
     const image = screen.queryByRole('img');
     expect(image).not.toBeInTheDocument();
   });
 
-  it('should return null when tip is null and not loading or error', () => {
-    const { container } = render(
-      <FeaturedTip tip={null} loading={false} error={null} onRetry={vi.fn()} />
-    );
-
-    expect(container.firstChild).toBeNull();
-  });
-
   it('should render as a section element', () => {
-    const { container } = render(
-      <FeaturedTip tip={mockTip} loading={false} error={null} onRetry={vi.fn()} />
-    );
+    const { container } = render(<FeaturedTip tip={mockTip} />);
 
     const section = container.querySelector('section');
     expect(section).toBeInTheDocument();
@@ -250,9 +169,7 @@ describe('FeaturedTip - Property Tests', () => {
       };
 
       const user = userEvent.setup();
-      const { container } = render(
-        <FeaturedTip tip={tip} loading={false} error={null} onRetry={vi.fn()} />
-      );
+      const { container } = render(<FeaturedTip tip={tip} />);
 
       const readMoreButton = container.querySelector(
         'button'
