@@ -13,7 +13,6 @@ const config: Config = {
         "primary-dark": "#1fa81f",
         "primary-light": "#eaffea",
         "background-light": "#f6f8f6",
-        "background-dark": "#102210",
         "soft-gray": "#f0f2f0",
         "text-main": "#1a2e1a",
       },
@@ -45,7 +44,22 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }: { addUtilities: (utilities: Record<string, Record<string, string | Record<string, string>>>) => void }) {
+      addUtilities({
+        '.scrollbar-hide': {
+          /* IE and Edge */
+          '-ms-overflow-style': 'none',
+          /* Firefox */
+          'scrollbar-width': 'none',
+          /* Safari and Chrome */
+          '&::-webkit-scrollbar': {
+            display: 'none',
+          },
+        },
+      });
+    },
+  ],
 };
 
 export default config;
