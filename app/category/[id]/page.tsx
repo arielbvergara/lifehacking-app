@@ -1,25 +1,108 @@
-import Link from 'next/link';
+import { Metadata } from 'next';
+import { connection } from 'next/server';
+import { notFound } from 'next/navigation';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
+import { TipCard } from '@/components/shared/tip/tip-card';
+import { Breadcrumb } from '@/components/shared/breadcrumb';
+import { getCachedCategoryById, getCachedTipsByCategory } from '@/lib/data/category-data';
 
-export default function TipNotFound() {
+interface CategoryPageProps {
+  params: {
+    id: string;
+  };
+}
+
+export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
+  try {
+    const { id } = params;
+    
+    // Skip metadata generation during build if params are not available
+    if (!id) {
+      return {
+        title: 'Category - LifeHackBuddy',
+        description: 'Browse category tips and life hacks',
+      };
+    }
+    
+    const category = await getCachedCategoryById(id);
+    
+    return {
+      title: `${category.name} - LifeHackBuddy`,
+      description: `Browse ${category.name} tips and life hacks`,
+    };
+  } catch {
+    return {
+      title: 'Category Not Found - LifeHackBuddy',
+      description: 'The category you are looking for could not be found.',
+    };
+  }
+}
+
+/**
+ * CategoryPage Component
+ * 
+ * Server component that displays tips for a specific category.
+ * - Reads category ID from URL parameters
+ * - Fetches category and tips with caching (5-minute cache)
+ * - Uses connection() to defer rendering to request time
+ */
+export default async function CategoryPage({ params }: CategoryPageProps) {
+  // Defer to request time to avoid build-time API dependency
+  await connection();
+
+  // Read URL parameters
+  const { id } = params;
+
+  // Fetch category and tips with caching
+  let category;
+  try {
+    category = await getCachedCategoryById(id);
+  } catch {
+    notFound();
+  }
+
+  const response = await getCachedTipsByCategory(id, 1, 20);
+  const { items: tips, metadata: pagination } = response;
+
+  // Prepare breadcrumb items
+  const breadcrumbItems = [
+    { label: 'Home', href: '/' },
+    { label: 'Categories', href: '/categories' },
+    { label: category.name },
+  ];
+
   return (
     <div className="min-h-screen flex flex-col bg-background-light">
       <Header />
       
-      <main className="flex-grow flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <h1 className="text-6xl font-bold text-gray-900 mb-4">Coming soon!</h1>
-          <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-            Work in progress
-          </h2>
-          <Link
-            href="/"
-            className="inline-block px-6 py-3 bg-primary text-white font-semibold rounded-full hover:bg-primary/90 transition-colors"
-          >
-            Back to Home
-          </Link>
+      <main className="flex-grow w-full max-w-7xl mx-auto px-4 md:px-8 py-8">
+        {/* Breadcrumb Navigation */}
+        <Breadcrumb items={breadcrumbItems} />
+
+        {/* Page Header */}
+        <div className="mt-8 mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            {category.name}
+          </h1>
+          <p className="text-gray-500 text-sm">
+            {pagination.totalItems} {pagination.totalItems === 1 ? 'tip' : 'tips'}
+          </p>
         </div>
+
+        {/* Tips Grid */}
+        {tips.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {tips.map((tip) => (
+              <TipCard key={tip.id} tip={tip} />
+            ))}
+          </div>
+        ) : (
+          /* Empty State */
+          <div className="text-center py-12">
+            <p className="text-gray-600 text-lg">No tips found in this category</p>
+          </div>
+        )}
       </main>
       
       <Footer />

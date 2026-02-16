@@ -11,19 +11,26 @@ This project has been migrated to use Next.js 16's Cache Components feature for 
 - Added custom `cacheLife` profiles with 5-minute cache duration
 
 ### Architecture
-- **Home Page**: Migrated to async server component with cached data fetching
-- **Data Layer**: Created `lib/data/home-data.ts` with `"use cache"` directive
+- **Pages Migrated**: Home, Tip Detail, Search, Categories, Category Detail, Latest Tips, Popular Tips
+- **Data Layer**: Created cached data fetching modules with `"use cache"` directive:
+  - `lib/data/home-data.ts` - Home page data
+  - `lib/data/tip-data.ts` - Tip and related tips data
+  - `lib/data/search-data.ts` - Search and category filter data
+  - `lib/data/category-data.ts` - Category listing and detail data
 - **Components**: Simplified to accept only data props (removed loading/error states)
 - **Error Handling**: Moved to Next.js error boundaries (`app/error.tsx`, `app/loading.tsx`)
 
 ### Files Created
-- `lib/data/home-data.ts` - Cached data fetching functions
-- `lib/data/search-data.ts` - Cached search data functions (for future use)
+- `lib/data/home-data.ts` - Cached home page data functions
+- `lib/data/tip-data.ts` - Cached tip data functions (tip detail, related tips, latest, popular)
+- `lib/data/search-data.ts` - Cached search data functions
+- `lib/data/category-data.ts` - Cached category data functions
 - `app/error.tsx` - Root error boundary
 - `app/loading.tsx` - Root loading state
 - `app/search/error.tsx` - Search page error boundary
 - `app/search/loading.tsx` - Search page loading state
 - `app/page-scroll-wrapper.tsx` - Client component for scroll detection
+- `components/search/search-page-client.tsx` - Client component for search URL navigation
 
 ### Files Deleted
 - `app/page.client.tsx` - Old client-side home page
@@ -32,10 +39,20 @@ This project has been migrated to use Next.js 16's Cache Components feature for 
 - `lib/hooks/use-home-data.test.ts` - Obsolete test file
 - `app/page.test.tsx` - Obsolete test file (needs rewrite for server components)
 
+### Pages Updated
+- `app/page.tsx` - Home page (async server component with cached data)
+- `app/tip/[id]/page.tsx` - Tip detail page (async server component with cached data)
+- `app/search/page.tsx` - Search page (async server component with cached data)
+- `app/categories/page.tsx` - Categories listing page (async server component with cached data)
+- `app/category/[id]/page.tsx` - Category detail page (async server component with cached data)
+- `app/tips/latest/page.tsx` - Latest tips page (async server component with cached data)
+- `app/tips/popular/page.tsx` - Popular tips page (async server component with cached data)
+
 ### Components Updated
 - `components/home/explore-categories.tsx` - Now accepts only `categories` prop
 - `components/home/featured-tip.tsx` - Now accepts only `tip` prop
 - `components/home/latest-lifehacks.tsx` - Now accepts only `tips` prop
+- `components/tip/related-tips.tsx` - Updated to use cached data function
 - `components/layout/footer.tsx` - Made client component (uses `new Date()`)
 
 ## Build Requirements
@@ -137,15 +154,22 @@ All tests have been updated to work with the new architecture:
 - ✅ Property-based tests updated
 - ✅ Integration tests passing
 
-## Future Work
+## Migration Complete
 
-### Search Page Migration
-The search page (`app/search/page.tsx`) is still using client-side rendering. It can be migrated to use server components with cached data from `lib/data/search-data.ts` in a future update.
+All major data-fetching pages have been migrated to use Next.js 16 Cache Components:
+- ✅ Home page
+- ✅ Tip detail page
+- ✅ Search page
+- ✅ Categories listing page
+- ✅ Category detail page
+- ✅ Latest tips page
+- ✅ Popular tips page
 
-### Considerations
-- Search results are more dynamic (query-dependent)
-- May benefit from different caching strategy
-- URL parameters need special handling in server components
+### Notes
+- Popular tips page uses `CreatedAt` sorting (API doesn't support view count sorting)
+- All pages use `connection()` to defer rendering to request time
+- All pages have 5-minute cache duration
+- Error boundaries and loading states are in place for all pages
 
 ## References
 

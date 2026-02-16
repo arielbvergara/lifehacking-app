@@ -1,7 +1,7 @@
 'use cache';
 
-import { fetchTipById, fetchTipsByCategory } from '@/lib/api/tips';
-import { TipSortField, SortDirection, type TipDetail, type TipSummary } from '@/lib/types/api';
+import { fetchTipById, fetchTipsByCategory, fetchTips } from '@/lib/api/tips';
+import { TipSortField, SortDirection, type TipDetail, type TipSummary, type PagedTipsResponse } from '@/lib/types/api';
 import { cacheLife } from 'next/dist/server/use-cache/cache-life';
 
 /**
@@ -73,5 +73,90 @@ export async function getCachedRelatedTips(
     });
     // Return empty array for graceful degradation
     return [];
+  }
+}
+
+/**
+ * Get cached latest tips
+ * 
+ * Fetches latest tips sorted by creation date with 5-minute cache.
+ * Returns empty results on error (graceful degradation).
+ */
+export async function getCachedLatestTips(
+  pageNumber: number = 1,
+  pageSize: number = 20
+): Promise<PagedTipsResponse> {
+  'use cache';
+  cacheLife('default');
+
+  try {
+    const response = await fetchTips({
+      pageNumber,
+      pageSize,
+      orderBy: TipSortField.CreatedAt,
+      sortDirection: SortDirection.Descending,
+    });
+    return response;
+  } catch (error) {
+    console.error('[getCachedLatestTips] Error fetching latest tips:', {
+      error,
+      pageNumber,
+      pageSize,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString(),
+    });
+    // Return empty results for graceful degradation
+    return {
+      items: [],
+      metadata: {
+        totalItems: 0,
+        pageNumber,
+        pageSize,
+        totalPages: 0,
+      },
+    };
+  }
+}
+
+/**
+ * Get cached popular tips
+ * 
+ * Fetches popular tips sorted by creation date with 5-minute cache.
+ * Note: API doesn't support sorting by view count, using CreatedAt instead.
+ * Returns empty results on error (graceful degradation).
+ */
+export async function getCachedPopularTips(
+  pageNumber: number = 1,
+  pageSize: number = 20
+): Promise<PagedTipsResponse> {
+  'use cache';
+  cacheLife('default');
+
+  try {
+    const response = await fetchTips({
+      pageNumber,
+      pageSize,
+      orderBy: TipSortField.CreatedAt, //TODO: We need to improve this
+      sortDirection: SortDirection.Descending,
+    });
+    return response;
+  } catch (error) {
+    console.error('[getCachedPopularTips] Error fetching popular tips:', {
+      error,
+      pageNumber,
+      pageSize,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString(),
+    });
+    // Return empty results for graceful degradation
+    return {
+      items: [],
+      metadata: {
+        totalItems: 0,
+        pageNumber,
+        pageSize,
+        totalPages: 0,
+      },
+    };
   }
 }
