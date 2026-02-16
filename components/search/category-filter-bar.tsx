@@ -141,7 +141,7 @@ export function CategoryFilterBar({ selectedCategoryId, onCategorySelect }: Cate
         role="tablist"
         aria-label="Filter tips by category"
         onKeyDown={handleKeyDown}
-        className="flex gap-2 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
+        className="flex gap-2 overflow-x-auto scrollbar-hide scroll-smooth py-2"
         style={{
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
