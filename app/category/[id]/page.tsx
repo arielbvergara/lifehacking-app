@@ -16,6 +16,15 @@ interface CategoryPageProps {
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   try {
     const { id } = params;
+    
+    // Skip metadata generation during build if params are not available
+    if (!id) {
+      return {
+        title: 'Category - LifeHackBuddy',
+        description: 'Browse category tips and life hacks',
+      };
+    }
+    
     const category = await getCachedCategoryById(id);
     
     return {
