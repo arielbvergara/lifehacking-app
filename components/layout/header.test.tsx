@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { User as FirebaseUser } from 'firebase/auth';
+import React from 'react';
 import { Header } from './header';
 
 // Mock Next.js router
@@ -27,16 +28,36 @@ vi.mock('@/components/shared/logo', () => ({
 }));
 
 vi.mock('@/components/shared/search-bar', () => ({
-  SearchBar: ({ variant, onSearch, placeholder }: { variant?: string; onSearch?: (query: string) => void; placeholder?: string }) => (
-    <div data-testid="search-bar" data-variant={variant} data-placeholder={placeholder}>
-      <input 
-        type="text" 
-        placeholder={placeholder}
-        onChange={(e) => onSearch?.(e.target.value)}
-        data-testid="search-input"
-      />
-    </div>
-  ),
+  SearchBar: ({ variant, onSearch, onSearchComplete, placeholder }: { variant?: string; onSearch?: (query: string) => void; onSearchComplete?: () => void; placeholder?: string }) => {
+    const [value, setValue] = React.useState('');
+    const mockRouter = { push: (url: string) => mockPush(url) };
+    
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter' && value.trim()) {
+        if (onSearch) {
+          onSearch(value);
+          onSearchComplete?.();
+        } else {
+          // Default behavior: navigate to search page
+          mockRouter.push(`/search?q=${encodeURIComponent(value.trim())}`);
+          onSearchComplete?.();
+        }
+      }
+    };
+    
+    return (
+      <div data-testid="search-bar" data-variant={variant} data-placeholder={placeholder}>
+        <input 
+          type="text" 
+          placeholder={placeholder}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          data-testid="search-input"
+        />
+      </div>
+    );
+  },
 }));
 
 vi.mock('@/components/layout/user-avatar', () => ({
@@ -371,12 +392,12 @@ describe('Header', () => {
 
     it('Header_ShouldHandleSearchErrors_WhenHandlerThrows', async () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {
+      const mockOnSearch = vi.fn(() => {
         throw new Error('Search failed');
       });
       
       const user = userEvent.setup();
-      render(<Header />);
+      render(<Header onSearch={mockOnSearch} />);
 
       // Open mobile search
       const searchButton = screen.getByRole('button', { name: /search/i });
@@ -385,16 +406,13 @@ describe('Header', () => {
       // Submit search that will throw error - get the mobile search input
       const searchInputs = screen.getAllByTestId('search-input');
       const mobileSearchInput = searchInputs[1]; // Mobile is the second one
-      await user.type(mobileSearchInput, 'test query');
+      await user.type(mobileSearchInput, 'test query{Enter}');
 
       // Error should be logged
       expect(consoleErrorSpy).toHaveBeenCalled();
-      
-      // Mobile search should still close even with error
-      expect(searchButton).toHaveAccessibleName(/search/i);
+      expect(mockOnSearch).toHaveBeenCalledWith('test query');
 
       consoleErrorSpy.mockRestore();
-      consoleLogSpy.mockRestore();
     });
   });
 
@@ -582,17 +600,14 @@ describe('Header', () => {
     });
 
     it('Header_ShouldReceiveSearchQueries_WhenSearchBarUsed', async () => {
-      const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
       const user = userEvent.setup();
       
       render(<Header />);
 
       const searchInput = screen.getByTestId('search-input');
-      await user.type(searchInput, 'test query');
+      await user.type(searchInput, 'test query{Enter}');
 
-      expect(consoleLogSpy).toHaveBeenCalledWith('Search query:', 'test query');
-      
-      consoleLogSpy.mockRestore();
+      expect(mockPush).toHaveBeenCalledWith('/search?q=test%20query');
     });
 
     it('Header_ShouldPreserveNavigationLinks_WhenSearchBarIntegrated', () => {
@@ -704,7 +719,6 @@ describe('Header', () => {
     });
 
     it('Header_ShouldTriggerSearch_WhenOnDesktopViewport', async () => {
-      const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
       const user = userEvent.setup();
       
       render(<Header />);
@@ -713,15 +727,12 @@ describe('Header', () => {
       const searchInputs = screen.getAllByTestId('search-input');
       const desktopSearchInput = searchInputs[0]; // First one is desktop
       
-      await user.type(desktopSearchInput, 'desktop query');
+      await user.type(desktopSearchInput, 'desktop query{Enter}');
 
-      expect(consoleLogSpy).toHaveBeenCalledWith('Search query:', 'desktop query');
-      
-      consoleLogSpy.mockRestore();
+      expect(mockPush).toHaveBeenCalledWith('/search?q=desktop%20query');
     });
 
     it('Header_ShouldTriggerSearch_WhenOnMobileViewport', async () => {
-      const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
       const user = userEvent.setup();
       
       render(<Header />);
@@ -730,39 +741,33 @@ describe('Header', () => {
       const searchButton = screen.getByRole('button', { name: /search/i });
       await user.click(searchButton);
 
-      // Mobile search should work - the mock calls onSearch on every keystroke
+      // Mobile search should work
       const searchInputs = screen.getAllByTestId('search-input');
       const mobileSearchInput = searchInputs[1]; // Second one is mobile
       
-      await user.type(mobileSearchInput, 'm');
+      await user.type(mobileSearchInput, 'mobile query{Enter}');
 
-      // Should have been called with the typed character (mock behavior)
-      expect(consoleLogSpy).toHaveBeenCalledWith('Search query:', 'm');
-      
-      consoleLogSpy.mockRestore();
+      expect(mockPush).toHaveBeenCalledWith('/search?q=mobile%20query');
     });
 
     it('Header_ShouldMaintainFunctionality_AtVariousViewportWidths', async () => {
-      const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
       const user = userEvent.setup();
       
       // Test at different viewport scenarios
       render(<Header />);
 
-      // Test desktop search - mock calls onSearch on every keystroke
+      // Test desktop search
       const searchInputs = screen.getAllByTestId('search-input');
-      await user.type(searchInputs[0], 't');
-      expect(consoleLogSpy).toHaveBeenCalledWith('Search query:', 't');
+      await user.type(searchInputs[0], 'test{Enter}');
+      expect(mockPush).toHaveBeenCalledWith('/search?q=test');
 
       // Test mobile search
       const searchButton = screen.getByRole('button', { name: /search/i });
       await user.click(searchButton);
       
       const mobileSearchInputs = screen.getAllByTestId('search-input');
-      await user.type(mobileSearchInputs[1], 'm');
-      expect(consoleLogSpy).toHaveBeenCalledWith('Search query:', 'm');
-      
-      consoleLogSpy.mockRestore();
+      await user.type(mobileSearchInputs[1], 'mobile{Enter}');
+      expect(mockPush).toHaveBeenCalledWith('/search?q=mobile');
     });
 
     it('Header_ShouldHideDesktopSearchBar_WhenBelowMdBreakpoint', () => {

@@ -72,29 +72,21 @@ export function Header({
     router.push('/profile');
   };
 
-  const handleSearch = (query: string) => {
-    try {
-      // Use custom handler if provided (for SearchPage)
-      if (onSearch) {
-        onSearch(query);
-      } else {
-        // Default behavior: log the search query
-        // Future: Navigate to search results page or trigger search API
-        console.log('Search query:', query);
-      }
-      
-      // Close mobile search interface if open
-      if (isSearchOpen) {
-        setIsSearchOpen(false);
-      }
-    } catch (error) {
-      console.error('Search error:', error);
-      // Ensure mobile search interface closes even if handler throws
-      if (isSearchOpen) {
-        setIsSearchOpen(false);
-      }
+  const handleSearchComplete = () => {
+    // Close mobile search interface after search
+    if (isSearchOpen) {
+      setIsSearchOpen(false);
     }
   };
+
+  const handleSearch = onSearch ? (query: string) => {
+    try {
+      // Use custom handler if provided (for SearchPage)
+      onSearch(query);
+    } catch (error) {
+      console.error('Search error:', error);
+    }
+  } : undefined;
 
   return (
     <header className="w-full bg-white border-b border-gray-100 sticky top-0 z-50">
@@ -116,6 +108,7 @@ export function Header({
                 <SearchBar 
                   variant="compact"
                   onSearch={handleSearch}
+                  onSearchComplete={handleSearchComplete}
                   placeholder="Search for tips..."
                 />
               </div>
@@ -227,6 +220,7 @@ export function Header({
             <SearchBar 
               variant="compact"
               onSearch={handleSearch}
+              onSearchComplete={handleSearchComplete}
               placeholder="Search for tips..."
             />
           </div>
