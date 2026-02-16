@@ -53,7 +53,7 @@ With Next.js 16 Cache Components, pages that use `"use cache"` will attempt to p
 
 #### Solutions
 
-**Option 1: Run API During Build (Recommended)**
+**Option 1: Run API During Build (Recommended for Production)**
 ```bash
 # Terminal 1: Start API server
 npm run api:start
@@ -62,26 +62,38 @@ npm run api:start
 npm run build
 ```
 
-**Option 2: Development Builds**
+**Option 2: Mock API Server (Recommended for CI/CD)**
+For CI/CD pipelines, use a lightweight mock API server. See `.github/workflows/ci.yml` for the implementation:
+
+```javascript
+// Simple mock API that returns empty data
+const http = require('http');
+const server = http.createServer((req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  
+  if (req.url.includes('/categories') || req.url.includes('/tips')) {
+    res.writeHead(200);
+    res.end(JSON.stringify({ items: [], metadata: { totalItems: 0 } }));
+  } else {
+    res.writeHead(404);
+    res.end(JSON.stringify({ error: 'Not found' }));
+  }
+});
+server.listen(8080);
+```
+
+This allows the build to complete with empty data, which is fine since the actual data will be fetched at runtime.
+
+**Option 3: Development Builds**
 For development, you can skip the build step and use:
 ```bash
 npm run dev
 ```
 The dev server doesn't prerender pages, so the API isn't required.
 
-**Option 3: CI/CD Pipeline**
-In your CI/CD pipeline, ensure the API is available:
-```yaml
-# Example GitHub Actions
-- name: Start API
-  run: npm run api:start &
-  
-- name: Wait for API
-  run: npx wait-on http://localhost:3001/health
-
-- name: Build
-  run: npm run build
-```
+**Option 4: CI/CD Pipeline (Automated)**
+Our CI/CD pipeline automatically starts a mock API server before building. See `.github/workflows/ci.yml` for the complete implementation.
 
 ## Performance Benefits
 
