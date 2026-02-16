@@ -175,7 +175,6 @@ describe('Header - Accessibility', () => {
     });
 
     it('Header_ShouldAllowKeyboardAccess_ToAuthButtons', async () => {
-      const user = userEvent.setup();
       render(<Header />);
       
       const loginLink = screen.getByRole('link', { name: /login/i });

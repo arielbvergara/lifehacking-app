@@ -6,10 +6,15 @@ import { useRouter, usePathname } from 'next/navigation';
 import { Logo } from '@/components/shared/logo';
 import { UserAvatar } from '@/components/layout/user-avatar';
 import { SearchBar } from '@/components/shared/search-bar';
+import { CategoryFilterBar } from '@/components/search/category-filter-bar';
 import { useAuth } from '@/lib/auth/auth-context';
 
 export interface HeaderProps {
   showSearchBar?: boolean;
+  showCategoryFilter?: boolean;
+  selectedCategoryId?: string | null;
+  onCategorySelect?: (categoryId: string | null) => void;
+  onSearch?: (query: string) => void;
 }
 
 /**
@@ -20,12 +25,20 @@ export interface HeaderProps {
  * - Authenticated users see UserAvatar with dropdown menu
  * - Responsive mobile menu for smaller screens
  * - Optional search bar display (controlled via showSearchBar prop)
+ * - Optional category filter bar (controlled via showCategoryFilter prop)
  * 
  * @example
  * <Header />
  * <Header showSearchBar={false} />
+ * <Header showCategoryFilter={true} selectedCategoryId={categoryId} onCategorySelect={handleCategorySelect} />
  */
-export function Header({ showSearchBar = true }: HeaderProps) {
+export function Header({ 
+  showSearchBar = true,
+  showCategoryFilter = false,
+  selectedCategoryId = null,
+  onCategorySelect,
+  onSearch,
+}: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { user, signOut, loading: authLoading } = useAuth();
@@ -59,24 +72,21 @@ export function Header({ showSearchBar = true }: HeaderProps) {
     router.push('/profile');
   };
 
-  const handleSearch = (query: string) => {
-    try {
-      // For now, log the search query
-      // Future: Navigate to search results page or trigger search API
-      console.log('Search query:', query);
-      
-      // Close mobile search interface if open
-      if (isSearchOpen) {
-        setIsSearchOpen(false);
-      }
-    } catch (error) {
-      console.error('Search error:', error);
-      // Ensure mobile search interface closes even if handler throws
-      if (isSearchOpen) {
-        setIsSearchOpen(false);
-      }
+  const handleSearchComplete = () => {
+    // Close mobile search interface after search
+    if (isSearchOpen) {
+      setIsSearchOpen(false);
     }
   };
+
+  const handleSearch = onSearch ? (query: string) => {
+    try {
+      // Use custom handler if provided (for SearchPage)
+      onSearch(query);
+    } catch (error) {
+      console.error('Search error:', error);
+    }
+  } : undefined;
 
   return (
     <header className="w-full bg-white border-b border-gray-100 sticky top-0 z-50">
@@ -98,6 +108,7 @@ export function Header({ showSearchBar = true }: HeaderProps) {
                 <SearchBar 
                   variant="compact"
                   onSearch={handleSearch}
+                  onSearchComplete={handleSearchComplete}
                   placeholder="Search for tips..."
                 />
               </div>
@@ -209,6 +220,7 @@ export function Header({ showSearchBar = true }: HeaderProps) {
             <SearchBar 
               variant="compact"
               onSearch={handleSearch}
+              onSearchComplete={handleSearchComplete}
               placeholder="Search for tips..."
             />
           </div>
@@ -292,6 +304,18 @@ export function Header({ showSearchBar = true }: HeaderProps) {
           </div>
         )}
       </nav>
+
+      {/* Category Filter Bar - Conditionally rendered below main navigation */}
+      {showCategoryFilter && onCategorySelect && (
+        <div className="border-t border-gray-100 py-3">
+          <div className="max-w-7xl mx-auto px-4 md:px-8">
+            <CategoryFilterBar
+              selectedCategoryId={selectedCategoryId}
+              onCategorySelect={onCategorySelect}
+            />
+          </div>
+        </div>
+      )}
     </header>
   );
 }

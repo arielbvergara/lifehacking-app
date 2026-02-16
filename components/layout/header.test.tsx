@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { User as FirebaseUser } from 'firebase/auth';
+import React from 'react';
 import { Header } from './header';
 
 // Mock Next.js router
@@ -27,16 +28,36 @@ vi.mock('@/components/shared/logo', () => ({
 }));
 
 vi.mock('@/components/shared/search-bar', () => ({
-  SearchBar: ({ variant, onSearch, placeholder }: { variant?: string; onSearch?: (query: string) => void; placeholder?: string }) => (
-    <div data-testid="search-bar" data-variant={variant} data-placeholder={placeholder}>
-      <input 
-        type="text" 
-        placeholder={placeholder}
-        onChange={(e) => onSearch?.(e.target.value)}
-        data-testid="search-input"
-      />
-    </div>
-  ),
+  SearchBar: ({ variant, onSearch, onSearchComplete, placeholder }: { variant?: string; onSearch?: (query: string) => void; onSearchComplete?: () => void; placeholder?: string }) => {
+    const [value, setValue] = React.useState('');
+    const mockRouter = { push: (url: string) => mockPush(url) };
+    
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter' && value.trim()) {
+        if (onSearch) {
+          onSearch(value);
+          onSearchComplete?.();
+        } else {
+          // Default behavior: navigate to search page
+          mockRouter.push(`/search?q=${encodeURIComponent(value.trim())}`);
+          onSearchComplete?.();
+        }
+      }
+    };
+    
+    return (
+      <div data-testid="search-bar" data-variant={variant} data-placeholder={placeholder}>
+        <input 
+          type="text" 
+          placeholder={placeholder}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          data-testid="search-input"
+        />
+      </div>
+    );
+  },
 }));
 
 vi.mock('@/components/layout/user-avatar', () => ({
@@ -44,6 +65,16 @@ vi.mock('@/components/layout/user-avatar', () => ({
     <button onClick={onClick} data-testid="user-avatar">
       {user.displayName || user.email}
     </button>
+  ),
+}));
+
+vi.mock('@/components/search/category-filter-bar', () => ({
+  CategoryFilterBar: ({ selectedCategoryId, onCategorySelect }: { selectedCategoryId: string | null; onCategorySelect: (id: string | null) => void }) => (
+    <div data-testid="category-filter-bar" data-selected-category={selectedCategoryId === null ? null : selectedCategoryId}>
+      <button onClick={() => onCategorySelect('test-category-id')} data-testid="category-pill">
+        Test Category
+      </button>
+    </div>
   ),
 }));
 
@@ -361,12 +392,12 @@ describe('Header', () => {
 
     it('Header_ShouldHandleSearchErrors_WhenHandlerThrows', async () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {
+      const mockOnSearch = vi.fn(() => {
         throw new Error('Search failed');
       });
       
       const user = userEvent.setup();
-      render(<Header />);
+      render(<Header onSearch={mockOnSearch} />);
 
       // Open mobile search
       const searchButton = screen.getByRole('button', { name: /search/i });
@@ -375,16 +406,13 @@ describe('Header', () => {
       // Submit search that will throw error - get the mobile search input
       const searchInputs = screen.getAllByTestId('search-input');
       const mobileSearchInput = searchInputs[1]; // Mobile is the second one
-      await user.type(mobileSearchInput, 'test query');
+      await user.type(mobileSearchInput, 'test query{Enter}');
 
       // Error should be logged
       expect(consoleErrorSpy).toHaveBeenCalled();
-      
-      // Mobile search should still close even with error
-      expect(searchButton).toHaveAccessibleName(/search/i);
+      expect(mockOnSearch).toHaveBeenCalledWith('test query');
 
       consoleErrorSpy.mockRestore();
-      consoleLogSpy.mockRestore();
     });
   });
 
@@ -572,17 +600,14 @@ describe('Header', () => {
     });
 
     it('Header_ShouldReceiveSearchQueries_WhenSearchBarUsed', async () => {
-      const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
       const user = userEvent.setup();
       
       render(<Header />);
 
       const searchInput = screen.getByTestId('search-input');
-      await user.type(searchInput, 'test query');
+      await user.type(searchInput, 'test query{Enter}');
 
-      expect(consoleLogSpy).toHaveBeenCalledWith('Search query:', 'test query');
-      
-      consoleLogSpy.mockRestore();
+      expect(mockPush).toHaveBeenCalledWith('/search?q=test%20query');
     });
 
     it('Header_ShouldPreserveNavigationLinks_WhenSearchBarIntegrated', () => {
@@ -694,7 +719,6 @@ describe('Header', () => {
     });
 
     it('Header_ShouldTriggerSearch_WhenOnDesktopViewport', async () => {
-      const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
       const user = userEvent.setup();
       
       render(<Header />);
@@ -703,15 +727,12 @@ describe('Header', () => {
       const searchInputs = screen.getAllByTestId('search-input');
       const desktopSearchInput = searchInputs[0]; // First one is desktop
       
-      await user.type(desktopSearchInput, 'desktop query');
+      await user.type(desktopSearchInput, 'desktop query{Enter}');
 
-      expect(consoleLogSpy).toHaveBeenCalledWith('Search query:', 'desktop query');
-      
-      consoleLogSpy.mockRestore();
+      expect(mockPush).toHaveBeenCalledWith('/search?q=desktop%20query');
     });
 
     it('Header_ShouldTriggerSearch_WhenOnMobileViewport', async () => {
-      const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
       const user = userEvent.setup();
       
       render(<Header />);
@@ -720,39 +741,33 @@ describe('Header', () => {
       const searchButton = screen.getByRole('button', { name: /search/i });
       await user.click(searchButton);
 
-      // Mobile search should work - the mock calls onSearch on every keystroke
+      // Mobile search should work
       const searchInputs = screen.getAllByTestId('search-input');
       const mobileSearchInput = searchInputs[1]; // Second one is mobile
       
-      await user.type(mobileSearchInput, 'm');
+      await user.type(mobileSearchInput, 'mobile query{Enter}');
 
-      // Should have been called with the typed character (mock behavior)
-      expect(consoleLogSpy).toHaveBeenCalledWith('Search query:', 'm');
-      
-      consoleLogSpy.mockRestore();
+      expect(mockPush).toHaveBeenCalledWith('/search?q=mobile%20query');
     });
 
     it('Header_ShouldMaintainFunctionality_AtVariousViewportWidths', async () => {
-      const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
       const user = userEvent.setup();
       
       // Test at different viewport scenarios
       render(<Header />);
 
-      // Test desktop search - mock calls onSearch on every keystroke
+      // Test desktop search
       const searchInputs = screen.getAllByTestId('search-input');
-      await user.type(searchInputs[0], 't');
-      expect(consoleLogSpy).toHaveBeenCalledWith('Search query:', 't');
+      await user.type(searchInputs[0], 'test{Enter}');
+      expect(mockPush).toHaveBeenCalledWith('/search?q=test');
 
       // Test mobile search
       const searchButton = screen.getByRole('button', { name: /search/i });
       await user.click(searchButton);
       
       const mobileSearchInputs = screen.getAllByTestId('search-input');
-      await user.type(mobileSearchInputs[1], 'm');
-      expect(consoleLogSpy).toHaveBeenCalledWith('Search query:', 'm');
-      
-      consoleLogSpy.mockRestore();
+      await user.type(mobileSearchInputs[1], 'mobile{Enter}');
+      expect(mockPush).toHaveBeenCalledWith('/search?q=mobile');
     });
 
     it('Header_ShouldHideDesktopSearchBar_WhenBelowMdBreakpoint', () => {
@@ -777,6 +792,194 @@ describe('Header', () => {
       
       // Should be visible on mobile, hidden on desktop
       expect(mobileContainer).toHaveClass('md:hidden');
+    });
+  });
+
+  describe('Category Filter Integration', () => {
+    const mockOnCategorySelect = vi.fn();
+
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('Header_ShouldRenderCategoryFilterBar_WhenShowCategoryFilterIsTrue', () => {
+      render(
+        <Header 
+          showCategoryFilter={true} 
+          selectedCategoryId={null}
+          onCategorySelect={mockOnCategorySelect}
+        />
+      );
+
+      const categoryFilterBar = screen.getByTestId('category-filter-bar');
+      expect(categoryFilterBar).toBeInTheDocument();
+    });
+
+    it('Header_ShouldNotRenderCategoryFilterBar_WhenShowCategoryFilterIsFalse', () => {
+      render(<Header showCategoryFilter={false} />);
+
+      const categoryFilterBar = screen.queryByTestId('category-filter-bar');
+      expect(categoryFilterBar).not.toBeInTheDocument();
+    });
+
+    it('Header_ShouldNotRenderCategoryFilterBar_WhenShowCategoryFilterIsUndefined', () => {
+      render(<Header />);
+
+      const categoryFilterBar = screen.queryByTestId('category-filter-bar');
+      expect(categoryFilterBar).not.toBeInTheDocument();
+    });
+
+    it('Header_ShouldNotRenderCategoryFilterBar_WhenOnCategorySelectIsUndefined', () => {
+      render(
+        <Header 
+          showCategoryFilter={true} 
+          selectedCategoryId={null}
+        />
+      );
+
+      const categoryFilterBar = screen.queryByTestId('category-filter-bar');
+      expect(categoryFilterBar).not.toBeInTheDocument();
+    });
+
+    it('Header_ShouldPassSelectedCategoryId_WhenRenderingCategoryFilterBar', () => {
+      const testCategoryId = 'test-category-123';
+      
+      render(
+        <Header 
+          showCategoryFilter={true} 
+          selectedCategoryId={testCategoryId}
+          onCategorySelect={mockOnCategorySelect}
+        />
+      );
+
+      const categoryFilterBar = screen.getByTestId('category-filter-bar');
+      expect(categoryFilterBar).toHaveAttribute('data-selected-category', testCategoryId);
+    });
+
+    it('Header_ShouldPassNullSelectedCategoryId_WhenAllCategoriesSelected', () => {
+      render(
+        <Header 
+          showCategoryFilter={true} 
+          selectedCategoryId={null}
+          onCategorySelect={mockOnCategorySelect}
+        />
+      );
+
+      const categoryFilterBar = screen.getByTestId('category-filter-bar');
+      // When selectedCategoryId is null, the data attribute will be null (not set)
+      expect(categoryFilterBar.getAttribute('data-selected-category')).toBeNull();
+    });
+
+    it('Header_ShouldCallOnCategorySelect_WhenCategoryPillClicked', async () => {
+      const user = userEvent.setup();
+      
+      render(
+        <Header 
+          showCategoryFilter={true} 
+          selectedCategoryId={null}
+          onCategorySelect={mockOnCategorySelect}
+        />
+      );
+
+      const categoryPill = screen.getByTestId('category-pill');
+      await user.click(categoryPill);
+
+      expect(mockOnCategorySelect).toHaveBeenCalledWith('test-category-id');
+    });
+
+    it('Header_ShouldMaintainSearchBarFunctionality_WhenCategoryFilterBarDisplayed', () => {
+      render(
+        <Header 
+          showSearchBar={true}
+          showCategoryFilter={true} 
+          selectedCategoryId={null}
+          onCategorySelect={mockOnCategorySelect}
+        />
+      );
+
+      const searchBar = screen.getByTestId('search-bar');
+      const categoryFilterBar = screen.getByTestId('category-filter-bar');
+
+      expect(searchBar).toBeInTheDocument();
+      expect(categoryFilterBar).toBeInTheDocument();
+    });
+
+    it('Header_ShouldMaintainNavigationLinks_WhenCategoryFilterBarDisplayed', () => {
+      render(
+        <Header 
+          showCategoryFilter={true} 
+          selectedCategoryId={null}
+          onCategorySelect={mockOnCategorySelect}
+        />
+      );
+
+      expect(screen.getByRole('link', { name: /^home$/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^categories$/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^popular$/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^about$/i })).toBeInTheDocument();
+      expect(screen.getByTestId('category-filter-bar')).toBeInTheDocument();
+    });
+
+    it('Header_ShouldMaintainAuthenticationUI_WhenCategoryFilterBarDisplayed', () => {
+      render(
+        <Header 
+          showCategoryFilter={true} 
+          selectedCategoryId={null}
+          onCategorySelect={mockOnCategorySelect}
+        />
+      );
+
+      expect(screen.getByRole('link', { name: /login/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /join for free/i })).toBeInTheDocument();
+      expect(screen.getByTestId('category-filter-bar')).toBeInTheDocument();
+    });
+
+    it('Header_ShouldPositionCategoryFilterBarBelowNavigation_WhenRendered', () => {
+      const { container } = render(
+        <Header 
+          showCategoryFilter={true} 
+          selectedCategoryId={null}
+          onCategorySelect={mockOnCategorySelect}
+        />
+      );
+
+      const header = container.querySelector('header');
+      const nav = header?.querySelector('nav');
+      const categoryFilterContainer = container.querySelector('[data-testid="category-filter-bar"]')?.parentElement?.parentElement;
+
+      // CategoryFilterBar should be a sibling of nav, not inside it
+      expect(nav).toBeInTheDocument();
+      expect(categoryFilterContainer).toBeInTheDocument();
+      expect(nav?.contains(categoryFilterContainer as Node)).toBe(false);
+    });
+
+    it('Header_ShouldApplyBorderTop_WhenCategoryFilterBarRendered', () => {
+      const { container } = render(
+        <Header 
+          showCategoryFilter={true} 
+          selectedCategoryId={null}
+          onCategorySelect={mockOnCategorySelect}
+        />
+      );
+
+      const categoryFilterContainer = container.querySelector('[data-testid="category-filter-bar"]')?.parentElement?.parentElement;
+      expect(categoryFilterContainer).toHaveClass('border-t');
+      expect(categoryFilterContainer).toHaveClass('border-gray-100');
+    });
+
+    it('Header_ShouldMaintainStickyPositioning_WhenCategoryFilterBarDisplayed', () => {
+      const { container } = render(
+        <Header 
+          showCategoryFilter={true} 
+          selectedCategoryId={null}
+          onCategorySelect={mockOnCategorySelect}
+        />
+      );
+
+      const header = container.querySelector('header');
+      expect(header).toHaveClass('sticky');
+      expect(header).toHaveClass('top-0');
+      expect(header).toHaveClass('z-50');
     });
   });
 });

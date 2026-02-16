@@ -3,6 +3,14 @@ import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { SearchBar } from './search-bar';
 
+// Mock Next.js router
+const mockPush = vi.fn();
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockPush,
+  }),
+}));
+
 /**
  * Styling Consistency and Accessibility Tests
  * Task 7: Verify styling consistency and accessibility
