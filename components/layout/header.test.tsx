@@ -47,6 +47,16 @@ vi.mock('@/components/layout/user-avatar', () => ({
   ),
 }));
 
+vi.mock('@/components/search/category-filter-bar', () => ({
+  CategoryFilterBar: ({ selectedCategoryId, onCategorySelect }: { selectedCategoryId: string | null; onCategorySelect: (id: string | null) => void }) => (
+    <div data-testid="category-filter-bar" data-selected-category={selectedCategoryId === null ? null : selectedCategoryId}>
+      <button onClick={() => onCategorySelect('test-category-id')} data-testid="category-pill">
+        Test Category
+      </button>
+    </div>
+  ),
+}));
+
 describe('Header', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -777,6 +787,194 @@ describe('Header', () => {
       
       // Should be visible on mobile, hidden on desktop
       expect(mobileContainer).toHaveClass('md:hidden');
+    });
+  });
+
+  describe('Category Filter Integration', () => {
+    const mockOnCategorySelect = vi.fn();
+
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('Header_ShouldRenderCategoryFilterBar_WhenShowCategoryFilterIsTrue', () => {
+      render(
+        <Header 
+          showCategoryFilter={true} 
+          selectedCategoryId={null}
+          onCategorySelect={mockOnCategorySelect}
+        />
+      );
+
+      const categoryFilterBar = screen.getByTestId('category-filter-bar');
+      expect(categoryFilterBar).toBeInTheDocument();
+    });
+
+    it('Header_ShouldNotRenderCategoryFilterBar_WhenShowCategoryFilterIsFalse', () => {
+      render(<Header showCategoryFilter={false} />);
+
+      const categoryFilterBar = screen.queryByTestId('category-filter-bar');
+      expect(categoryFilterBar).not.toBeInTheDocument();
+    });
+
+    it('Header_ShouldNotRenderCategoryFilterBar_WhenShowCategoryFilterIsUndefined', () => {
+      render(<Header />);
+
+      const categoryFilterBar = screen.queryByTestId('category-filter-bar');
+      expect(categoryFilterBar).not.toBeInTheDocument();
+    });
+
+    it('Header_ShouldNotRenderCategoryFilterBar_WhenOnCategorySelectIsUndefined', () => {
+      render(
+        <Header 
+          showCategoryFilter={true} 
+          selectedCategoryId={null}
+        />
+      );
+
+      const categoryFilterBar = screen.queryByTestId('category-filter-bar');
+      expect(categoryFilterBar).not.toBeInTheDocument();
+    });
+
+    it('Header_ShouldPassSelectedCategoryId_WhenRenderingCategoryFilterBar', () => {
+      const testCategoryId = 'test-category-123';
+      
+      render(
+        <Header 
+          showCategoryFilter={true} 
+          selectedCategoryId={testCategoryId}
+          onCategorySelect={mockOnCategorySelect}
+        />
+      );
+
+      const categoryFilterBar = screen.getByTestId('category-filter-bar');
+      expect(categoryFilterBar).toHaveAttribute('data-selected-category', testCategoryId);
+    });
+
+    it('Header_ShouldPassNullSelectedCategoryId_WhenAllCategoriesSelected', () => {
+      render(
+        <Header 
+          showCategoryFilter={true} 
+          selectedCategoryId={null}
+          onCategorySelect={mockOnCategorySelect}
+        />
+      );
+
+      const categoryFilterBar = screen.getByTestId('category-filter-bar');
+      // When selectedCategoryId is null, the data attribute will be null (not set)
+      expect(categoryFilterBar.getAttribute('data-selected-category')).toBeNull();
+    });
+
+    it('Header_ShouldCallOnCategorySelect_WhenCategoryPillClicked', async () => {
+      const user = userEvent.setup();
+      
+      render(
+        <Header 
+          showCategoryFilter={true} 
+          selectedCategoryId={null}
+          onCategorySelect={mockOnCategorySelect}
+        />
+      );
+
+      const categoryPill = screen.getByTestId('category-pill');
+      await user.click(categoryPill);
+
+      expect(mockOnCategorySelect).toHaveBeenCalledWith('test-category-id');
+    });
+
+    it('Header_ShouldMaintainSearchBarFunctionality_WhenCategoryFilterBarDisplayed', () => {
+      render(
+        <Header 
+          showSearchBar={true}
+          showCategoryFilter={true} 
+          selectedCategoryId={null}
+          onCategorySelect={mockOnCategorySelect}
+        />
+      );
+
+      const searchBar = screen.getByTestId('search-bar');
+      const categoryFilterBar = screen.getByTestId('category-filter-bar');
+
+      expect(searchBar).toBeInTheDocument();
+      expect(categoryFilterBar).toBeInTheDocument();
+    });
+
+    it('Header_ShouldMaintainNavigationLinks_WhenCategoryFilterBarDisplayed', () => {
+      render(
+        <Header 
+          showCategoryFilter={true} 
+          selectedCategoryId={null}
+          onCategorySelect={mockOnCategorySelect}
+        />
+      );
+
+      expect(screen.getByRole('link', { name: /^home$/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^categories$/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^popular$/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^about$/i })).toBeInTheDocument();
+      expect(screen.getByTestId('category-filter-bar')).toBeInTheDocument();
+    });
+
+    it('Header_ShouldMaintainAuthenticationUI_WhenCategoryFilterBarDisplayed', () => {
+      render(
+        <Header 
+          showCategoryFilter={true} 
+          selectedCategoryId={null}
+          onCategorySelect={mockOnCategorySelect}
+        />
+      );
+
+      expect(screen.getByRole('link', { name: /login/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /join for free/i })).toBeInTheDocument();
+      expect(screen.getByTestId('category-filter-bar')).toBeInTheDocument();
+    });
+
+    it('Header_ShouldPositionCategoryFilterBarBelowNavigation_WhenRendered', () => {
+      const { container } = render(
+        <Header 
+          showCategoryFilter={true} 
+          selectedCategoryId={null}
+          onCategorySelect={mockOnCategorySelect}
+        />
+      );
+
+      const header = container.querySelector('header');
+      const nav = header?.querySelector('nav');
+      const categoryFilterContainer = container.querySelector('[data-testid="category-filter-bar"]')?.parentElement?.parentElement;
+
+      // CategoryFilterBar should be a sibling of nav, not inside it
+      expect(nav).toBeInTheDocument();
+      expect(categoryFilterContainer).toBeInTheDocument();
+      expect(nav?.contains(categoryFilterContainer as Node)).toBe(false);
+    });
+
+    it('Header_ShouldApplyBorderTop_WhenCategoryFilterBarRendered', () => {
+      const { container } = render(
+        <Header 
+          showCategoryFilter={true} 
+          selectedCategoryId={null}
+          onCategorySelect={mockOnCategorySelect}
+        />
+      );
+
+      const categoryFilterContainer = container.querySelector('[data-testid="category-filter-bar"]')?.parentElement?.parentElement;
+      expect(categoryFilterContainer).toHaveClass('border-t');
+      expect(categoryFilterContainer).toHaveClass('border-gray-100');
+    });
+
+    it('Header_ShouldMaintainStickyPositioning_WhenCategoryFilterBarDisplayed', () => {
+      const { container } = render(
+        <Header 
+          showCategoryFilter={true} 
+          selectedCategoryId={null}
+          onCategorySelect={mockOnCategorySelect}
+        />
+      );
+
+      const header = container.querySelector('header');
+      expect(header).toHaveClass('sticky');
+      expect(header).toHaveClass('top-0');
+      expect(header).toHaveClass('z-50');
     });
   });
 });
