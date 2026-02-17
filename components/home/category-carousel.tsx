@@ -28,6 +28,7 @@ export function CategoryCarousel({ categories }: CategoryCarouselProps) {
   const [isPaused, setIsPaused] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(true);
   const carouselRef = useRef<HTMLDivElement>(null);
 
   // Detect viewport size
@@ -48,32 +49,39 @@ export function CategoryCarousel({ categories }: CategoryCarouselProps) {
   const extendedCategories = [
     ...categories,
     ...categories,
-    ...categories,
   ];
 
   const totalSlides = categories.length;
 
   const goToNext = useCallback(() => {
-    setCurrentIndex((prevIndex) => {
-      const nextIndex = prevIndex + 1;
-      // Reset to start when reaching the end of first set
-      if (nextIndex >= totalSlides) {
-        return 0;
-      }
-      return nextIndex;
-    });
-  }, [totalSlides]);
+    setIsTransitioning(true);
+    setCurrentIndex((prevIndex) => prevIndex + 1);
+  }, []);
 
   const goToPrevious = useCallback(() => {
-    setCurrentIndex((prevIndex) => {
-      const nextIndex = prevIndex - 1;
-      // Go to end when going before start
-      if (nextIndex < 0) {
-        return totalSlides - 1;
-      }
-      return nextIndex;
-    });
-  }, [totalSlides]);
+    setIsTransitioning(true);
+    setCurrentIndex((prevIndex) => prevIndex - 1);
+  }, []);
+
+  // Handle infinite loop reset
+  useEffect(() => {
+    if (!isTransitioning) return;
+
+    // After reaching the end of the first set, reset to the beginning
+    if (currentIndex >= totalSlides) {
+      setTimeout(() => {
+        setIsTransitioning(false);
+        setCurrentIndex(0);
+      }, 500); // Match transition duration
+    }
+    // After going before the start, reset to the end
+    else if (currentIndex < 0) {
+      setTimeout(() => {
+        setIsTransitioning(false);
+        setCurrentIndex(totalSlides - 1);
+      }, 500); // Match transition duration
+    }
+  }, [currentIndex, totalSlides, isTransitioning]);
 
   // Auto-play functionality
   useEffect(() => {
@@ -151,7 +159,7 @@ export function CategoryCarousel({ categories }: CategoryCarouselProps) {
           {/* Carousel Container */}
           <div className="overflow-hidden">
             <div
-              className="flex transition-transform duration-500 ease-in-out"
+              className={`flex ${isTransitioning ? 'transition-transform duration-500 ease-in-out' : ''}`}
               style={{
                 transform: getTransform(),
               }}
@@ -205,16 +213,17 @@ export function CategoryCarousel({ categories }: CategoryCarouselProps) {
               <button
                 key={index}
                 onClick={() => {
+                  setIsTransitioning(true);
                   setCurrentIndex(index);
                   setIsPaused(true);
                 }}
                 className={`w-2 h-2 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
-                  index === currentIndex
+                  index === (currentIndex % totalSlides)
                     ? 'bg-primary w-8'
                     : 'bg-gray-300 hover:bg-gray-400'
                 }`}
                 aria-label={`Go to slide ${index + 1}`}
-                aria-current={index === currentIndex ? 'true' : 'false'}
+                aria-current={index === (currentIndex % totalSlides) ? 'true' : 'false'}
                 type="button"
               />
             ))}
