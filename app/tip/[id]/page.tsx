@@ -14,7 +14,7 @@ import { TipSteps } from '@/components/tip/tip-steps';
 import { RelatedTips } from '@/components/tip/related-tips';
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
