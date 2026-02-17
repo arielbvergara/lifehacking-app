@@ -13,15 +13,15 @@ export interface TipCardProps {
 
 /**
  * TipCard displays a tip summary with image, title, description, and category badge.
- * Clicking "Read tip >" navigates to the tip detail page.
+ * The entire card is clickable and navigates to the tip detail page.
+ * The favorites button has independent functionality and doesn't trigger navigation.
  * 
  * Implements semantic HTML with <article> tag and includes structured data (JSON-LD).
  */
 export function TipCard({ tip }: TipCardProps) {
   const router = useRouter();
 
-  const handleReadTip = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleCardClick = () => {
     router.push(`/tip/${tip.id}`);
   };
 
@@ -40,7 +40,19 @@ export function TipCard({ tip }: TipCardProps) {
   const structuredData = generateTipStructuredData(tip);
 
   return (
-    <article className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+    <article 
+      className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all cursor-pointer overflow-hidden group"
+      onClick={handleCardClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleCardClick();
+        }
+      }}
+      aria-label={`View tip: ${tip.title}`}
+    >
       {/* Structured Data (JSON-LD) */}
       <script
         type="application/ld+json"
@@ -54,7 +66,7 @@ export function TipCard({ tip }: TipCardProps) {
             src={tip.image.imageUrl}
             alt={imageAlt}
             fill
-            className="object-cover"
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         ) : (
@@ -74,7 +86,7 @@ export function TipCard({ tip }: TipCardProps) {
       {/* Card Content */}
       <div className="p-5">
         {/* Title */}
-        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-green-600 transition-colors">
           {truncatedTitle}
         </h3>
 
@@ -84,22 +96,14 @@ export function TipCard({ tip }: TipCardProps) {
         </p>
 
         {/* Actions */}
-        <div className="flex items-center justify-between">
-          <button
-            onClick={handleReadTip}
-            className="text-green-600 hover:text-green-700 font-medium text-sm transition-colors"
-            aria-label={`Read tip: ${tip.title}`}
-          >
-            Read tip &gt;
-          </button>
-          
+        <div className="flex items-center justify-end">
           <button
             onClick={handleFavorite}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
             aria-label={`Add ${tip.title} to favorites`}
           >
             <svg
-              className="w-5 h-5 text-gray-400"
+              className="w-5 h-5 text-gray-400 hover:text-red-500 transition-colors"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
