@@ -1,7 +1,6 @@
 'use client';
 
 import type { Category } from '@/lib/types/api';
-import Image from 'next/image';
 
 export interface CategoryPillProps {
   category: Category | null; // null for "All" category
