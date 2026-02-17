@@ -116,7 +116,7 @@ interface Favorite {
 ### Base Configuration
 ```typescript
 // Environment Variables
-NEXT_PUBLIC_API_URL=http://localhost:8080
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8080
 NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-auth-domain
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
@@ -125,7 +125,7 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
 ### API Client Setup
 ```typescript
 // lib/api/client.ts
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 async function apiRequest<T>(
   endpoint: string,
@@ -1752,7 +1752,7 @@ npm install -D @testing-library/react @testing-library/jest-dom jest jest-enviro
 
 ```bash
 # .env.local
-NEXT_PUBLIC_API_URL=http://localhost:8080
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8080
 NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-auth-domain
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
@@ -1969,7 +1969,7 @@ vercel --prod
 
 ```bash
 # Set in Vercel dashboard or CLI
-vercel env add NEXT_PUBLIC_API_URL production
+vercel env add NEXT_PUBLIC_API_BASE_URL production
 vercel env add NEXT_PUBLIC_FIREBASE_API_KEY production
 # ... other Firebase config
 ```
@@ -1984,7 +1984,7 @@ const nextConfig = {
     domains: ['your-image-domain.com'],
   },
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
   },
   // Enable React strict mode
   reactStrictMode: true,
