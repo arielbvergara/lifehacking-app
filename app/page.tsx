@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { connection } from 'next/server';
 import { generateWebsiteStructuredData } from '@/lib/seo/structured-data';
 import { getHomePageData } from '@/lib/data/home-data';
 import { PageScrollWrapper } from './page-scroll-wrapper';
 import { HeroSection } from '@/components/home/hero-section';
 import { CategoryCarousel } from '@/components/home/category-carousel';
+import { CategoryCarouselSkeleton } from '@/components/home/category-carousel-skeleton';
 import { FeaturedTip } from '@/components/home/featured-tip';
 import { LatestLifehacks } from '@/components/home/latest-lifehacks';
 import { Footer } from '@/components/layout/footer';
@@ -83,7 +85,9 @@ export default async function Home() {
         <HeroSection />
 
         {/* Explore Categories Carousel */}
-        <CategoryCarousel categories={categories} />
+        <Suspense fallback={<CategoryCarouselSkeleton />}>
+          <CategoryCarousel categories={categories} />
+        </Suspense>
 
         {/* Featured Tip Section */}
         <FeaturedTip tip={featuredTip} />
