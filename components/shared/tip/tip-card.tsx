@@ -41,7 +41,7 @@ export function TipCard({ tip }: TipCardProps) {
 
   return (
     <article 
-      className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all cursor-pointer overflow-hidden group"
+      className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all cursor-pointer overflow-hidden group transform hover:rotate-[-1deg] transition-transform duration-300"
       onClick={handleCardClick}
       role="button"
       tabIndex={0}
@@ -66,7 +66,7 @@ export function TipCard({ tip }: TipCardProps) {
             src={tip.image.imageUrl}
             alt={imageAlt}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         ) : (

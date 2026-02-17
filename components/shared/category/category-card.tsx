@@ -32,7 +32,7 @@ export function CategoryCard({ category, tipCount = 0, priority = false }: Categ
     return (
       <div
         onClick={handleClick}
-        className="relative rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer h-full min-h-[200px]"
+        className="relative rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer h-full min-h-[200px] transform hover:rotate-[-1deg] transition-transform duration-300"
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
