@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { connection } from 'next/server';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
+import { Breadcrumb } from '@/components/shared/breadcrumb';
 import { CategoryCard } from '@/components/shared/category/category-card';
 import { getCachedCategories } from '@/lib/data/category-data';
 
@@ -25,13 +26,22 @@ export default async function CategoriesPage() {
   // Fetch categories with caching
   const categories = await getCachedCategories();
 
+  // Prepare breadcrumb items
+  const breadcrumbItems = [
+    { label: 'Home', href: '/' },
+    { label: 'Categories' },
+  ];
+
   return (
     <div className="min-h-screen flex flex-col bg-background-light">
       <Header />
       
       <main className="flex-grow w-full max-w-7xl mx-auto px-4 md:px-8 py-8">
+        {/* Breadcrumb Navigation */}
+        <Breadcrumb items={breadcrumbItems} />
+
         {/* Page Title */}
-        <div className="mb-8">
+        <div className="mb-8 mt-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Browse Categories
           </h1>
