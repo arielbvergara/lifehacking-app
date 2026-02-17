@@ -40,7 +40,7 @@ export async function middleware(request: NextRequest) {
       if (user.role !== 'Admin') {
         return NextResponse.redirect(new URL('/404', request.url));
       }
-    } catch (error) {
+    } catch {
       // Error calling backend API - redirect to 404
       return NextResponse.redirect(new URL('/404', request.url));
     }
