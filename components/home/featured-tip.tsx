@@ -1,11 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { TipSummary } from '@/lib/types/api';
 import { truncateText } from '@/lib/utils/text';
 import { generateTipImageAlt } from '@/lib/utils/seo';
 import { generateTipStructuredData } from '@/lib/seo/structured-data';
+import { VideoModal } from '@/components/shared/video-modal';
 
 export interface FeaturedTipProps {
   tip: TipSummary | null;
@@ -27,16 +29,18 @@ const READ_GUIDE_TEXT = 'Read Guide';
  */
 export function FeaturedTip({ tip }: FeaturedTipProps) {
   const router = useRouter();
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   const handleWatchVideo = () => {
-    if (tip) {
-      router.push(`/tip/${tip.id}`);
+    if (tip?.videoUrl) {
+      setIsVideoModalOpen(true);
     }
   };
 
   const handleReadGuide = () => {
-    // Placeholder for future implementation
-    // This button is intentionally non-functional
+    if (tip) {
+      router.push(`/tip/${tip.id}`);
+    }
   };
 
   if (!tip) {
@@ -113,6 +117,16 @@ export function FeaturedTip({ tip }: FeaturedTipProps) {
           </div>
         </article>
       </div>
+
+      {/* Video Modal */}
+      {tip.videoUrl && (
+        <VideoModal
+          isOpen={isVideoModalOpen}
+          onClose={() => setIsVideoModalOpen(false)}
+          videoUrl={tip.videoUrl}
+          title={tip.title}
+        />
+      )}
     </section>
   );
 }

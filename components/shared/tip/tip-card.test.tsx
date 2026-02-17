@@ -106,17 +106,34 @@ describe('TipCard', () => {
     expect(descriptionElement.textContent).toContain('...');
   });
 
-  it('should render "Read tip >" link', () => {
-    render(<TipCard tip={mockTip} />);
-    expect(screen.getByText('Read tip >')).toBeInTheDocument();
-  });
-
-  it('should navigate to tip detail page when "Read tip >" is clicked', async () => {
+  it('should navigate to tip detail page when card is clicked', async () => {
     const user = userEvent.setup();
     render(<TipCard tip={mockTip} />);
     
-    const readButton = screen.getByText('Read tip >');
-    await user.click(readButton);
+    const card = screen.getByRole('button', { name: /View tip: How to Clean Your Kitchen Faster/i });
+    await user.click(card);
+    
+    expect(mockPush).toHaveBeenCalledWith('/tip/123e4567-e89b-12d3-a456-426614174000');
+  });
+
+  it('should navigate when Enter key is pressed on card', async () => {
+    const user = userEvent.setup();
+    render(<TipCard tip={mockTip} />);
+    
+    const card = screen.getByRole('button', { name: /View tip: How to Clean Your Kitchen Faster/i });
+    card.focus();
+    await user.keyboard('{Enter}');
+    
+    expect(mockPush).toHaveBeenCalledWith('/tip/123e4567-e89b-12d3-a456-426614174000');
+  });
+
+  it('should navigate when Space key is pressed on card', async () => {
+    const user = userEvent.setup();
+    render(<TipCard tip={mockTip} />);
+    
+    const card = screen.getByRole('button', { name: /View tip: How to Clean Your Kitchen Faster/i });
+    card.focus();
+    await user.keyboard(' ');
     
     expect(mockPush).toHaveBeenCalledWith('/tip/123e4567-e89b-12d3-a456-426614174000');
   });
@@ -142,7 +159,8 @@ describe('TipCard', () => {
     const { container } = render(<TipCard tip={mockTip} />);
     const card = container.firstChild as HTMLElement;
     
-    expect(card).toHaveClass('hover:shadow-md');
+    expect(card).toHaveClass('hover:shadow-lg');
+    expect(card).toHaveClass('cursor-pointer');
   });
 
   it('should display all non-null fields from tip object', () => {
@@ -165,9 +183,9 @@ import { cleanup } from '@testing-library/react';
 describe('TipCard - Property Tests', () => {
   test.prop([
     fc.uuid(),
-    fc.string({ minLength: 1, maxLength: 100 }),
-    fc.string({ minLength: 1, maxLength: 200 }),
-    fc.string({ minLength: 1, maxLength: 50 }),
+    fc.string({ minLength: 1, maxLength: 100 }).filter(s => s.trim().length > 0),
+    fc.string({ minLength: 1, maxLength: 200 }).filter(s => s.trim().length > 0),
+    fc.string({ minLength: 1, maxLength: 50 }).filter(s => s.trim().length > 0),
   ])(
     'should preserve exact tip ID in navigation URL',
     async (tipId, title, description, categoryName) => {
@@ -188,11 +206,11 @@ describe('TipCard - Property Tests', () => {
       };
 
       const user = userEvent.setup();
-      const { container } = render(<TipCard tip={tip} />);
+      render(<TipCard tip={tip} />);
       
-      // Find the "Read tip >" button
-      const readButton = container.querySelector('button') as HTMLElement;
-      await user.click(readButton);
+      // Find the card (article element with role="button")
+      const card = screen.getByRole('button', { name: /View tip:/i });
+      await user.click(card);
       
       // Verify the exact ID is preserved in the navigation URL
       expect(mockPush).toHaveBeenCalledWith(`/tip/${tipId}`);

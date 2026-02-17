@@ -6,10 +6,10 @@ import { TipCard } from '@/components/shared/tip/tip-card';
 import { getCachedSearchResults } from '@/lib/data/search-data';
 
 interface SearchPageProps {
-  searchParams: {
+  searchParams: Promise<{
     q?: string;
     categoryId?: string;
-  };
+  }>;
 }
 
 /**

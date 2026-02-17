@@ -8,14 +8,14 @@ import { Breadcrumb } from '@/components/shared/breadcrumb';
 import { getCachedCategoryById, getCachedTipsByCategory } from '@/lib/data/category-data';
 
 interface CategoryPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   try {
-    const { id } = params;
+    const { id } = await params;
     
     // Skip metadata generation during build if params are not available
     if (!id) {
@@ -52,7 +52,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   await connection();
 
   // Read URL parameters
-  const { id } = params;
+  const { id } = await params;
 
   // Fetch category and tips with caching
   let category;

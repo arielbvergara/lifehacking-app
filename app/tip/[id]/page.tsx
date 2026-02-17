@@ -14,7 +14,7 @@ import { TipSteps } from '@/components/tip/tip-steps';
 import { RelatedTips } from '@/components/tip/related-tips';
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -83,6 +83,7 @@ export default async function TipDetailPage({ params }: Props) {
   // Prepare breadcrumb items
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
+    { label: 'Categories', href: `/categories` },
     { label: tip.categoryName, href: `/category/${tip.categoryId}` },
     { label: truncateForBreadcrumb(tip.title) },
   ];

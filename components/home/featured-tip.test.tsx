@@ -79,19 +79,7 @@ describe('FeaturedTip', () => {
     expect(screen.getByRole('button', { name: /read guide/i })).toBeInTheDocument();
   });
 
-  it('should navigate to tip detail page when Watch Video is clicked', async () => {
-    const user = userEvent.setup();
-
-    render(<FeaturedTip tip={mockTip} />);
-
-    const watchVideoButton = screen.getByRole('button', { name: /watch video/i });
-    await user.click(watchVideoButton);
-
-    expect(mockPush).toHaveBeenCalledWith(`/tip/${mockTip.id}`);
-    expect(mockPush).toHaveBeenCalledTimes(1);
-  });
-
-  it('should not navigate when Read Guide button is clicked', async () => {
+  it('should navigate to tip detail page when Read Guide is clicked', async () => {
     const user = userEvent.setup();
 
     render(<FeaturedTip tip={mockTip} />);
@@ -99,7 +87,19 @@ describe('FeaturedTip', () => {
     const readGuideButton = screen.getByRole('button', { name: /read guide/i });
     await user.click(readGuideButton);
 
-    // Read Guide button should not trigger navigation
+    expect(mockPush).toHaveBeenCalledWith(`/tip/${mockTip.id}`);
+    expect(mockPush).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not navigate when Watch Video button is clicked', async () => {
+    const user = userEvent.setup();
+
+    render(<FeaturedTip tip={mockTip} />);
+
+    const watchVideoButton = screen.getByRole('button', { name: /watch video/i });
+    await user.click(watchVideoButton);
+
+    // Watch Video button opens modal, should not trigger navigation
     expect(mockPush).not.toHaveBeenCalled();
   });
 
@@ -169,12 +169,10 @@ describe('FeaturedTip - Property Tests', () => {
       };
 
       const user = userEvent.setup();
-      const { container } = render(<FeaturedTip tip={tip} />);
+      render(<FeaturedTip tip={tip} />);
 
-      const readMoreButton = container.querySelector(
-        'button'
-      ) as HTMLButtonElement;
-      await user.click(readMoreButton);
+      const readGuideButton = screen.getByRole('button', { name: /read guide/i });
+      await user.click(readGuideButton);
 
       // Verify the exact ID is preserved in the navigation URL
       expect(mockPush).toHaveBeenCalledWith(`/tip/${tipId}`);
