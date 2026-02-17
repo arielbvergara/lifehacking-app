@@ -5,7 +5,6 @@ import { CategoryForm } from './category-form';
 import * as adminCategoryApi from '@/lib/api/admin-category';
 import { CategoryImageDto } from '@/lib/types/admin-category';
 import {
-  CATEGORY_NAME_MIN_LENGTH,
   CATEGORY_NAME_MAX_LENGTH,
   MAX_IMAGE_SIZE_BYTES,
   ERROR_MESSAGES,
@@ -20,6 +19,7 @@ vi.mock('@/lib/auth/auth-context', () => ({
 // Mock Next.js Image component
 vi.mock('next/image', () => ({
   default: ({ src, alt, fill, className }: { src: string; alt: string; fill?: boolean; className?: string }) => (
+    // eslint-disable-next-line @next/next/no-img-element
     <img src={src} alt={alt} data-fill={fill} className={className} />
   ),
 }));

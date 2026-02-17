@@ -106,9 +106,9 @@ describe('LatestLifehacks', () => {
       />
     );
 
-    // Each TipCard has a "Read tip >" button
-    const readTipButtons = screen.getAllByText(/read tip/i);
-    expect(readTipButtons).toHaveLength(mockTips.length);
+    // Each TipCard is rendered as an article with role="button"
+    const tipCards = screen.getAllByRole('button', { name: /view tip:/i });
+    expect(tipCards).toHaveLength(mockTips.length);
   });
 
   it('should render as a section element', () => {
@@ -155,9 +155,9 @@ describe('LatestLifehacks - Property Tests', () => {
     (tips) => {
       const { unmount } = render(<LatestLifehacks tips={tips} />);
 
-      // Verify the count matches by checking "Read tip >" buttons (one per card)
-      const readTipButtons = screen.getAllByText(/read tip/i);
-      expect(readTipButtons).toHaveLength(tips.length);
+      // Verify the count matches by checking article elements with role="button" (one per card)
+      const tipCards = screen.getAllByRole('button', { name: /view tip:/i });
+      expect(tipCards).toHaveLength(tips.length);
 
       unmount();
     }
@@ -188,9 +188,9 @@ describe('LatestLifehacks - Property Tests', () => {
     (tips) => {
       const { unmount } = render(<LatestLifehacks tips={tips} />);
 
-      // Count the number of "Read tip >" buttons (one per card)
-      const readTipButtons = screen.getAllByText(/read tip/i);
-      expect(readTipButtons).toHaveLength(tips.length);
+      // Count the number of article elements with role="button" (one per card)
+      const tipCards = screen.getAllByRole('button', { name: /view tip:/i });
+      expect(tipCards).toHaveLength(tips.length);
 
       unmount();
     }

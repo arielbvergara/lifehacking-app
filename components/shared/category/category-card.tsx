@@ -3,12 +3,11 @@
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Category } from '@/lib/types/api';
-import { getCategoryIcon, formatTipCount } from '@/lib/utils/category';
+import { getCategoryIcon } from '@/lib/utils/category';
 import { generateCategoryImageAlt } from '@/lib/utils/seo';
 
 export interface CategoryCardProps {
   category: Category;
-  tipCount?: number;
   priority?: boolean;
 }
 
@@ -16,7 +15,7 @@ export interface CategoryCardProps {
  * CategoryCard displays a category with its image or icon, name, and tip count.
  * Clicking the card navigates to the category detail page.
  */
-export function CategoryCard({ category, tipCount = 0, priority = false }: CategoryCardProps) {
+export function CategoryCard({ category, priority = false }: CategoryCardProps) {
   const router = useRouter();
 
   const handleClick = () => {
@@ -24,7 +23,6 @@ export function CategoryCard({ category, tipCount = 0, priority = false }: Categ
   };
 
   const icon = getCategoryIcon(category.name);
-  const formattedCount = formatTipCount(tipCount);
   const imageUrl = category.image?.imageUrl;
   const imageAlt = generateCategoryImageAlt(category);
 
@@ -41,7 +39,7 @@ export function CategoryCard({ category, tipCount = 0, priority = false }: Categ
             handleClick();
           }
         }}
-        aria-label={`View ${category.name} category with ${formattedCount}`}
+        aria-label={`View ${category.name} category`}
       >
         <Image
           src={imageUrl}
@@ -56,7 +54,6 @@ export function CategoryCard({ category, tipCount = 0, priority = false }: Categ
           <h3 className="text-lg font-semibold text-white mb-1">
             {category.name}
           </h3>
-          <p className="text-sm text-white text-opacity-90">{formattedCount}</p>
         </div>
       </div>
     );
@@ -74,13 +71,12 @@ export function CategoryCard({ category, tipCount = 0, priority = false }: Categ
           handleClick();
         }
       }}
-      aria-label={`View ${category.name} category with ${formattedCount}`}
+      aria-label={`View ${category.name} category`}
     >
       <div className="text-4xl mb-3" aria-hidden="true">{icon}</div>
       <h3 className="text-lg font-semibold text-gray-900 mb-1">
         {category.name}
       </h3>
-      <p className="text-sm text-gray-600">{formattedCount}</p>
     </div>
   );
 }
