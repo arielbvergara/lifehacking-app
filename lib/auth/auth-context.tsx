@@ -87,6 +87,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
           const token = await firebaseGetIdToken(firebaseUser);
           console.log('[AuthProvider] Token obtained (first 20 chars):', token.substring(0, 20) + '...');
           
+          // Store token in cookie for middleware access
+          document.cookie = `session=${token}; path=/; max-age=3600; SameSite=Lax`;
+          
           setUser(firebaseUser);
           setIdToken(token);
           
@@ -110,6 +113,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         } else {
           // User is signed out
           console.log('[AuthProvider] User signed out');
+          
+          // Clear session cookie
+          document.cookie = 'session=; path=/; max-age=0';
+          
           setUser(null);
           setIdToken(null);
         }
