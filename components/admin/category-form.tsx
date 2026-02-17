@@ -2,6 +2,7 @@
 
 import { useState, useCallback, ChangeEvent, FormEvent, DragEvent, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import { useAuth } from '@/lib/auth/auth-context';
 import { uploadCategoryImage, createCategory } from '@/lib/api/admin-category';
 import { ValidationErrors } from '@/lib/types/admin-category';
 import {
@@ -24,6 +25,8 @@ interface FormState {
 }
 
 export function CategoryForm() {
+  const { idToken } = useAuth();
+  
   const [formState, setFormState] = useState<FormState>({
     categoryName: '',
     selectedFile: null,
@@ -201,12 +204,13 @@ export function CategoryForm() {
     }));
 
     try {
-      // TODO: Get actual Firebase ID token from auth context
-      // For now, using placeholder
-      const token = 'placeholder-token';
+      // Get Firebase ID token from auth context
+      if (!idToken) {
+        throw new Error('Authentication required');
+      }
 
       // Step 1: Upload image
-      const imageMetadata = await uploadCategoryImage(formState.selectedFile!, token);
+      const imageMetadata = await uploadCategoryImage(formState.selectedFile!, idToken);
 
       // Step 2: Create category
       await createCategory(
@@ -214,7 +218,7 @@ export function CategoryForm() {
           name: formState.categoryName.trim(),
           image: imageMetadata,
         },
-        token
+        idToken
       );
 
       // Success - reset form
