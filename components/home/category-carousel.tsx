@@ -8,8 +8,7 @@ export interface CategoryCarouselProps {
   categories: Category[];
 }
 
-const DESKTOP_AUTO_PLAY_INTERVAL = 5000; // 5 seconds for desktop
-const MOBILE_AUTO_PLAY_INTERVAL = 2000; // 2 seconds for mobile
+const AUTO_PLAY_INTERVAL = 3000; // 3 seconds for all viewports
 
 /**
  * CategoryCarousel Component
@@ -17,7 +16,7 @@ const MOBILE_AUTO_PLAY_INTERVAL = 2000; // 2 seconds for mobile
  * Displays categories in an infinite carousel with responsive items per view.
  * Features:
  * - Infinite loop scrolling
- * - Auto-play with responsive timing (2s mobile, 5s desktop)
+ * - Auto-play every 3 seconds
  * - Pause on hover
  * - Navigation arrows
  * - Responsive design (1 item on mobile, 2 on tablet, 3 on desktop)
@@ -28,18 +27,21 @@ export function CategoryCarousel({ categories }: CategoryCarouselProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
 
-  // Detect mobile viewport
+  // Detect viewport size
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+    const checkViewport = () => {
+      const width = window.innerWidth;
+      setIsMobile(width < 768);
+      setIsTablet(width >= 768 && width < 1024);
     };
     
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
+    checkViewport();
+    window.addEventListener('resize', checkViewport);
     
-    return () => window.removeEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkViewport);
   }, []);
 
   // Create infinite loop by duplicating categories
@@ -73,17 +75,16 @@ export function CategoryCarousel({ categories }: CategoryCarouselProps) {
     });
   }, [totalSlides]);
 
-  // Auto-play functionality with responsive timing
+  // Auto-play functionality
   useEffect(() => {
     if (isHovered || isPaused) return;
 
-    const interval = isMobile ? MOBILE_AUTO_PLAY_INTERVAL : DESKTOP_AUTO_PLAY_INTERVAL;
     const autoPlayInterval = setInterval(() => {
       goToNext();
-    }, interval);
+    }, AUTO_PLAY_INTERVAL);
 
     return () => clearInterval(autoPlayInterval);
-  }, [isHovered, isPaused, isMobile, goToNext]);
+  }, [isHovered, isPaused, goToNext]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -111,8 +112,11 @@ export function CategoryCarousel({ categories }: CategoryCarouselProps) {
     if (isMobile) {
       // Mobile: 1 card per view, move by 100%
       return `translateX(-${currentIndex * 100}%)`;
+    } else if (isTablet) {
+      // Tablet: 2 cards per view, move by 50% (1 card width)
+      return `translateX(-${currentIndex * 50}%)`;
     }
-    // Desktop/Tablet: 3 cards per view, move by 33.333%
+    // Desktop: 3 cards per view, move by 33.333% (1 card width)
     return `translateX(-${currentIndex * (100 / 3)}%)`;
   };
 
