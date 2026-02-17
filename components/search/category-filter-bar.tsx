@@ -9,22 +9,30 @@ import { CategoryPill } from './category-pill';
 export interface CategoryFilterBarProps {
   selectedCategoryId: string | null; // null means "All" is selected
   onCategorySelect: (categoryId: string | null) => void;
+  variant?: 'horizontal' | 'vertical'; // Layout variant
 }
 
 /**
  * CategoryFilterBar Component
  * 
- * Displays a horizontal scrollable list of category pills with the currently selected category highlighted.
+ * Displays a list of category pills with the currently selected category highlighted.
  * Fetches categories from the API on mount and caches them in session storage.
  * Hides itself entirely if the category API request fails.
+ * 
+ * @param variant - Layout variant: 'horizontal' (default, scrollable) or 'vertical' (stacked)
  * 
  * @example
  * <CategoryFilterBar
  *   selectedCategoryId={categoryId}
  *   onCategorySelect={(id) => handleCategoryChange(id)}
+ *   variant="vertical"
  * />
  */
-export function CategoryFilterBar({ selectedCategoryId, onCategorySelect }: CategoryFilterBarProps) {
+export function CategoryFilterBar({ 
+  selectedCategoryId, 
+  onCategorySelect,
+  variant = 'horizontal'
+}: CategoryFilterBarProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -111,17 +119,19 @@ export function CategoryFilterBar({ selectedCategoryId, onCategorySelect }: Cate
   if (loading) {
     return (
       <div className="relative">
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+        <div className={variant === 'vertical' ? 'flex flex-col gap-2' : 'flex gap-2 overflow-x-auto scrollbar-hide'}>
           {[...Array(5)].map((_, i) => (
             <div
               key={i}
-              className="h-11 w-24 bg-gray-200 rounded-full animate-pulse flex-shrink-0"
+              className={`h-11 bg-gray-200 rounded-full animate-pulse ${variant === 'vertical' ? 'w-full' : 'w-24 flex-shrink-0'}`}
             />
           ))}
         </div>
       </div>
     );
   }
+
+  const isVertical = variant === 'vertical';
 
   return (
     <div className="relative">
@@ -135,23 +145,32 @@ export function CategoryFilterBar({ selectedCategoryId, onCategorySelect }: Cate
         {announcement}
       </div>
 
-      {/* Horizontal scrollable container */}
+      {/* Container - horizontal scrollable or vertical stacked */}
       <div
         ref={containerRef}
         role="tablist"
         aria-label="Filter tips by category"
         onKeyDown={handleKeyDown}
-        className="flex gap-2 overflow-x-auto scrollbar-hide scroll-smooth py-2"
-        style={{
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-        }}
+        className={
+          isVertical
+            ? 'flex flex-col gap-2'
+            : 'flex gap-2 overflow-x-auto scrollbar-hide scroll-smooth py-2'
+        }
+        style={
+          isVertical
+            ? undefined
+            : {
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+              }
+        }
       >
         {/* "All" pill first */}
         <CategoryPill
           category={null}
           isSelected={selectedCategoryId === null}
           onClick={() => onCategorySelect(null)}
+          fullWidth={isVertical}
         />
         
         {/* Fetched categories */}
@@ -161,13 +180,18 @@ export function CategoryFilterBar({ selectedCategoryId, onCategorySelect }: Cate
             category={category}
             isSelected={selectedCategoryId === category.id}
             onClick={() => onCategorySelect(category.id)}
+            fullWidth={isVertical}
           />
         ))}
       </div>
 
-      {/* Scroll indicators (fade edges) for overflow */}
-      <div className="absolute top-0 left-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent pointer-events-none" />
-      <div className="absolute top-0 right-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none" />
+      {/* Scroll indicators (fade edges) for overflow - horizontal only */}
+      {!isVertical && (
+        <>
+          <div className="absolute top-0 left-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent pointer-events-none" />
+          <div className="absolute top-0 right-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none" />
+        </>
+      )}
     </div>
   );
 }

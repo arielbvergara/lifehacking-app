@@ -7,6 +7,7 @@ export interface CategoryPillProps {
   category: Category | null; // null for "All" category
   isSelected: boolean;
   onClick: () => void;
+  fullWidth?: boolean; // Whether to display full width (for vertical layout)
 }
 
 /**
@@ -15,15 +16,17 @@ export interface CategoryPillProps {
  * Renders an individual category button with optional image icon.
  * Used in the CategoryFilterBar to display filterable categories.
  * 
+ * @param fullWidth - Whether to display full width (for vertical layout)
+ * 
  * @example
  * // "All" category pill
  * <CategoryPill category={null} isSelected={true} onClick={() => {}} />
  * 
  * @example
- * // Category with image
- * <CategoryPill category={categoryWithImage} isSelected={false} onClick={() => {}} />
+ * // Category with image, full width
+ * <CategoryPill category={categoryWithImage} isSelected={false} onClick={() => {}} fullWidth={true} />
  */
-export function CategoryPill({ category, isSelected, onClick }: CategoryPillProps) {
+export function CategoryPill({ category, isSelected, onClick, fullWidth = false }: CategoryPillProps) {
   const isAllCategory = category === null;
   const categoryName = isAllCategory ? 'All' : category.name;
 
@@ -47,6 +50,7 @@ export function CategoryPill({ category, isSelected, onClick }: CategoryPillProp
         font-medium text-sm transition-all
         min-h-[44px] min-w-[44px]
         focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
+        ${fullWidth ? 'w-full justify-center' : 'flex-shrink-0'}
         ${
           isSelected
             ? 'bg-primary text-white hover:bg-primary-dark'
