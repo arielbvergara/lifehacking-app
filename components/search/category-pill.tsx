@@ -26,7 +26,6 @@ export interface CategoryPillProps {
 export function CategoryPill({ category, isSelected, onClick }: CategoryPillProps) {
   const isAllCategory = category === null;
   const categoryName = isAllCategory ? 'All' : category.name;
-  const hasImage = !isAllCategory && category.image?.imageUrl;
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -55,17 +54,6 @@ export function CategoryPill({ category, isSelected, onClick }: CategoryPillProp
         }
       `}
     >
-      {hasImage && (
-        <div className="relative w-6 h-6 flex-shrink-0">
-          <Image
-            src={category.image!.imageUrl!}
-            alt=""
-            fill
-            className="object-contain"
-            sizes="24px"
-          />
-        </div>
-      )}
       <span className="whitespace-nowrap">{categoryName}</span>
     </button>
   );
