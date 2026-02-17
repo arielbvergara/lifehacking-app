@@ -83,6 +83,7 @@ export default async function TipDetailPage({ params }: Props) {
   // Prepare breadcrumb items
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
+    { label: 'Categories', href: `/categories` },
     { label: tip.categoryName, href: `/category/${tip.categoryId}` },
     { label: truncateForBreadcrumb(tip.title) },
   ];
