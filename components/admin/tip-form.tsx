@@ -113,6 +113,7 @@ export function TipForm() {
   const handleProcessVideo = async () => {
     // Validate video URL
     const validation = validateVideoUrl(formState.videoUrl);
+    
     if (!validation.isValid) {
       setFormState((prev) => ({
         ...prev,
@@ -142,6 +143,7 @@ export function TipForm() {
       }));
     } catch (err) {
       const error = err as Error;
+      
       setFormState((prev) => ({
         ...prev,
         isProcessingVideo: false,

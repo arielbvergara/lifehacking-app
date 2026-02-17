@@ -170,12 +170,10 @@ export async function generateTipContentFromVideo(
   try {
     // Initialize Gemini AI
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     // Create prompt for tip generation
-    const prompt = `Analyze this ${validation.platform} video and generate a life hack tip in JSON format.
-
-Video URL: ${videoUrl}
+    const promptText = `Analyze this ${validation.platform} video and generate a life hack tip in JSON format.
 
 Generate a JSON response with the following structure:
 {
@@ -209,8 +207,18 @@ Return ONLY valid JSON, no markdown formatting or additional text.`;
     const timeoutId = setTimeout(() => controller.abort(), GEMINI_TIMEOUT_MS);
 
     try {
-      // Generate content
-      const result = await model.generateContent(prompt);
+      // Generate content with YouTube URL as fileData
+      const result = await model.generateContent([
+        {
+          fileData: {
+            fileUri: videoUrl,
+            mimeType: 'video/*',
+          },
+        },
+        {
+          text: promptText,
+        },
+      ]);
       clearTimeout(timeoutId);
 
       const response = result.response;
@@ -224,6 +232,7 @@ Return ONLY valid JSON, no markdown formatting or additional text.`;
           .replace(/```json\n?/g, '')
           .replace(/```\n?/g, '')
           .trim();
+        
         parsedContent = JSON.parse(cleanedText);
       } catch {
         throw new Error(ERROR_MESSAGES.GEMINI_INVALID_RESPONSE);
