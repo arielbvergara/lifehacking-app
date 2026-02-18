@@ -151,18 +151,38 @@ export function FilterSidebar({
       >
         {/* Sidebar Header */}
         <div className="sticky top-0 bg-white md:rounded-t-xl border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
-          <h2 className="text-lg font-bold text-gray-900">Filters</h2>
+          <div className="flex items-center gap-3">
+            {/* Filter Icon */}
+            <span className="material-icons-round text-primary text-2xl">tune</span>
+            <h2 className="text-lg font-bold text-gray-900">Filters</h2>
+          </div>
           
-          {/* Close button - mobile only */}
-          <button
-            ref={closeButtonRef}
-            onClick={onClose}
-            className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
-            aria-label="Close filters"
-            type="button"
-          >
-            <span className="material-icons-round text-gray-600">close</span>
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Reset text button - visible on desktop */}
+            <button
+              onClick={onResetFilters}
+              disabled={!hasActiveFilters}
+              className={`hidden md:block text-sm font-medium transition-colors ${
+                hasActiveFilters
+                  ? 'text-gray-600 hover:text-gray-900'
+                  : 'text-gray-400 cursor-not-allowed'
+              }`}
+              type="button"
+            >
+              Reset
+            </button>
+            
+            {/* Close button - mobile only */}
+            <button
+              ref={closeButtonRef}
+              onClick={onClose}
+              className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
+              aria-label="Close filters"
+              type="button"
+            >
+              <span className="material-icons-round text-gray-600">close</span>
+            </button>
+          </div>
         </div>
 
         {/* Sidebar Content */}

@@ -248,7 +248,15 @@ export function SearchPageClient() {
             {/* Page Title */}
             <div className="mb-6">
               <h1 className="text-2xl font-bold text-gray-900 mb-1">
-                {searchQuery ? `Search results for "${searchQuery}"` : 'Exploring All Tips'}
+                {searchQuery ? (
+                  <>
+                    Search results for <span className="text-primary">&ldquo;{searchQuery}&rdquo;</span>
+                  </>
+                ) : (
+                  <>
+                    Exploring <span className="text-primary">All Tips</span>
+                  </>
+                )}
               </h1>
               {!loading && (
                 <p className="text-sm text-gray-500">
