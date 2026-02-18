@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { SearchBar } from '../shared/search-bar';
 import { CategoryTags } from '../shared/category/category-tags';
 
@@ -19,6 +20,13 @@ const DEFAULT_TAGS = ['kitchenhacks', 'organization', 'wellness'];
  * <HeroSection />
  */
 export function HeroSection({ onSearch }: HeroSectionProps) {
+  const router = useRouter();
+
+  const handleTagClick = (tag: string) => {
+    // Navigate to search page with tag as query parameter
+    router.push(`/search?q=${encodeURIComponent(tag)}`);
+  };
+
   return (
     <section className="relative bg-gradient-to-b from-[#e8f5e8] via-[#f0f9f0] to-white py-12 md:py-16 lg:py-20 pb-24 md:pb-32">
       <div className="container mx-auto px-4 max-w-4xl">
@@ -46,7 +54,7 @@ export function HeroSection({ onSearch }: HeroSectionProps) {
         </div>
 
         <div className="flex justify-center">
-          <CategoryTags tags={DEFAULT_TAGS} />
+          <CategoryTags tags={DEFAULT_TAGS} onTagClick={handleTagClick} />
         </div>
       </div>
     </section>
