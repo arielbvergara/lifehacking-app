@@ -189,8 +189,8 @@ export function FilterSidebar({
         {/* Sidebar Content */}
         <div className="p-6 space-y-6">
           
-          {/* Active Filter Tags */}
-          {(selectedCategoryId || searchQuery) && (
+          {/* Active Filter Tags or Empty State */}
+          {(selectedCategoryId || searchQuery) ? (
             <div>
               <h3 className="text-sm font-semibold text-gray-700 mb-3">Active Filters</h3>
               <div className="flex flex-wrap gap-2">
@@ -209,6 +209,10 @@ export function FilterSidebar({
                   />
                 )}
               </div>
+            </div>
+          ) : (
+            <div className="text-sm text-gray-500 italic">
+              No filters applied yet
             </div>
           )}
 
