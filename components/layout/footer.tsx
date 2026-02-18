@@ -69,14 +69,6 @@ export function Footer() {
                   Contact
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/blog"
-                  className="text-sm text-gray-600 hover:text-primary transition-colors"
-                >
-                  Blog
-                </Link>
-              </li>
             </ul>
           </div>
 
