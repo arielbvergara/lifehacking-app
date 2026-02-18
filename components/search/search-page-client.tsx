@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { TipSummary } from '@/lib/types/api';
 import type { SortOption } from '@/lib/utils/sort-mappings';
-import { validateSortBy, validateSortDir, validatePage, getSortMapping } from '@/lib/utils/sort-mappings';
+import { validateSortBy, validatePage, getSortMapping } from '@/lib/utils/sort-mappings';
 import { calculateActiveFilters } from '@/lib/utils/active-filters';
 import { fetchTips, APIError } from '@/lib/api/tips';
 import { Header } from '@/components/layout/header';
@@ -59,7 +59,6 @@ export function SearchPageClient() {
   const searchQuery = searchParams.get('q') || '';
   const categoryId = searchParams.get('categoryId') || null;
   const sortBy = validateSortBy(searchParams.get('sortBy'));
-  const sortDir = validateSortDir(searchParams.get('sortDir'));
   const currentPage = validatePage(searchParams.get('page'));
 
   // Calculate active filter count for mobile button badge
@@ -96,7 +95,7 @@ export function SearchPageClient() {
     };
 
     loadTips();
-  }, [searchQuery, categoryId, sortBy, sortDir]);
+  }, [searchQuery, categoryId, sortBy]);
 
   // Handlers
   const handleCategorySelect = (categoryId: string | null) => {
@@ -125,21 +124,6 @@ export function SearchPageClient() {
     params.set('sortBy', newSortBy);
     
     // Reset page to 1 when sort changes
-    params.delete('page');
-    
-    // Navigate to updated URL
-    router.push(`/search?${params.toString()}`);
-  };
-
-  const handleSortDirectionToggle = () => {
-    // Create new URLSearchParams from current params
-    const params = new URLSearchParams(searchParams.toString());
-    
-    // Toggle sort direction
-    const newSortDir = sortDir === 'asc' ? 'desc' : 'asc';
-    params.set('sortDir', newSortDir);
-    
-    // Reset page to 1 when sort direction changes
     params.delete('page');
     
     // Navigate to updated URL
@@ -234,9 +218,7 @@ export function SearchPageClient() {
             selectedCategoryId={categoryId}
             onCategorySelect={handleCategorySelect}
             sortBy={sortBy}
-            sortDir={sortDir}
             onSortChange={handleSortChange}
-            onSortDirectionToggle={handleSortDirectionToggle}
             onResetFilters={handleResetFilters}
             hasActiveFilters={hasActiveFilters}
             showCategoryFilter={true} // True on mobile (inside sidebar), false on desktop (in Header)

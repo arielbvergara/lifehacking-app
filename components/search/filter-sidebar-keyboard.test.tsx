@@ -28,16 +28,9 @@ vi.mock('./sort-field-dropdown', () => ({
     <select value={value} onChange={(e) => onChange(e.target.value)} data-testid="sort-dropdown">
       <option value="newest">Newest First</option>
       <option value="oldest">Oldest First</option>
-      <option value="alphabetical">Alphabetical A-Z</option>
+      <option value="alphabetical-asc">Alphabetical A-Z</option>
+      <option value="alphabetical-desc">Alphabetical Z-A</option>
     </select>
-  ),
-}));
-
-vi.mock('./sort-direction-toggle', () => ({
-  SortDirectionToggle: ({ value, onChange, disabled }: { value: string; onChange: () => void; disabled: boolean }) => (
-    <button onClick={onChange} disabled={disabled} data-testid="sort-direction-toggle">
-      {value === 'asc' ? 'Ascending' : 'Descending'}
-    </button>
   ),
 }));
 
@@ -48,9 +41,7 @@ describe('FilterSidebar - Keyboard Navigation', () => {
     selectedCategoryId: null,
     onCategorySelect: vi.fn(),
     sortBy: 'newest',
-    sortDir: 'desc',
     onSortChange: vi.fn(),
-    onSortDirectionToggle: vi.fn(),
     onResetFilters: vi.fn(),
     hasActiveFilters: false,
     showCategoryFilter: false,
@@ -133,16 +124,6 @@ describe('FilterSidebar - Keyboard Navigation', () => {
       const sortDropdown = screen.getByTestId('sort-dropdown');
       expect(sortDropdown).toBeInTheDocument();
       expect(sortDropdown.tagName).toBe('SELECT');
-    });
-
-    it('FilterSidebar_ShouldHaveSortDirectionToggleFocusable_WhenRendered', () => {
-      render(
-        <FilterSidebar {...defaultProps} isOpen={true} />
-      );
-
-      const sortToggle = screen.getByTestId('sort-direction-toggle');
-      expect(sortToggle).toBeInTheDocument();
-      expect(sortToggle.tagName).toBe('BUTTON');
     });
 
     it('FilterSidebar_ShouldMoveFocusToCloseButton_WhenSidebarOpens', async () => {
@@ -250,13 +231,11 @@ describe('FilterSidebar - Keyboard Navigation', () => {
       const closeButton = screen.getByLabelText('Close filters');
       const resetButton = screen.getByTestId('reset-button');
       const sortDropdown = screen.getByTestId('sort-dropdown');
-      const sortToggle = screen.getByTestId('sort-direction-toggle');
 
       // All interactive elements should be in the document
       expect(closeButton).toBeInTheDocument();
       expect(resetButton).toBeInTheDocument();
       expect(sortDropdown).toBeInTheDocument();
-      expect(sortToggle).toBeInTheDocument();
     });
 
     it('FilterSidebar_ShouldHaveButtonTypeOnCloseButton_WhenRendered', () => {

@@ -5,7 +5,6 @@ import type { SortOption } from '@/lib/utils/sort-mappings';
 import { CategoryFilterBar } from './category-filter-bar';
 import { ResetFiltersButton } from './reset-filters-button';
 import { SortFieldDropdown } from './sort-field-dropdown';
-import { SortDirectionToggle } from './sort-direction-toggle';
 
 export interface FilterSidebarProps {
   isOpen: boolean;
@@ -13,9 +12,7 @@ export interface FilterSidebarProps {
   selectedCategoryId: string | null;
   onCategorySelect: (categoryId: string | null) => void;
   sortBy: SortOption;
-  sortDir: 'asc' | 'desc';
   onSortChange: (sortBy: SortOption) => void;
-  onSortDirectionToggle: () => void;
   onResetFilters: () => void;
   hasActiveFilters: boolean;
   showCategoryFilter: boolean;
@@ -33,9 +30,7 @@ export interface FilterSidebarProps {
  * @param selectedCategoryId - Currently selected category ID (null for "All")
  * @param onCategorySelect - Handler for category selection
  * @param sortBy - Current sort option
- * @param sortDir - Current sort direction
  * @param onSortChange - Handler for sort option change
- * @param onSortDirectionToggle - Handler for sort direction toggle
  * @param onResetFilters - Handler for reset filters button
  * @param hasActiveFilters - Whether any filters are currently active
  * @param showCategoryFilter - Whether to show category filter (true on mobile, false on desktop)
@@ -47,9 +42,7 @@ export interface FilterSidebarProps {
  *   selectedCategoryId={categoryId}
  *   onCategorySelect={handleCategorySelect}
  *   sortBy="newest"
- *   sortDir="desc"
  *   onSortChange={handleSortChange}
- *   onSortDirectionToggle={handleSortDirectionToggle}
  *   onResetFilters={handleResetFilters}
  *   hasActiveFilters={true}
  *   showCategoryFilter={false}
@@ -61,9 +54,7 @@ export function FilterSidebar({
   selectedCategoryId,
   onCategorySelect,
   sortBy,
-  sortDir,
   onSortChange,
-  onSortDirectionToggle,
   onResetFilters,
   hasActiveFilters,
   showCategoryFilter,
@@ -116,9 +107,6 @@ export function FilterSidebar({
       }
     }
   }, [isOpen]);
-
-  // Disable sort direction toggle when alphabetical is selected
-  const isSortDirectionDisabled = sortBy === 'alphabetical';
 
   return (
     <>
@@ -187,6 +175,18 @@ export function FilterSidebar({
 
         {/* Sidebar Content */}
         <div className="p-6 space-y-6">
+          {/* Category Filter - mobile only, vertical layout */}
+          {showCategoryFilter && (
+            <div className="md:hidden">
+              <h3 className="text-sm font-medium text-gray-700 mb-3">Categories</h3>
+              <CategoryFilterBar
+                selectedCategoryId={selectedCategoryId}
+                onCategorySelect={onCategorySelect}
+                variant="vertical"
+              />
+            </div>
+          )}
+
           {/* Reset Filters Button */}
           <ResetFiltersButton
             onClick={onResetFilters}
@@ -197,13 +197,6 @@ export function FilterSidebar({
           <SortFieldDropdown
             value={sortBy}
             onChange={onSortChange}
-          />
-
-          {/* Sort Direction Toggle */}
-          <SortDirectionToggle
-            value={sortDir}
-            onChange={onSortDirectionToggle}
-            disabled={isSortDirectionDisabled}
           />
         </div>
       </aside>

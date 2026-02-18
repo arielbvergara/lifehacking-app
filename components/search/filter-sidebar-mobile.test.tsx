@@ -29,16 +29,9 @@ vi.mock('./sort-field-dropdown', () => ({
     <select value={value} onChange={(e) => onChange(e.target.value)} data-testid="sort-dropdown">
       <option value="newest">Newest First</option>
       <option value="oldest">Oldest First</option>
-      <option value="alphabetical">Alphabetical A-Z</option>
+      <option value="alphabetical-asc">Alphabetical A-Z</option>
+      <option value="alphabetical-desc">Alphabetical Z-A</option>
     </select>
-  ),
-}));
-
-vi.mock('./sort-direction-toggle', () => ({
-  SortDirectionToggle: ({ value, onChange, disabled }: { value: string; onChange: () => void; disabled: boolean }) => (
-    <button onClick={onChange} disabled={disabled} data-testid="sort-direction-toggle">
-      {value === 'asc' ? 'Ascending' : 'Descending'}
-    </button>
   ),
 }));
 
@@ -49,9 +42,7 @@ describe('FilterSidebar - Mobile Behavior', () => {
     selectedCategoryId: null,
     onCategorySelect: vi.fn(),
     sortBy: 'newest',
-    sortDir: 'desc',
     onSortChange: vi.fn(),
-    onSortDirectionToggle: vi.fn(),
     onResetFilters: vi.fn(),
     hasActiveFilters: false,
     showCategoryFilter: false,

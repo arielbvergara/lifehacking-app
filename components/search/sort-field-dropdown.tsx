@@ -13,7 +13,8 @@ export interface SortFieldDropdownProps {
 const SORT_OPTIONS = [
   { value: 'newest' as const, label: 'Newest First' },
   { value: 'oldest' as const, label: 'Oldest First' },
-  { value: 'alphabetical' as const, label: 'Alphabetical A-Z' },
+  { value: 'alphabetical-asc' as const, label: 'Alphabetical A-Z' },
+  { value: 'alphabetical-desc' as const, label: 'Alphabetical Z-A' },
 ];
 
 /**
