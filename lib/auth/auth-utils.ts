@@ -15,7 +15,7 @@ const FIREBASE_ERROR_MESSAGES: Record<string, string> = {
   // Email/Password errors
   'auth/invalid-email': 'Please enter a valid email address',
   'auth/user-disabled': 'This account has been disabled',
-  'auth/user-not-found': 'No account found with this email',
+  'auth/user-not-found': 'If an account exists with this email, you will receive a password reset link',
   'auth/wrong-password': 'Incorrect password',
   'auth/email-already-in-use': 'An account with this email already exists',
   'auth/weak-password': 'Password is too weak. Please use a stronger password',
@@ -33,6 +33,11 @@ const FIREBASE_ERROR_MESSAGES: Record<string, string> = {
   // Network errors
   'auth/network-request-failed': 'Network error. Please check your connection',
   'auth/timeout': 'Request timed out. Please try again',
+  
+  // Password reset errors
+  'auth/expired-action-code': 'This password reset link has expired. Please request a new one',
+  'auth/invalid-action-code': 'This password reset link is invalid. Please request a new one',
+  'auth/missing-email': 'Please enter your email address',
   
   // General errors
   'auth/internal-error': 'An unexpected error occurred. Please try again',

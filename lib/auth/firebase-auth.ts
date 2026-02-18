@@ -13,6 +13,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
+  sendPasswordResetEmail as firebaseSendPasswordResetEmail,
   User,
   UserCredential,
 } from 'firebase/auth';
@@ -187,6 +188,34 @@ export async function signUpWithEmail(
       password
     );
     return result.user;
+  } catch (error) {
+    // Re-throw with context for better error handling upstream
+    throw error;
+  }
+}
+
+/**
+ * Send password reset email
+ * 
+ * Sends a password reset email to the specified email address.
+ * The email contains a link to Firebase's hosted password reset page.
+ * For security, this function does not reveal whether the email exists.
+ * 
+ * @param email - User's email address
+ * @returns Promise that resolves when email is sent
+ * @throws FirebaseError if sending fails (network error, rate limiting, etc.)
+ * 
+ * @example
+ * try {
+ *   await sendPasswordResetEmail('user@example.com');
+ *   console.log('Password reset email sent');
+ * } catch (error) {
+ *   console.error('Failed to send reset email:', error);
+ * }
+ */
+export async function sendPasswordResetEmail(email: string): Promise<void> {
+  try {
+    await firebaseSendPasswordResetEmail(auth, email);
   } catch (error) {
     // Re-throw with context for better error handling upstream
     throw error;
