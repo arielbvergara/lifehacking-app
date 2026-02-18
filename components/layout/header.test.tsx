@@ -22,6 +22,12 @@ vi.mock('@/lib/auth/auth-context', () => ({
   useAuth: () => mockUseAuth(),
 }));
 
+// Mock useFavorites hook
+const mockUseFavorites = vi.fn();
+vi.mock('@/lib/hooks/use-favorites', () => ({
+  useFavorites: () => mockUseFavorites(),
+}));
+
 // Mock child components
 vi.mock('@/components/shared/logo', () => ({
   Logo: () => <div data-testid="logo">Logo</div>,
@@ -85,6 +91,17 @@ describe('Header', () => {
     mockUseAuth.mockReturnValue({
       user: null,
       signOut: mockSignOut,
+    });
+    // Default favorites count to 0
+    mockUseFavorites.mockReturnValue({
+      favorites: [],
+      isLoading: false,
+      error: null,
+      addFavorite: vi.fn(),
+      removeFavorite: vi.fn(),
+      isFavorite: vi.fn(),
+      refreshFavorites: vi.fn(),
+      count: 0,
     });
   });
 
@@ -980,6 +997,273 @@ describe('Header', () => {
       expect(header).toHaveClass('sticky');
       expect(header).toHaveClass('top-0');
       expect(header).toHaveClass('z-50');
+    });
+  });
+
+  describe('Favorites Link', () => {
+    it('FavoritesLink_ShouldAppearInHeader_WhenRendered', () => {
+      render(<Header />);
+
+      const favoritesLink = screen.getByRole('link', { name: /favorites/i });
+      expect(favoritesLink).toBeInTheDocument();
+    });
+
+    it('FavoritesLink_ShouldHaveCorrectHref_WhenRendered', () => {
+      render(<Header />);
+
+      const favoritesLink = screen.getByRole('link', { name: /favorites/i });
+      expect(favoritesLink).toHaveAttribute('href', '/favorites');
+    });
+
+    it('FavoritesLink_ShouldDisplayHeartIcon_WhenRendered', () => {
+      render(<Header />);
+
+      const favoritesLink = screen.getByRole('link', { name: /favorites/i });
+      const heartIcon = favoritesLink.querySelector('.material-icons-round');
+      
+      expect(heartIcon).toBeInTheDocument();
+      expect(heartIcon?.textContent).toBe('favorite');
+    });
+
+    it('FavoritesLink_ShouldNotDisplayBadge_WhenCountIsZero', () => {
+      mockUseFavorites.mockReturnValue({
+        favorites: [],
+        isLoading: false,
+        error: null,
+        addFavorite: vi.fn(),
+        removeFavorite: vi.fn(),
+        isFavorite: vi.fn(),
+        refreshFavorites: vi.fn(),
+        count: 0,
+      });
+
+      render(<Header />);
+
+      const favoritesLink = screen.getByRole('link', { name: /favorites/i });
+      const badge = favoritesLink.querySelector('.bg-red-500');
+      
+      expect(badge).not.toBeInTheDocument();
+    });
+
+    it('FavoritesLink_ShouldDisplayBadge_WhenCountIsGreaterThanZero', () => {
+      mockUseFavorites.mockReturnValue({
+        favorites: ['tip-1', 'tip-2', 'tip-3'],
+        isLoading: false,
+        error: null,
+        addFavorite: vi.fn(),
+        removeFavorite: vi.fn(),
+        isFavorite: vi.fn(),
+        refreshFavorites: vi.fn(),
+        count: 3,
+      });
+
+      render(<Header />);
+
+      const favoritesLink = screen.getByRole('link', { name: /favorites \(3 items\)/i });
+      const badge = favoritesLink.querySelector('.bg-red-500');
+      
+      expect(badge).toBeInTheDocument();
+      expect(badge?.textContent).toBe('3');
+    });
+
+    it('FavoritesLink_ShouldDisplayCorrectCount_WhenCountIsLessThan100', () => {
+      mockUseFavorites.mockReturnValue({
+        favorites: Array(42).fill('tip'),
+        isLoading: false,
+        error: null,
+        addFavorite: vi.fn(),
+        removeFavorite: vi.fn(),
+        isFavorite: vi.fn(),
+        refreshFavorites: vi.fn(),
+        count: 42,
+      });
+
+      render(<Header />);
+
+      const favoritesLink = screen.getByRole('link', { name: /favorites \(42 items\)/i });
+      const badge = favoritesLink.querySelector('.bg-red-500');
+      
+      expect(badge?.textContent).toBe('42');
+    });
+
+    it('FavoritesLink_ShouldDisplay99Plus_WhenCountIsGreaterThan99', () => {
+      mockUseFavorites.mockReturnValue({
+        favorites: Array(150).fill('tip'),
+        isLoading: false,
+        error: null,
+        addFavorite: vi.fn(),
+        removeFavorite: vi.fn(),
+        isFavorite: vi.fn(),
+        refreshFavorites: vi.fn(),
+        count: 150,
+      });
+
+      render(<Header />);
+
+      const favoritesLink = screen.getByRole('link', { name: /favorites \(150 items\)/i });
+      const badge = favoritesLink.querySelector('.bg-red-500');
+      
+      expect(badge?.textContent).toBe('99+');
+    });
+
+    it('FavoritesLink_ShouldHaveAccessibleLabel_WhenCountIsZero', () => {
+      mockUseFavorites.mockReturnValue({
+        favorites: [],
+        isLoading: false,
+        error: null,
+        addFavorite: vi.fn(),
+        removeFavorite: vi.fn(),
+        isFavorite: vi.fn(),
+        refreshFavorites: vi.fn(),
+        count: 0,
+      });
+
+      render(<Header />);
+
+      const favoritesLink = screen.getByRole('link', { name: 'Favorites' });
+      expect(favoritesLink).toBeInTheDocument();
+    });
+
+    it('FavoritesLink_ShouldHaveAccessibleLabel_WhenCountIsGreaterThanZero', () => {
+      mockUseFavorites.mockReturnValue({
+        favorites: ['tip-1', 'tip-2'],
+        isLoading: false,
+        error: null,
+        addFavorite: vi.fn(),
+        removeFavorite: vi.fn(),
+        isFavorite: vi.fn(),
+        refreshFavorites: vi.fn(),
+        count: 2,
+      });
+
+      render(<Header />);
+
+      const favoritesLink = screen.getByRole('link', { name: 'Favorites (2 items)' });
+      expect(favoritesLink).toBeInTheDocument();
+    });
+
+    it('FavoritesLink_ShouldHighlightActive_WhenOnFavoritesPage', () => {
+      mockPathname.mockReturnValue('/favorites');
+      
+      render(<Header />);
+
+      const favoritesLink = screen.getByRole('link', { name: /favorites/i });
+      expect(favoritesLink).toHaveClass('text-primary');
+    });
+
+    it('FavoritesLink_ShouldNotHighlight_WhenOnOtherPage', () => {
+      mockPathname.mockReturnValue('/');
+      
+      render(<Header />);
+
+      const favoritesLink = screen.getByRole('link', { name: /favorites/i });
+      expect(favoritesLink).not.toHaveClass('text-primary');
+      expect(favoritesLink).toHaveClass('text-gray-700');
+    });
+
+    it('FavoritesLink_ShouldAppearInMobileMenu_WhenMenuOpened', async () => {
+      const user = userEvent.setup();
+      mockUseFavorites.mockReturnValue({
+        favorites: ['tip-1', 'tip-2'],
+        isLoading: false,
+        error: null,
+        addFavorite: vi.fn(),
+        removeFavorite: vi.fn(),
+        isFavorite: vi.fn(),
+        refreshFavorites: vi.fn(),
+        count: 2,
+      });
+
+      render(<Header />);
+
+      const menuButton = screen.getByRole('button', { name: /toggle menu/i });
+      await user.click(menuButton);
+
+      // Should have multiple instances (desktop + mobile)
+      const favoritesLinks = screen.getAllByRole('link', { name: /favorites/i });
+      expect(favoritesLinks.length).toBeGreaterThan(1);
+    });
+
+    it('FavoritesLink_ShouldDisplayBadgeInMobileMenu_WhenCountIsGreaterThanZero', async () => {
+      const user = userEvent.setup();
+      mockUseFavorites.mockReturnValue({
+        favorites: ['tip-1', 'tip-2', 'tip-3'],
+        isLoading: false,
+        error: null,
+        addFavorite: vi.fn(),
+        removeFavorite: vi.fn(),
+        isFavorite: vi.fn(),
+        refreshFavorites: vi.fn(),
+        count: 3,
+      });
+
+      render(<Header />);
+
+      const menuButton = screen.getByRole('button', { name: /toggle menu/i });
+      await user.click(menuButton);
+
+      // Find mobile favorites link
+      const favoritesLinks = screen.getAllByRole('link', { name: /favorites \(3 items\)/i });
+      const mobileLink = favoritesLinks.find(link => 
+        link.className.includes('rounded-lg')
+      );
+
+      expect(mobileLink).toBeInTheDocument();
+      
+      const badge = mobileLink?.querySelector('.bg-red-500');
+      expect(badge).toBeInTheDocument();
+      expect(badge?.textContent).toBe('3');
+    });
+
+    it('FavoritesLink_ShouldCloseMobileMenu_WhenClicked', async () => {
+      const user = userEvent.setup();
+      
+      render(<Header />);
+
+      const menuButton = screen.getByRole('button', { name: /toggle menu/i });
+      await user.click(menuButton);
+
+      // Find and click mobile favorites link
+      const favoritesLinks = screen.getAllByRole('link', { name: /favorites/i });
+      const mobileLink = favoritesLinks.find(link => 
+        link.className.includes('rounded-lg')
+      );
+
+      if (mobileLink) {
+        await user.click(mobileLink);
+      }
+
+      // Menu should close
+      expect(menuButton.textContent).toBe('menu');
+    });
+
+    it('FavoritesLink_ShouldBePositionedAfterNavLinks_WhenRendered', () => {
+      const { container } = render(<Header />);
+
+      // Get all navigation links in desktop view
+      const desktopNav = container.querySelector('.hidden.md\\:flex .flex.items-center.gap-8');
+      const links = desktopNav?.querySelectorAll('a');
+      
+      // Should have Home, Categories, Popular, About, Favorites
+      expect(links?.length).toBeGreaterThanOrEqual(5);
+      
+      // Favorites should be the last navigation link before auth section
+      const favoritesLink = Array.from(links || []).find(link => 
+        link.getAttribute('href') === '/favorites'
+      );
+      expect(favoritesLink).toBeInTheDocument();
+    });
+
+    it('FavoritesLink_ShouldBePositionedBeforeAuthSection_WhenRendered', () => {
+      render(<Header />);
+      
+      // Favorites link should exist
+      const favoritesLink = screen.getByRole('link', { name: /favorites/i });
+      expect(favoritesLink).toBeInTheDocument();
+      
+      // Login/Signup should exist after favorites
+      const loginLink = screen.getByRole('link', { name: /login/i });
+      expect(loginLink).toBeInTheDocument();
     });
   });
 });
