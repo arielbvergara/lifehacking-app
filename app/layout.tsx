@@ -10,7 +10,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://lifehackbuddy.com'),
+  metadataBase: new URL('https://lifehacking.vercel.app'), //TODO: replace for https://lifehacking.com or similar
   title: {
     default: "LifeHackBuddy - Simple Life Hacks for Everyday Living",
     template: "%s | LifeHackBuddy",
