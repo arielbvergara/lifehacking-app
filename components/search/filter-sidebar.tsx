@@ -137,19 +137,21 @@ export function FilterSidebar({
           top-0 left-0 bottom-0
           w-[280px] md:w-[260px]
           bg-white
-          z-50
+          z-50 md:z-0
           transition-transform duration-300 ease-in-out
           md:transform-none
           ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
           overflow-y-auto
+          md:overflow-visible
           md:rounded-xl md:shadow-sm md:border md:border-gray-200
           flex-shrink-0
+          md:h-fit md:sticky md:top-8
         `}
         role="complementary"
         aria-label="Filter sidebar"
       >
         {/* Sidebar Header */}
-        <div className="sticky top-0 bg-white md:rounded-t-xl border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-white md:rounded-t-xl border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10 md:z-0">
           <div className="flex items-center gap-3">
             {/* Filter Icon */}
             <span className="material-icons-round text-primary text-2xl">tune</span>
