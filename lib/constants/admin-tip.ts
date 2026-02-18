@@ -26,6 +26,20 @@ export const ALLOWED_IMAGE_TYPES = [
 export const API_TIMEOUT_MS = 30000; // 30 seconds
 export const GEMINI_TIMEOUT_MS = 60000; // 60 seconds for AI processing
 
+// Gemini model configuration
+export const DEFAULT_GEMINI_MODEL_PRIMARY = 'gemini-2.5-flash';
+export const DEFAULT_GEMINI_MODEL_FALLBACK = 'gemini-2.5';
+
+/**
+ * Get Gemini model names from environment variables with fallback to defaults
+ */
+export function getGeminiModels(): { primary: string; fallback: string } {
+  return {
+    primary: process.env.NEXT_PUBLIC_GEMINI_MODEL_PRIMARY || DEFAULT_GEMINI_MODEL_PRIMARY,
+    fallback: process.env.NEXT_PUBLIC_GEMINI_MODEL_FALLBACK || DEFAULT_GEMINI_MODEL_FALLBACK,
+  };
+}
+
 // Video URL patterns
 export const VIDEO_URL_PATTERNS = {
   YOUTUBE_WATCH: /^https:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})$/,

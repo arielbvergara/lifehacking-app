@@ -21,6 +21,7 @@ import {
   TIP_TAG_MAX_LENGTH,
   TIP_MAX_TAGS,
   TIP_MIN_STEPS,
+  getGeminiModels,
 } from '@/lib/constants/admin-tip';
 
 /**
@@ -150,6 +151,66 @@ function validateGeminiResponse(data: unknown): data is GeminiTipContent {
 }
 
 /**
+ * Attempts to generate content using a specific Gemini model
+ */
+async function tryGenerateWithModel(
+  genAI: GoogleGenerativeAI,
+  modelName: string,
+  videoUrl: string,
+  validation: VideoUrlValidation & { isValid: true },
+  promptText: string
+): Promise<GeminiTipContent> {
+  const model = genAI.getGenerativeModel({ model: modelName });
+
+  // Set timeout for Gemini API call
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), GEMINI_TIMEOUT_MS);
+
+  try {
+    // Generate content with YouTube URL as fileData
+    const result = await model.generateContent([
+      {
+        fileData: {
+          fileUri: videoUrl,
+          mimeType: 'video/*',
+        },
+      },
+      {
+        text: promptText,
+      },
+    ]);
+    clearTimeout(timeoutId);
+
+    const response = result.response;
+    const text = response.text();
+
+    // Parse JSON response
+    let parsedContent: unknown;
+    try {
+      // Remove markdown code blocks if present
+      const cleanedText = text
+        .replace(/```json\n?/g, '')
+        .replace(/```\n?/g, '')
+        .trim();
+      
+      parsedContent = JSON.parse(cleanedText);
+    } catch {
+      throw new Error(ERROR_MESSAGES.GEMINI_INVALID_RESPONSE);
+    }
+
+    // Validate response structure
+    if (!validateGeminiResponse(parsedContent)) {
+      throw new Error(ERROR_MESSAGES.GEMINI_INVALID_RESPONSE);
+    }
+
+    return parsedContent;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    throw error;
+  }
+}
+
+/**
  * Generates tip content from a video URL using Gemini AI
  */
 export async function generateTipContentFromVideo(
@@ -167,10 +228,12 @@ export async function generateTipContentFromVideo(
     throw new Error(validation.error);
   }
 
+  // Get model names from environment
+  const models = getGeminiModels();
+
   try {
     // Initialize Gemini AI
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     // Create prompt for tip generation
     const promptText = `Analyze this ${validation.platform} video and generate a life hack tip in JSON format.
@@ -202,51 +265,19 @@ Requirements:
 
 Return ONLY valid JSON, no markdown formatting or additional text.`;
 
-    // Set timeout for Gemini API call
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), GEMINI_TIMEOUT_MS);
-
+    // Try primary model first
     try {
-      // Generate content with YouTube URL as fileData
-      const result = await model.generateContent([
-        {
-          fileData: {
-            fileUri: videoUrl,
-            mimeType: 'video/*',
-          },
-        },
-        {
-          text: promptText,
-        },
-      ]);
-      clearTimeout(timeoutId);
-
-      const response = result.response;
-      const text = response.text();
-
-      // Parse JSON response
-      let parsedContent: unknown;
+      return await tryGenerateWithModel(genAI, models.primary, videoUrl, validation as VideoUrlValidation & { isValid: true }, promptText);
+    } catch {
+      // If primary model fails, try fallback model
+      console.warn(`Primary model (${models.primary}) failed, trying fallback model (${models.fallback})`);
+      
       try {
-        // Remove markdown code blocks if present
-        const cleanedText = text
-          .replace(/```json\n?/g, '')
-          .replace(/```\n?/g, '')
-          .trim();
-        
-        parsedContent = JSON.parse(cleanedText);
-      } catch {
-        throw new Error(ERROR_MESSAGES.GEMINI_INVALID_RESPONSE);
+        return await tryGenerateWithModel(genAI, models.fallback, videoUrl, validation as VideoUrlValidation & { isValid: true }, promptText);
+      } catch (fallbackError) {
+        // Both models failed, throw the fallback error
+        throw fallbackError;
       }
-
-      // Validate response structure
-      if (!validateGeminiResponse(parsedContent)) {
-        throw new Error(ERROR_MESSAGES.GEMINI_INVALID_RESPONSE);
-      }
-
-      return parsedContent;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      throw error;
     }
   } catch (error) {
     if (error instanceof Error) {
