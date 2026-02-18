@@ -2,6 +2,7 @@
 
 import { useState, useCallback, ChangeEvent, FormEvent, DragEvent, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import * as Sentry from '@sentry/nextjs';
 import { useAuth } from '@/lib/auth/auth-context';
 import { uploadCategoryImage, createCategory } from '@/lib/api/admin-category';
 import { ValidationErrors } from '@/lib/types/admin-category';
@@ -204,21 +205,35 @@ export function CategoryForm() {
     }));
 
     try {
-      // Get Firebase ID token from auth context
-      if (!idToken) {
-        throw new Error('Authentication required');
-      }
-
-      // Step 1: Upload image
-      const imageMetadata = await uploadCategoryImage(formState.selectedFile!, idToken);
-
-      // Step 2: Create category
-      await createCategory(
+      await Sentry.startSpan(
         {
-          name: formState.categoryName.trim(),
-          image: imageMetadata,
+          op: 'ui.action',
+          name: 'Create Category Form Submit',
         },
-        idToken
+        async (span) => {
+          span.setAttribute('category.name', formState.categoryName.trim());
+          span.setAttribute('image.size', formState.selectedFile!.size);
+          span.setAttribute('image.type', formState.selectedFile!.type);
+
+          // Get Firebase ID token from auth context
+          if (!idToken) {
+            throw new Error('Authentication required');
+          }
+
+          // Step 1: Upload image
+          const imageMetadata = await uploadCategoryImage(formState.selectedFile!, idToken);
+          span.setAttribute('image.uploaded', true);
+
+          // Step 2: Create category
+          await createCategory(
+            {
+              name: formState.categoryName.trim(),
+              image: imageMetadata,
+            },
+            idToken
+          );
+          span.setAttribute('category.created', true);
+        }
       );
 
       // Success - reset form
@@ -241,6 +256,9 @@ export function CategoryForm() {
         fileInputRef.current.value = '';
       }
     } catch (err) {
+      // Capture exception in Sentry
+      Sentry.captureException(err);
+      
       // Handle 403 Forbidden - redirect to 404
       const error = err as { status?: number; message?: string };
       if (error.status === 403) {

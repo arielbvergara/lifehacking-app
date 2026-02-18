@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
+import * as Sentry from '@sentry/nextjs';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 
@@ -14,6 +15,8 @@ export default function TipError({
 }) {
   useEffect(() => {
     console.error('Tip page error:', error);
+    // Capture the error in Sentry
+    Sentry.captureException(error);
   }, [error]);
 
   return (
