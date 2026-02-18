@@ -187,18 +187,6 @@ export function FilterSidebar({
 
         {/* Sidebar Content */}
         <div className="p-6 space-y-6">
-          {/* Category Filter - mobile only, vertical layout */}
-          {showCategoryFilter && (
-            <div className="md:hidden">
-              <h3 className="text-sm font-medium text-gray-700 mb-3">Categories</h3>
-              <CategoryFilterBar
-                selectedCategoryId={selectedCategoryId}
-                onCategorySelect={onCategorySelect}
-                variant="vertical"
-              />
-            </div>
-          )}
-
           {/* Reset Filters Button */}
           <ResetFiltersButton
             onClick={onResetFilters}
