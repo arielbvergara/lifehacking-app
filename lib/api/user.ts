@@ -5,6 +5,8 @@
  * These functions handle user profile management and synchronization with Firebase auth.
  */
 
+import { handleFavoritesMerge } from '@/lib/favorites/merge-handler';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000';
 
 /**
@@ -109,6 +111,7 @@ export async function createUser(idToken: string): Promise<UserProfile> {
  * 
  * Checks if user exists in backend, creates if not.
  * This should be called after successful Firebase authentication.
+ * After successful sync, triggers favorites merge to combine local favorites with server favorites.
  * 
  * @param idToken - Firebase ID token for authentication
  * @returns Promise resolving to user profile (existing or newly created)
@@ -125,27 +128,35 @@ export async function createUser(idToken: string): Promise<UserProfile> {
 export async function handleUserSync(idToken: string): Promise<UserProfile> {
   console.log('[handleUserSync] Starting user sync');
   
+  let profile: UserProfile;
+  
   try {
     // Try to fetch existing user profile
     console.log('[handleUserSync] Checking if user exists...');
-    const profile = await getUserProfile(idToken);
+    profile = await getUserProfile(idToken);
     console.log('[handleUserSync] User exists:', profile.id);
-    return profile;
   } catch (error) {
     console.log('[handleUserSync] Error fetching user:', error);
     
     // If user doesn't exist (404), create new profile
     if (error instanceof Error && error.message === 'User profile not found') {
       console.log('[handleUserSync] User not found, creating new user...');
-      const newProfile = await createUser(idToken);
-      console.log('[handleUserSync] New user created:', newProfile.id);
-      return newProfile;
+      profile = await createUser(idToken);
+      console.log('[handleUserSync] New user created:', profile.id);
+    } else {
+      // Re-throw other errors
+      console.log('[handleUserSync] Re-throwing error');
+      throw error;
     }
-    
-    // Re-throw other errors
-    console.log('[handleUserSync] Re-throwing error');
-    throw error;
   }
+  
+  // Trigger favorites merge after successful sync (don't block on errors)
+  // This happens only once, regardless of whether user existed or was created
+  handleFavoritesMerge(idToken).catch((error) => {
+    console.error('[handleUserSync] Favorites merge failed, but continuing:', error);
+  });
+  
+  return profile;
 }
 
 /**
