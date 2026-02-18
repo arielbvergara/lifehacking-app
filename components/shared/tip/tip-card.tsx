@@ -6,6 +6,7 @@ import { TipSummary } from '@/lib/types/api';
 import { truncateText } from '@/lib/utils/text';
 import { generateTipImageAlt } from '@/lib/utils/seo';
 import { generateTipStructuredData } from '@/lib/seo/structured-data';
+import { FavoriteButton } from '@/components/shared/favorite-button';
 
 export interface TipCardProps {
   tip: TipSummary;
@@ -23,11 +24,6 @@ export function TipCard({ tip }: TipCardProps) {
 
   const handleCardClick = () => {
     router.push(`/tip/${tip.id}`);
-  };
-
-  const handleFavorite = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    // Non-functional placeholder for future implementation
   };
 
   // Truncate title to 2 lines (approximately 60 characters)
@@ -97,27 +93,12 @@ export function TipCard({ tip }: TipCardProps) {
 
         {/* Actions */}
         <div className="flex items-center justify-end">
-          <button
-            onClick={handleFavorite}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
-            aria-label={`Add ${tip.title} to favorites`}
-          >
-            <svg
-              className="w-5 h-5 text-gray-400 hover:text-red-500 transition-colors"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-              />
-            </svg>
-          </button>
+          <FavoriteButton 
+            tipId={tip.id}
+            tipTitle={tip.title}
+            size="md"
+            showLabel={false}
+          />
         </div>
       </div>
     </article>
