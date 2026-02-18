@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { uploadCategoryImage, createCategory } from './admin-category';
 import { CategoryImageDto, CreateCategoryRequest } from '@/lib/types/admin-category';
-import { API_TIMEOUT_MS, ERROR_MESSAGES } from '@/lib/constants/admin-category';
+import { ERROR_MESSAGES } from '@/lib/constants/admin-category';
 
 // Mock environment variables
 const mockApiBaseUrl = 'http://localhost:8080';
@@ -149,11 +149,9 @@ describe('Admin Category API', () => {
       
       vi.mocked(fetch).mockImplementation(() => {
         return new Promise((_, reject) => {
-          setTimeout(() => {
-            const error = new Error('Timeout');
-            error.name = 'AbortError';
-            reject(error);
-          }, API_TIMEOUT_MS + 100);
+          const error = new Error('Timeout');
+          error.name = 'AbortError';
+          reject(error);
         });
       });
 
@@ -161,7 +159,7 @@ describe('Admin Category API', () => {
         status: 0,
         message: ERROR_MESSAGES.NETWORK_ERROR,
       });
-    }, API_TIMEOUT_MS + 1000);
+    });
 
     it('uploadCategoryImage_ShouldThrowGenericError_WhenNonJSONResponse', async () => {
       const mockFile = new File(['content'], 'test.jpg', { type: 'image/jpeg' });
@@ -367,11 +365,9 @@ describe('Admin Category API', () => {
     it('createCategory_ShouldThrowNetworkError_WhenTimeout', async () => {
       vi.mocked(fetch).mockImplementation(() => {
         return new Promise((_, reject) => {
-          setTimeout(() => {
-            const error = new Error('Timeout');
-            error.name = 'AbortError';
-            reject(error);
-          }, API_TIMEOUT_MS + 100);
+          const error = new Error('Timeout');
+          error.name = 'AbortError';
+          reject(error);
         });
       });
 
@@ -379,7 +375,7 @@ describe('Admin Category API', () => {
         status: 0,
         message: ERROR_MESSAGES.NETWORK_ERROR,
       });
-    }, API_TIMEOUT_MS + 1000);
+    });
 
     it('createCategory_ShouldThrowGenericError_WhenNonJSONResponse', async () => {
       vi.mocked(fetch).mockResolvedValue({
