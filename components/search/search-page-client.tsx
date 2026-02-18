@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import type { TipSummary } from '@/lib/types/api';
+import type { TipSummary, Category } from '@/lib/types/api';
 import type { SortOption } from '@/lib/utils/sort-mappings';
 import { validateSortBy, validatePage, getSortMapping } from '@/lib/utils/sort-mappings';
 import { calculateActiveFilters } from '@/lib/utils/active-filters';
 import { fetchTips, APIError } from '@/lib/api/tips';
+import { fetchCategories } from '@/lib/api/categories';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { TipCard } from '@/components/shared/tip/tip-card';
@@ -54,6 +55,7 @@ export function SearchPageClient() {
   const [error, setError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState(1);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   // Read and validate URL parameters
   const searchQuery = searchParams.get('q') || '';
@@ -64,6 +66,25 @@ export function SearchPageClient() {
   // Calculate active filter count for mobile button badge
   const activeFilterCount = calculateActiveFilters(searchParams);
   const hasActiveFilters = activeFilterCount > 0;
+
+  // Get selected category name from categories array
+  const selectedCategoryName = categoryId 
+    ? categories.find(cat => cat.id === categoryId)?.name || null
+    : null;
+
+  // Fetch categories on mount
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const response = await fetchCategories();
+        setCategories(response.items);
+      } catch (err) {
+        console.error('Failed to load categories:', err);
+      }
+    };
+
+    loadCategories();
+  }, []);
 
   // Initial load and filter changes - fetch tips when URL parameters change
   useEffect(() => {
@@ -155,6 +176,20 @@ export function SearchPageClient() {
     router.push(`/search?${params.toString()}`);
   };
 
+  const handleSearchQueryRemove = () => {
+    // Create new URLSearchParams from current params
+    const params = new URLSearchParams(searchParams.toString());
+    
+    // Remove search query parameter
+    params.delete('q');
+    
+    // Reset page to 1
+    params.delete('page');
+    
+    // Navigate to updated URL
+    router.push(`/search?${params.toString()}`);
+  };
+
   const handleLoadMore = async () => {
     if (loadingMore || currentPage >= totalPages) return;
 
@@ -216,7 +251,10 @@ export function SearchPageClient() {
             isOpen={sidebarOpen}
             onClose={() => setSidebarOpen(false)}
             selectedCategoryId={categoryId}
+            selectedCategoryName={selectedCategoryName}
             onCategorySelect={handleCategorySelect}
+            searchQuery={searchQuery}
+            onSearchQueryRemove={handleSearchQueryRemove}
             sortBy={sortBy}
             onSortChange={handleSortChange}
             onResetFilters={handleResetFilters}

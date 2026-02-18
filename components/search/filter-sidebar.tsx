@@ -5,12 +5,16 @@ import type { SortOption } from '@/lib/utils/sort-mappings';
 import { CategoryFilterBar } from './category-filter-bar';
 import { ResetFiltersButton } from './reset-filters-button';
 import { SortFieldDropdown } from './sort-field-dropdown';
+import { FilterTag } from './filter-tag';
 
 export interface FilterSidebarProps {
   isOpen: boolean;
   onClose: () => void;
   selectedCategoryId: string | null;
+  selectedCategoryName: string | null;
   onCategorySelect: (categoryId: string | null) => void;
+  searchQuery: string;
+  onSearchQueryRemove: () => void;
   sortBy: SortOption;
   onSortChange: (sortBy: SortOption) => void;
   onResetFilters: () => void;
@@ -21,14 +25,17 @@ export interface FilterSidebarProps {
 /**
  * FilterSidebar Component
  * 
- * Container for all filter controls including reset button, sort dropdown, and sort direction toggle.
+ * Container for all filter controls including active filter tags, reset button, sort dropdown, and sort direction toggle.
  * On desktop (≥768px): Fixed sidebar always visible on the left side
  * On mobile (<768px): Slide-in panel controlled by isOpen prop
  * 
  * @param isOpen - Mobile only: sidebar visibility state
  * @param onClose - Mobile only: handler to close the sidebar
  * @param selectedCategoryId - Currently selected category ID (null for "All")
+ * @param selectedCategoryName - Currently selected category name (null for "All")
  * @param onCategorySelect - Handler for category selection
+ * @param searchQuery - Current search query string
+ * @param onSearchQueryRemove - Handler to clear search query
  * @param sortBy - Current sort option
  * @param onSortChange - Handler for sort option change
  * @param onResetFilters - Handler for reset filters button
@@ -40,7 +47,10 @@ export interface FilterSidebarProps {
  *   isOpen={sidebarOpen}
  *   onClose={() => setSidebarOpen(false)}
  *   selectedCategoryId={categoryId}
+ *   selectedCategoryName="Technology"
  *   onCategorySelect={handleCategorySelect}
+ *   searchQuery="productivity"
+ *   onSearchQueryRemove={handleSearchQueryRemove}
  *   sortBy="newest"
  *   onSortChange={handleSortChange}
  *   onResetFilters={handleResetFilters}
@@ -52,7 +62,10 @@ export function FilterSidebar({
   isOpen,
   onClose,
   selectedCategoryId,
+  selectedCategoryName,
   onCategorySelect,
+  searchQuery,
+  onSearchQueryRemove,
   sortBy,
   onSortChange,
   onResetFilters,
@@ -176,6 +189,29 @@ export function FilterSidebar({
         {/* Sidebar Content */}
         <div className="p-6 space-y-6">
           
+          {/* Active Filter Tags */}
+          {(selectedCategoryId || searchQuery) && (
+            <div>
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">Active Filters</h3>
+              <div className="flex flex-wrap gap-2">
+                {selectedCategoryId && selectedCategoryName && (
+                  <FilterTag
+                    label={selectedCategoryName}
+                    onRemove={() => onCategorySelect(null)}
+                    type="category"
+                  />
+                )}
+                {searchQuery && (
+                  <FilterTag
+                    label={`"${searchQuery}"`}
+                    onRemove={onSearchQueryRemove}
+                    type="search"
+                  />
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Reset Filters Button */}
           <ResetFiltersButton
             onClick={onResetFilters}
