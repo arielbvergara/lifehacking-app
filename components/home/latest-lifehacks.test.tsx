@@ -11,6 +11,20 @@ vi.mock('next/navigation', () => ({
   }),
 }));
 
+// Mock favorites context to avoid Firebase imports
+vi.mock('@/lib/context/favorites-context', () => ({
+  useFavoritesContext: () => ({
+    favorites: [],
+    isLoading: false,
+    error: null,
+    addFavorite: vi.fn(),
+    removeFavorite: vi.fn(),
+    isFavorite: vi.fn(() => false),
+    refreshFavorites: vi.fn(),
+    count: 0,
+  }),
+}));
+
 const mockTips: TipSummary[] = [
   {
     id: 'tip-1',
