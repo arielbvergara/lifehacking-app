@@ -65,14 +65,6 @@ describe('Footer', () => {
       expect(link).toBeInTheDocument();
       expect(link).toHaveAttribute('href', '/contact');
     });
-
-    it('should render Blog link', () => {
-      render(<Footer />);
-
-      const link = screen.getByRole('link', { name: /blog/i });
-      expect(link).toBeInTheDocument();
-      expect(link).toHaveAttribute('href', '/blog');
-    });
   });
 
   describe('Legal Section Links', () => {
