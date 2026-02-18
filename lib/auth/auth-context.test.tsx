@@ -236,12 +236,20 @@ describe('AuthProvider', () => {
 
       const mockToken = 'mock-id-token';
 
+      let authCallback: ((user: unknown) => void) | null = null;
       vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((_auth, callback) => {
-        callback(null);
+        authCallback = callback;
+        callback(null); // Initial state
         return unsubscribe;
       });
 
-      vi.mocked(firebaseAuthFunctions.signInWithGoogle).mockResolvedValue(mockUser);
+      vi.mocked(firebaseAuthFunctions.signInWithGoogle).mockImplementation(async () => {
+        // Simulate auth state change after sign in
+        if (authCallback) {
+          authCallback(mockUser);
+        }
+        return mockUser;
+      });
       vi.mocked(firebaseAuthFunctions.getIdToken).mockResolvedValue(mockToken);
       vi.mocked(userApi.handleUserSync).mockResolvedValue({
         id: 'test-uid',
@@ -263,7 +271,11 @@ describe('AuthProvider', () => {
       });
 
       expect(firebaseAuthFunctions.signInWithGoogle).toHaveBeenCalled();
-      expect(userApi.handleUserSync).toHaveBeenCalledWith(mockToken);
+      
+      // Wait for auth state change to trigger sync
+      await waitFor(() => {
+        expect(userApi.handleUserSync).toHaveBeenCalledWith(mockToken);
+      });
     });
 
     it('should set error state if Google sign in fails', async () => {
@@ -306,12 +318,20 @@ describe('AuthProvider', () => {
 
       const mockToken = 'mock-id-token';
 
+      let authCallback: ((user: unknown) => void) | null = null;
       vi.mocked(firebaseAuth.onAuthStateChanged).mockImplementation((_auth, callback) => {
-        callback(null);
+        authCallback = callback;
+        callback(null); // Initial state
         return unsubscribe;
       });
 
-      vi.mocked(firebaseAuthFunctions.signInWithEmail).mockResolvedValue(mockUser);
+      vi.mocked(firebaseAuthFunctions.signInWithEmail).mockImplementation(async () => {
+        // Simulate auth state change after sign in
+        if (authCallback) {
+          authCallback(mockUser);
+        }
+        return mockUser;
+      });
       vi.mocked(firebaseAuthFunctions.getIdToken).mockResolvedValue(mockToken);
       vi.mocked(userApi.handleUserSync).mockResolvedValue({
         id: 'test-uid',
@@ -333,7 +353,11 @@ describe('AuthProvider', () => {
       });
 
       expect(firebaseAuthFunctions.signInWithEmail).toHaveBeenCalledWith('test@example.com', 'password123');
-      expect(userApi.handleUserSync).toHaveBeenCalledWith(mockToken);
+      
+      // Wait for auth state change to trigger sync
+      await waitFor(() => {
+        expect(userApi.handleUserSync).toHaveBeenCalledWith(mockToken);
+      });
     });
 
     it('should set error state if email sign in fails', async () => {
