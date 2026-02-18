@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { NextRequest, NextResponse } from 'next/server';
-import { middleware } from './middleware';
+import { proxy } from './proxy';
 
 // Mock environment variables
 vi.stubEnv('NEXT_PUBLIC_API_BASE_URL', 'http://localhost:8080');
@@ -29,7 +29,7 @@ describe('Middleware - Admin Route Protection', () => {
         json: async () => ({ role: 'Admin' }),
       } as Response);
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       expect(response).toBeInstanceOf(NextResponse);
       expect(response.status).not.toBe(307); // Not a redirect
@@ -40,7 +40,7 @@ describe('Middleware - Admin Route Protection', () => {
       
       // No session cookie set
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       expect(response).toBeInstanceOf(NextResponse);
       expect(response.status).toBe(307); // Redirect
@@ -59,7 +59,7 @@ describe('Middleware - Admin Route Protection', () => {
         json: async () => ({ role: 'User' }),
       } as Response);
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       expect(response).toBeInstanceOf(NextResponse);
       expect(response.status).toBe(307); // Redirect
@@ -77,7 +77,7 @@ describe('Middleware - Admin Route Protection', () => {
         status: 401,
       } as Response);
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       expect(response).toBeInstanceOf(NextResponse);
       expect(response.status).toBe(307); // Redirect
@@ -95,7 +95,7 @@ describe('Middleware - Admin Route Protection', () => {
         status: 403,
       } as Response);
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       expect(response).toBeInstanceOf(NextResponse);
       expect(response.status).toBe(307); // Redirect
@@ -110,7 +110,7 @@ describe('Middleware - Admin Route Protection', () => {
       // Mock backend throwing network error
       vi.mocked(fetch).mockRejectedValue(new Error('Network error'));
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       expect(response).toBeInstanceOf(NextResponse);
       expect(response.status).toBe(307); // Redirect
@@ -128,7 +128,7 @@ describe('Middleware - Admin Route Protection', () => {
         json: async () => ({ role: 'Admin' }),
       } as Response);
 
-      await middleware(mockRequest);
+      await proxy(mockRequest);
 
       expect(fetch).toHaveBeenCalledWith(
         'http://localhost:8080/api/user/me',
@@ -152,7 +152,7 @@ describe('Middleware - Admin Route Protection', () => {
         json: async () => ({ role: 'Admin' }),
       } as Response);
 
-      await middleware(mockRequest);
+      await proxy(mockRequest);
 
       expect(fetch).toHaveBeenCalledWith(
         expect.any(String),
@@ -177,7 +177,7 @@ describe('Middleware - Admin Route Protection', () => {
         json: async () => ({ role: 'Admin' }),
       } as Response);
 
-      await middleware(mockRequest);
+      await proxy(mockRequest);
 
       expect(fetch).toHaveBeenCalled();
     });
@@ -193,7 +193,7 @@ describe('Middleware - Admin Route Protection', () => {
         json: async () => ({ role: 'Admin' }),
       } as Response);
 
-      await middleware(mockRequest);
+      await proxy(mockRequest);
 
       expect(fetch).toHaveBeenCalled();
     });
@@ -201,7 +201,7 @@ describe('Middleware - Admin Route Protection', () => {
     it('Middleware_ShouldNotProtectNonAdminRoutes_WhenPathDoesNotStartWithAdmin', async () => {
       const mockRequest = new NextRequest('http://localhost:3000/categories');
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       expect(fetch).not.toHaveBeenCalled();
       expect(response.status).not.toBe(307); // Not a redirect
@@ -210,7 +210,7 @@ describe('Middleware - Admin Route Protection', () => {
     it('Middleware_ShouldNotProtectHomePage_WhenPathIsRoot', async () => {
       const mockRequest = new NextRequest('http://localhost:3000/');
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       expect(fetch).not.toHaveBeenCalled();
       expect(response.status).not.toBe(307);
@@ -227,7 +227,7 @@ describe('Middleware - Admin Route Protection', () => {
 
       for (const url of publicRoutes) {
         const mockRequest = new NextRequest(url);
-        const response = await middleware(mockRequest);
+        const response = await proxy(mockRequest);
 
         expect(fetch).not.toHaveBeenCalled();
         expect(response.status).not.toBe(307);
@@ -247,7 +247,7 @@ describe('Middleware - Admin Route Protection', () => {
         json: async () => ({ role: 'Admin' }),
       } as Response);
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       expect(response.status).not.toBe(307);
     });
@@ -263,7 +263,7 @@ describe('Middleware - Admin Route Protection', () => {
         json: async () => ({ role: 'User' }),
       } as Response);
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       expect(response.status).toBe(307);
       expect(response.headers.get('location')).toContain('/404');
@@ -280,7 +280,7 @@ describe('Middleware - Admin Route Protection', () => {
         json: async () => ({}),
       } as Response);
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       expect(response.status).toBe(307);
       expect(response.headers.get('location')).toContain('/404');
@@ -297,7 +297,7 @@ describe('Middleware - Admin Route Protection', () => {
         json: async () => ({ role: null }),
       } as Response);
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       expect(response.status).toBe(307);
       expect(response.headers.get('location')).toContain('/404');
@@ -315,7 +315,7 @@ describe('Middleware - Admin Route Protection', () => {
         json: async () => ({ role: 'admin' }),
       } as Response);
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       expect(response.status).toBe(307);
       expect(response.headers.get('location')).toContain('/404');
@@ -330,7 +330,7 @@ describe('Middleware - Admin Route Protection', () => {
 
       vi.mocked(fetch).mockRejectedValue(new Error('ECONNREFUSED'));
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       expect(response.status).toBe(307);
       expect(response.headers.get('location')).toContain('/404');
@@ -343,7 +343,7 @@ describe('Middleware - Admin Route Protection', () => {
 
       vi.mocked(fetch).mockRejectedValue(new Error('Timeout'));
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       expect(response.status).toBe(307);
       expect(response.headers.get('location')).toContain('/404');
@@ -362,7 +362,7 @@ describe('Middleware - Admin Route Protection', () => {
         },
       } as Response);
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       expect(response.status).toBe(307);
       expect(response.headers.get('location')).toContain('/404');
@@ -379,7 +379,7 @@ describe('Middleware - Admin Route Protection', () => {
         json: async () => null,
       } as Response);
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       expect(response.status).toBe(307);
       expect(response.headers.get('location')).toContain('/404');
@@ -397,7 +397,7 @@ describe('Middleware - Admin Route Protection', () => {
         status: 401,
       } as Response);
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       const location = response.headers.get('location');
       expect(location).not.toContain('secret-token');
@@ -414,7 +414,7 @@ describe('Middleware - Admin Route Protection', () => {
         json: async () => ({ role: 'Admin' }),
       } as Response);
 
-      await middleware(mockRequest);
+      await proxy(mockRequest);
 
       // Verify that backend was called to validate token
       expect(fetch).toHaveBeenCalledWith(
@@ -437,7 +437,7 @@ describe('Middleware - Admin Route Protection', () => {
         status: 401,
       } as Response);
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       expect(response.status).toBe(307);
       expect(response.headers.get('location')).toContain('/404');
@@ -453,7 +453,7 @@ describe('Middleware - Admin Route Protection', () => {
         status: 403,
       } as Response);
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       expect(response.status).toBe(307);
       expect(response.headers.get('location')).toContain('/404');
@@ -466,7 +466,7 @@ describe('Middleware - Admin Route Protection', () => {
       
       // No session cookie
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       expect(response.headers.get('location')).toContain('/404');
       expect(response.headers.get('location')).not.toContain('/login');
@@ -477,7 +477,7 @@ describe('Middleware - Admin Route Protection', () => {
       
       // No session cookie
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       const location = response.headers.get('location');
       expect(location).toContain('https://');
@@ -488,7 +488,7 @@ describe('Middleware - Admin Route Protection', () => {
       
       // No session cookie
 
-      const response = await middleware(mockRequest);
+      const response = await proxy(mockRequest);
 
       const location = response.headers.get('location');
       expect(location).toContain('localhost:3000');

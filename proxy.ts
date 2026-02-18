@@ -2,13 +2,13 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 /**
- * Middleware to protect admin routes
+ * Proxy to protect admin routes
  * 
- * This middleware intercepts requests to /admin/* routes and verifies:
+ * This proxy intercepts requests to /admin/* routes and verifies:
  * 1. User is authenticated (has session cookie)
  * 2. User has admin privileges (verified via backend API)
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
   // Only protect /admin/* routes

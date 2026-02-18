@@ -245,7 +245,7 @@ export function SearchPageClient() {
 
       {/* Main Content Area with Sidebar */}
       <div className="flex-1 flex bg-gray-50">
-        <div className="w-full max-w-7xl mx-auto flex gap-6 px-4 md:px-8 py-8">
+        <div className="w-full max-w-7xl mx-auto flex items-start gap-6 px-4 md:px-8 py-8">
           {/* Filter Sidebar - Always visible on desktop, collapsible on mobile */}
           <FilterSidebar
             isOpen={sidebarOpen}
