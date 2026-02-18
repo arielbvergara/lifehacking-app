@@ -143,13 +143,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setLoading(true);
       setError(null);
       
-      const firebaseUser = await firebaseSignInWithGoogle();
-      const token = await firebaseGetIdToken(firebaseUser);
-      
-      // Sync user with backend
-      await handleUserSync(token);
+      await firebaseSignInWithGoogle();
       
       // State will be updated by onAuthStateChanged listener
+      // which will handle user sync and favorites merge
     } catch (err) {
       const errorMessage = formatAuthError(err);
       setError(errorMessage);
@@ -170,13 +167,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setLoading(true);
       setError(null);
       
-      const firebaseUser = await firebaseSignInWithEmail(email, password);
-      const token = await firebaseGetIdToken(firebaseUser);
-      
-      // Sync user with backend
-      await handleUserSync(token);
+      await firebaseSignInWithEmail(email, password);
       
       // State will be updated by onAuthStateChanged listener
+      // which will handle user sync and favorites merge
     } catch (err) {
       const errorMessage = formatAuthError(err);
       setError(errorMessage);

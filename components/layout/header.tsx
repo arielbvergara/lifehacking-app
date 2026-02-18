@@ -8,6 +8,7 @@ import { UserAvatar } from '@/components/layout/user-avatar';
 import { SearchBar } from '@/components/shared/search-bar';
 import { CategoryFilterBar } from '@/components/search/category-filter-bar';
 import { useAuth } from '@/lib/auth/auth-context';
+import { useFavorites } from '@/lib/hooks/use-favorites';
 
 export interface HeaderProps {
   showSearchBar?: boolean;
@@ -42,6 +43,7 @@ export function Header({
   const router = useRouter();
   const pathname = usePathname();
   const { user, signOut, loading: authLoading } = useAuth();
+  const { count: favoritesCount } = useFavorites();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -129,6 +131,24 @@ export function Header({
                   {link.label}
                 </Link>
               ))}
+              
+              {/* Favorites Link */}
+              <Link
+                href="/favorites"
+                className={`relative flex items-center gap-1.5 text-sm font-medium transition-colors ${
+                  pathname === '/favorites'
+                    ? 'text-primary'
+                    : 'text-gray-700 hover:text-gray-900'
+                }`}
+                aria-label={`Favorites${favoritesCount > 0 ? ` (${favoritesCount} items)` : ''}`}
+              >
+                <span className="material-icons-round text-xl">favorite</span>
+                {favoritesCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                    {favoritesCount > 99 ? '99+' : favoritesCount}
+                  </span>
+                )}
+              </Link>
             </div>
             {authLoading ? (
               /* Loading Skeleton - Avatar skeleton for better UX */
@@ -246,6 +266,28 @@ export function Header({
                   {link.label}
                 </Link>
               ))}
+              
+              {/* Favorites Link */}
+              <Link
+                href="/favorites"
+                className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg flex items-center justify-between ${
+                  pathname === '/favorites'
+                    ? 'text-primary bg-primary/5'
+                    : 'text-gray-700 hover:bg-gray-50'
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+                aria-label={`Favorites${favoritesCount > 0 ? ` (${favoritesCount} items)` : ''}`}
+              >
+                <span className="flex items-center gap-2">
+                  <span className="material-icons-round text-xl">favorite</span>
+                  Favorites
+                </span>
+                {favoritesCount > 0 && (
+                  <span className="bg-red-500 text-white text-xs font-bold rounded-full min-w-[20px] h-[20px] flex items-center justify-center px-1.5">
+                    {favoritesCount > 99 ? '99+' : favoritesCount}
+                  </span>
+                )}
+              </Link>
             </div>
 
             {/* Divider */}
