@@ -20,7 +20,7 @@ describe('Auth Utility Functions', () => {
         'Please enter a valid email address'
       );
       expect(getFirebaseErrorMessage('auth/user-not-found')).toBe(
-        'No account found with this email'
+        'If an account exists with this email, you will receive a password reset link'
       );
       expect(getFirebaseErrorMessage('auth/wrong-password')).toBe(
         'Incorrect password'
@@ -151,7 +151,7 @@ describe('Auth Utility Functions', () => {
         'Please enter a valid email address'
       );
       expect(formatAuthError(userNotFoundError)).toBe(
-        'No account found with this email'
+        'If an account exists with this email, you will receive a password reset link'
       );
     });
 
