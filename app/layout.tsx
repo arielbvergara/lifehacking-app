@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth/auth-context";
+import { FavoritesProvider } from "@/lib/context/favorites-context";
+import { ToastContainer } from "@/components/shared/toast";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-display",
@@ -74,8 +76,11 @@ export default function RootLayout({
           Skip to main content
         </a>
         <AuthProvider>
-          {children}
+          <FavoritesProvider>
+            {children}
+          </FavoritesProvider>
         </AuthProvider>
+        <ToastContainer />
       </body>
     </html>
   );
