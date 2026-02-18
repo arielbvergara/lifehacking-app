@@ -10,7 +10,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { signInWithGoogle as firebaseSignInWithGoogle, signInWithEmail as firebaseSignInWithEmail, signOut as firebaseSignOut, getIdToken as firebaseGetIdToken, signUpWithGoogle as firebaseSignUpWithGoogle, signUpWithEmail as firebaseSignUpWithEmail } from '@/lib/auth/firebase-auth';
+import { signInWithGoogle as firebaseSignInWithGoogle, signInWithEmail as firebaseSignInWithEmail, signOut as firebaseSignOut, getIdToken as firebaseGetIdToken, signUpWithGoogle as firebaseSignUpWithGoogle, signUpWithEmail as firebaseSignUpWithEmail, sendPasswordResetEmail as firebaseSendPasswordResetEmail } from '@/lib/auth/firebase-auth';
 import { formatAuthError } from '@/lib/auth/auth-utils';
 import { handleUserSync, createUserInBackend } from '@/lib/api/user';
 
@@ -36,6 +36,8 @@ interface AuthContextState {
   signUpWithGoogle: () => Promise<void>;
   /** Sign up with email and password */
   signUpWithEmail: (email: string, password: string, name?: string) => Promise<void>;
+  /** Send password reset email */
+  resetPassword: (email: string) => Promise<void>;
 }
 
 /**
@@ -292,6 +294,31 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
+  /**
+   * Send password reset email
+   * 
+   * Sends a password reset email to the specified email address.
+   * For security, always shows success message regardless of whether email exists.
+   * 
+   * @param email - User's email address
+   */
+  const resetPassword = useCallback(async (email: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      await firebaseSendPasswordResetEmail(email);
+      
+      // Success - email sent (or email doesn't exist, but we don't reveal that)
+    } catch (err) {
+      const errorMessage = formatAuthError(err);
+      setError(errorMessage);
+      throw err; // Re-throw so caller can handle
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const value: AuthContextState = {
     user,
     idToken,
@@ -302,6 +329,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     signOut,
     signUpWithGoogle,
     signUpWithEmail,
+    resetPassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
