@@ -222,6 +222,7 @@ export function Header({
               onSearch={handleSearch}
               onSearchComplete={handleSearchComplete}
               placeholder="Search for tips..."
+              autoFocus={true}
             />
           </div>
         )}

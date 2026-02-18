@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 export interface SearchBarProps {
@@ -9,6 +9,7 @@ export interface SearchBarProps {
   onSearchComplete?: () => void;
   disabled?: boolean;
   variant?: 'default' | 'compact';
+  autoFocus?: boolean;
 }
 
 /**
@@ -17,21 +18,35 @@ export interface SearchBarProps {
  * Renders a search input with a button. Currently a non-functional placeholder
  * for future search implementation.
  * 
+ * @param autoFocus - Whether to automatically focus the input when rendered
+ * 
  * @example
  * <SearchBar placeholder="Search for tips..." />
+ * <SearchBar placeholder="Search for tips..." autoFocus={true} />
  */
 export function SearchBar({ 
   placeholder = 'Search for tips...', 
   onSearch,
   onSearchComplete,
   disabled = false,
-  variant = 'default'
+  variant = 'default',
+  autoFocus = false,
 }: SearchBarProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
   const isCompact = variant === 'compact';
+
+  // Auto-focus input when autoFocus prop is true
+  useEffect(() => {
+    if (autoFocus && inputRef.current) {
+      // Use setTimeout to ensure the element is fully rendered and visible
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+    }
+  }, [autoFocus]);
 
   const handleSearch = () => {
     if (onSearch) {
