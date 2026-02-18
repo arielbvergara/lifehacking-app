@@ -15,11 +15,23 @@ vi.mock('next/font/google', () => ({
   }),
 }));
 
-// Mock the AuthProvider
+// Mock the AuthProvider and useAuth
 vi.mock('@/lib/auth/auth-context', () => ({
   AuthProvider: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="auth-provider">{children}</div>
   ),
+  useAuth: () => ({
+    user: null,
+    idToken: null,
+    loading: false,
+    error: null,
+    signInWithGoogle: vi.fn(),
+    signInWithEmail: vi.fn(),
+    signOut: vi.fn(),
+    signUpWithGoogle: vi.fn(),
+    signUpWithEmail: vi.fn(),
+    resetPassword: vi.fn(),
+  }),
 }));
 
 describe('RootLayout', () => {
