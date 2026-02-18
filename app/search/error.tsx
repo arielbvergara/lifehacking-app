@@ -1,5 +1,8 @@
 'use client';
 
+import { useEffect } from 'react';
+import * as Sentry from '@sentry/nextjs';
+
 /**
  * Error Boundary for Search Page
  * 
@@ -14,6 +17,10 @@ export default function SearchError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  useEffect(() => {
+    // Capture the error in Sentry
+    Sentry.captureException(error);
+  }, [error]);
   return (
     <div className="min-h-screen flex items-center justify-center bg-zinc-50 px-4">
       <div className="max-w-md w-full text-center">
