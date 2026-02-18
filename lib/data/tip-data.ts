@@ -1,5 +1,6 @@
 'use cache';
 
+import * as Sentry from '@sentry/nextjs';
 import { fetchTipById, fetchTipsByCategory, fetchTips } from '@/lib/api/tips';
 import { TipSortField, SortDirection, type TipDetail, type TipSummary, type PagedTipsResponse } from '@/lib/types/api';
 import { cacheLife } from 'next/dist/server/use-cache/cache-life';
@@ -21,18 +22,31 @@ export async function getCachedTipById(id: string): Promise<TipDetail> {
   'use cache';
   cacheLife('default');
 
-  try {
-    const tip = await fetchTipById(id);
-    return tip;
-  } catch (error) {
-    console.error('[getCachedTipById] Error fetching tip:', {
-      error,
-      tipId: id,
-      message: error instanceof Error ? error.message : 'Unknown error',
-      timestamp: new Date().toISOString(),
-    });
-    throw new Error(`Failed to load tip: ${id}`);
-  }
+  return Sentry.startSpan(
+    {
+      op: 'http.client',
+      name: `GET /api/tips/${id}`,
+    },
+    async (span) => {
+      span.setAttribute('tip.id', id);
+      
+      try {
+        const tip = await fetchTipById(id);
+        span.setAttribute('tip.found', true);
+        return tip;
+      } catch (error) {
+        span.setAttribute('tip.found', false);
+        console.error('[getCachedTipById] Error fetching tip:', {
+          error,
+          tipId: id,
+          message: error instanceof Error ? error.message : 'Unknown error',
+          timestamp: new Date().toISOString(),
+        });
+        Sentry.captureException(error);
+        throw new Error(`Failed to load tip: ${id}`);
+      }
+    }
+  );
 }
 
 /**
@@ -49,31 +63,44 @@ export async function getCachedRelatedTips(
   'use cache';
   cacheLife('default');
 
-  try {
-    // Fetch 5 tips to ensure we have 4 after filtering out current tip
-    const response = await fetchTipsByCategory(categoryId, {
-      pageSize: 5,
-      orderBy: TipSortField.CreatedAt,
-      sortDirection: SortDirection.Descending,
-    });
+  return Sentry.startSpan(
+    {
+      op: 'http.client',
+      name: `GET /api/tips/category/${categoryId}`,
+    },
+    async (span) => {
+      span.setAttribute('category.id', categoryId);
+      span.setAttribute('current.tip.id', currentTipId);
+      
+      try {
+        // Fetch 5 tips to ensure we have 4 after filtering out current tip
+        const response = await fetchTipsByCategory(categoryId, {
+          pageSize: 5,
+          orderBy: TipSortField.CreatedAt,
+          sortDirection: SortDirection.Descending,
+        });
 
-    // Filter out the current tip and limit to 4
-    const relatedTips = response.items
-      .filter((tip) => tip.id !== currentTipId)
-      .slice(0, 4);
+        // Filter out the current tip and limit to 4
+        const relatedTips = response.items
+          .filter((tip) => tip.id !== currentTipId)
+          .slice(0, 4);
 
-    return relatedTips;
-  } catch (error) {
-    console.error('[getCachedRelatedTips] Error fetching related tips:', {
-      error,
-      categoryId,
-      currentTipId,
-      message: error instanceof Error ? error.message : 'Unknown error',
-      timestamp: new Date().toISOString(),
-    });
-    // Return empty array for graceful degradation
-    return [];
-  }
+        span.setAttribute('related.tips.count', relatedTips.length);
+        return relatedTips;
+      } catch (error) {
+        console.error('[getCachedRelatedTips] Error fetching related tips:', {
+          error,
+          categoryId,
+          currentTipId,
+          message: error instanceof Error ? error.message : 'Unknown error',
+          timestamp: new Date().toISOString(),
+        });
+        Sentry.captureException(error);
+        // Return empty array for graceful degradation
+        return [];
+      }
+    }
+  );
 }
 
 /**
