@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from 'react';
 import type { SortOption } from '@/lib/utils/sort-mappings';
-import { CategoryFilterBar } from './category-filter-bar';
 import { ResetFiltersButton } from './reset-filters-button';
 import { SortFieldDropdown } from './sort-field-dropdown';
 import { FilterTag } from './filter-tag';
@@ -70,7 +69,6 @@ export function FilterSidebar({
   onSortChange,
   onResetFilters,
   hasActiveFilters,
-  showCategoryFilter,
 }: FilterSidebarProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
