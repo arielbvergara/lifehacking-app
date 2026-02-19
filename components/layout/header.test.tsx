@@ -487,7 +487,7 @@ describe('Header', () => {
     it('NavigationLinks_ShouldNotBeVisibleOnMobile_WhenMenuClosed', () => {
       render(<Header />);
 
-      // Desktop navigation container should be hidden on mobile (hidden md:flex class)
+      // Desktop navigation container should be hidden on mobile (hidden lg-header:flex class)
       const homeLinks = screen.getAllByRole('link', { name: /^home$/i });
       const desktopLink = homeLinks[0];
       
@@ -496,7 +496,7 @@ describe('Header', () => {
       const desktopNavContainer = navLinksContainer?.parentElement;
       
       expect(desktopNavContainer).toHaveClass('hidden');
-      expect(desktopNavContainer).toHaveClass('md:flex');
+      expect(desktopNavContainer).toHaveClass('lg-header:flex');
     });
 
     it('NavigationLinks_ShouldAppearInMobileMenu_WhenMenuOpened', async () => {
@@ -691,7 +691,7 @@ describe('Header', () => {
       const desktopSearchBar = searchBars[0];
       const desktopContainer = desktopSearchBar.parentElement?.parentElement;
       expect(desktopContainer).toHaveClass('hidden');
-      expect(desktopContainer).toHaveClass('md:flex');
+      expect(desktopContainer).toHaveClass('lg-header:flex');
     });
 
     it('Header_ShouldDisplaySearchIconButton_WhenOnMobileViewport', () => {
@@ -701,24 +701,24 @@ describe('Header', () => {
       const searchButton = screen.getByRole('button', { name: /search/i });
       expect(searchButton).toBeInTheDocument();
       
-      // Button should be in mobile container (md:hidden)
+      // Button should be in mobile container (lg-header:hidden)
       const mobileContainer = searchButton.parentElement;
-      expect(mobileContainer).toHaveClass('md:hidden');
+      expect(mobileContainer).toHaveClass('lg-header:hidden');
     });
 
     it('Header_ShouldHaveSmoothTransitions_WhenViewportChanges', () => {
       const { container } = render(<Header />);
 
       // Verify the header structure supports smooth transitions
-      // The responsive classes (hidden md:flex, md:hidden) provide smooth viewport transitions
+      // The responsive classes (hidden lg-header:flex, lg-header:hidden) provide smooth viewport transitions
       const nav = container.querySelector('nav');
       
       // Desktop navigation container should have responsive classes
-      const desktopNav = nav?.querySelector('.hidden.md\\:flex');
+      const desktopNav = nav?.querySelector('.hidden.lg-header\\:flex');
       expect(desktopNav).toBeTruthy();
       
       // Mobile container should have responsive classes
-      const mobileContainer = nav?.querySelector('.md\\:hidden');
+      const mobileContainer = nav?.querySelector('.lg-header\\:hidden');
       expect(mobileContainer).toBeTruthy();
     });
 
@@ -790,25 +790,25 @@ describe('Header', () => {
     it('Header_ShouldHideDesktopSearchBar_WhenBelowMdBreakpoint', () => {
       render(<Header />);
 
-      // Desktop navigation container should have 'hidden md:flex' classes
+      // Desktop navigation container should have 'hidden lg-header:flex' classes
       const searchBars = screen.getAllByTestId('search-bar');
       const desktopSearchBar = searchBars[0];
       const desktopNavContainer = desktopSearchBar.parentElement?.parentElement;
       
       // Should be hidden on mobile, visible on desktop
       expect(desktopNavContainer).toHaveClass('hidden');
-      expect(desktopNavContainer).toHaveClass('md:flex');
+      expect(desktopNavContainer).toHaveClass('lg-header:flex');
     });
 
     it('Header_ShouldHideMobileSearchButton_WhenAboveMdBreakpoint', () => {
       render(<Header />);
 
-      // Mobile search button container should have 'md:hidden' class
+      // Mobile search button container should have 'lg-header:hidden' class
       const searchButton = screen.getByRole('button', { name: /search/i });
       const mobileContainer = searchButton.parentElement;
       
       // Should be visible on mobile, hidden on desktop
-      expect(mobileContainer).toHaveClass('md:hidden');
+      expect(mobileContainer).toHaveClass('lg-header:hidden');
     });
   });
 
@@ -1241,7 +1241,7 @@ describe('Header', () => {
       const { container } = render(<Header />);
 
       // Get all navigation links in desktop view
-      const desktopNav = container.querySelector('.hidden.md\\:flex .flex.items-center.gap-8');
+      const desktopNav = container.querySelector('.hidden.lg-header\\:flex .flex.items-center.gap-8');
       const links = desktopNav?.querySelectorAll('a');
       
       // Should have Home, Categories, Popular, About, Favorites
