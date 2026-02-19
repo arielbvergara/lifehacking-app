@@ -12,6 +12,7 @@ import {
   createUser,
   handleUserSync,
   createUserInBackend,
+  deleteAccount,
   UserProfile,
   CreateUserPayload,
 } from './user';
@@ -732,6 +733,158 @@ describe('User API Functions', () => {
         expect.not.objectContaining({
           method: 'POST',
         })
+      );
+    });
+  });
+
+  describe('deleteAccount', () => {
+    it('deleteAccount_ShouldSucceed_WhenAPICallSucceeds', async () => {
+      // Arrange
+      const mockToken = 'test-firebase-token-delete-1';
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+      } as Response);
+
+      // Act
+      await deleteAccount(mockToken);
+
+      // Assert
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/api/User/me'),
+        expect.objectContaining({
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${mockToken}`,
+          },
+        })
+      );
+    });
+
+    it('deleteAccount_ShouldIncludeBearerToken_WhenMakingAPICall', async () => {
+      // Arrange
+      const mockToken = 'test-token-with-special-chars-!@#$%';
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+      } as Response);
+
+      // Act
+      await deleteAccount(mockToken);
+
+      // Assert
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            'Authorization': `Bearer ${mockToken}`,
+          }),
+        })
+      );
+    });
+
+    it('deleteAccount_ShouldThrowUnauthorizedError_When401Returned', async () => {
+      // Arrange
+      const mockToken = 'invalid-token';
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 401,
+        json: async () => ({ message: 'Unauthorized' }),
+      } as Response);
+
+      // Act & Assert
+      await expect(deleteAccount(mockToken)).rejects.toThrow('Unauthorized');
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('deleteAccount_ShouldThrowAccountNotFoundError_When404Returned', async () => {
+      // Arrange
+      const mockToken = 'test-token';
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 404,
+        json: async () => ({ message: 'Account not found' }),
+      } as Response);
+
+      // Act & Assert
+      await expect(deleteAccount(mockToken)).rejects.toThrow('Account not found');
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('deleteAccount_ShouldThrowGenericError_WhenOtherErrorOccurs', async () => {
+      // Arrange
+      const mockToken = 'test-token';
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+        json: async () => ({ message: 'Internal server error' }),
+      } as Response);
+
+      // Act & Assert
+      await expect(deleteAccount(mockToken)).rejects.toThrow(
+        'Failed to delete account'
+      );
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('deleteAccount_ShouldThrowError_WhenNetworkFails', async () => {
+      // Arrange
+      const mockToken = 'test-token';
+
+      global.fetch = vi.fn().mockRejectedValue(
+        new Error('Network request failed')
+      );
+
+      // Act & Assert
+      await expect(deleteAccount(mockToken)).rejects.toThrow(
+        'Network request failed'
+      );
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('deleteAccount_ShouldUseDELETEMethod_WhenMakingAPICall', async () => {
+      // Arrange
+      const mockToken = 'test-token';
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+      } as Response);
+
+      // Act
+      await deleteAccount(mockToken);
+
+      // Assert
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          method: 'DELETE',
+        })
+      );
+    });
+
+    it('deleteAccount_ShouldUseCorrectEndpoint_WhenMakingAPICall', async () => {
+      // Arrange
+      const mockToken = 'test-token';
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+      } as Response);
+
+      // Act
+      await deleteAccount(mockToken);
+
+      // Assert
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringMatching(/^https?:\/\/.+\/api\/User\/me$/),
+        expect.any(Object)
       );
     });
   });
