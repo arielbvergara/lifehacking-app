@@ -141,67 +141,70 @@ export function Header({
                     : 'text-gray-700 hover:text-gray-900'
                 }`}
                 aria-label={`Favorites${favoritesCount > 0 ? ` (${favoritesCount} items)` : ''}`}
+                suppressHydrationWarning
               >
                 <span className="material-icons-round text-xl">favorite</span>
                 {favoritesCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1" suppressHydrationWarning>
                     {favoritesCount > 99 ? '99+' : favoritesCount}
                   </span>
                 )}
               </Link>
             </div>
-            {authLoading ? (
-              /* Loading Skeleton - Avatar skeleton for better UX */
-              <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse" />
-            ) : user ? (
-              /* Authenticated User UI */
-              <div className="relative">
-                <UserAvatar user={user} onClick={handleAvatarClick} />
-                
-                {/* Dropdown Menu */}
-                {isDropdownOpen && (
-                  <>
-                    {/* Backdrop to close dropdown */}
-                    <div
-                      className="fixed inset-0 z-10"
-                      onClick={() => setIsDropdownOpen(false)}
-                    />
-                    
-                    {/* Dropdown Content */}
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-20">
-                      <button
-                        onClick={handleProfileClick}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      >
-                        Profile
-                      </button>
-                      <button
-                        onClick={handleSignOut}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      >
-                        Sign Out
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            ) : (
-              /* Anonymous User UI */
-              <div className="flex items-center gap-4">
-                <Link
-                  href="/login"
-                  className="px-5 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/signup"
-                  className="px-5 py-2 rounded-full bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors shadow-sm"
-                >
-                  Join for Free
-                </Link>
-              </div>
-            )}
+            <div suppressHydrationWarning>
+              {authLoading ? (
+                /* Loading Skeleton - Avatar skeleton for better UX */
+                <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse" />
+              ) : user ? (
+                /* Authenticated User UI */
+                <div className="relative">
+                  <UserAvatar user={user} onClick={handleAvatarClick} />
+                  
+                  {/* Dropdown Menu */}
+                  {isDropdownOpen && (
+                    <>
+                      {/* Backdrop to close dropdown */}
+                      <div
+                        className="fixed inset-0 z-10"
+                        onClick={() => setIsDropdownOpen(false)}
+                      />
+                      
+                      {/* Dropdown Content */}
+                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-20">
+                        <button
+                          onClick={handleProfileClick}
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          Profile
+                        </button>
+                        <button
+                          onClick={handleSignOut}
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          Sign Out
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : (
+                /* Anonymous User UI */
+                <div className="flex items-center gap-4">
+                  <Link
+                    href="/login"
+                    className="px-5 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="px-5 py-2 rounded-full bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors shadow-sm"
+                  >
+                    Join for Free
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Mobile Search and Menu Buttons */}
@@ -277,13 +280,14 @@ export function Header({
                 }`}
                 onClick={() => setIsMenuOpen(false)}
                 aria-label={`Favorites${favoritesCount > 0 ? ` (${favoritesCount} items)` : ''}`}
+                suppressHydrationWarning
               >
                 <span className="flex items-center gap-2">
                   <span className="material-icons-round text-xl">favorite</span>
                   Favorites
                 </span>
                 {favoritesCount > 0 && (
-                  <span className="bg-red-500 text-white text-xs font-bold rounded-full min-w-[20px] h-[20px] flex items-center justify-center px-1.5">
+                  <span className="bg-red-500 text-white text-xs font-bold rounded-full min-w-[20px] h-[20px] flex items-center justify-center px-1.5" suppressHydrationWarning>
                     {favoritesCount > 99 ? '99+' : favoritesCount}
                   </span>
                 )}
@@ -293,57 +297,59 @@ export function Header({
             {/* Divider */}
             <div className="border-t border-gray-100 mb-4" />
 
-            {authLoading ? (
-              /* Loading Skeleton - Avatar skeleton for better UX */
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-3 px-4 py-2">
-                  <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse" />
-                  <div className="w-32 h-5 bg-gray-200 rounded animate-pulse" />
+            <div suppressHydrationWarning>
+              {authLoading ? (
+                /* Loading Skeleton - Avatar skeleton for better UX */
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-3 px-4 py-2">
+                    <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse" />
+                    <div className="w-32 h-5 bg-gray-200 rounded animate-pulse" />
+                  </div>
+                  <div className="w-full h-9 bg-gray-200 rounded-lg animate-pulse" />
+                  <div className="w-full h-9 bg-gray-200 rounded-lg animate-pulse" />
                 </div>
-                <div className="w-full h-9 bg-gray-200 rounded-lg animate-pulse" />
-                <div className="w-full h-9 bg-gray-200 rounded-lg animate-pulse" />
-              </div>
-            ) : user ? (
-              /* Authenticated User Mobile Menu */
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-3 px-4 py-2">
-                  <UserAvatar user={user} />
-                  <span className="text-sm font-medium text-gray-700">
-                    {user.displayName || user.email}
-                  </span>
+              ) : user ? (
+                /* Authenticated User Mobile Menu */
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-3 px-4 py-2">
+                    <UserAvatar user={user} />
+                    <span className="text-sm font-medium text-gray-700">
+                      {user.displayName || user.email}
+                    </span>
+                  </div>
+                  <button
+                    onClick={handleProfileClick}
+                    className="text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors rounded-lg"
+                  >
+                    Profile
+                  </button>
+                  <button
+                    onClick={handleSignOut}
+                    className="text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors rounded-lg"
+                  >
+                    Sign Out
+                  </button>
                 </div>
-                <button
-                  onClick={handleProfileClick}
-                  className="text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors rounded-lg"
-                >
-                  Profile
-                </button>
-                <button
-                  onClick={handleSignOut}
-                  className="text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors rounded-lg"
-                >
-                  Sign Out
-                </button>
-              </div>
-            ) : (
-              /* Anonymous User Mobile Menu */
-              <div className="flex flex-col gap-3">
-                <Link
-                  href="/login"
-                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors rounded-lg"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/signup"
-                  className="px-4 py-2 text-center rounded-full bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors shadow-sm"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Join for Free
-                </Link>
-              </div>
-            )}
+              ) : (
+                /* Anonymous User Mobile Menu */
+                <div className="flex flex-col gap-3">
+                  <Link
+                    href="/login"
+                    className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors rounded-lg"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="px-4 py-2 text-center rounded-full bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors shadow-sm"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Join for Free
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </nav>
