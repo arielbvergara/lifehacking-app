@@ -92,18 +92,18 @@ export function Header({
 
   return (
     <header className="w-full bg-white border-b border-gray-100 sticky top-0 z-50">
-      <nav className="max-w-7xl mx-auto px-4 md:px-8 py-4">
+      <nav className="max-w-7xl mx-auto px-4 lg-header:px-8 py-4">
         <div className="flex justify-between items-center">
           {/* Logo - Smaller on mobile */}
-          <div className="md:hidden">
+          <div className="lg-header:hidden">
             <Logo size="sm" />
           </div>
-          <div className="hidden md:block">
+          <div className="hidden lg-header:block">
             <Logo />
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden lg-header:flex items-center gap-6">
             {/* SearchBar - Desktop Only */}
             {showSearchBar && (
               <div className="flex-1 max-w-md ml-6 w-80 animate-slide-down">
@@ -205,7 +205,7 @@ export function Header({
           </div>
 
           {/* Mobile Search and Menu Buttons */}
-          <div className="md:hidden flex items-center gap-2">
+          <div className="lg-header:hidden flex items-center gap-2">
             {/* Mobile Search Icon Button */}
             {showSearchBar && (
               <button
@@ -236,7 +236,7 @@ export function Header({
 
         {/* Mobile Search Interface */}
         {showSearchBar && isSearchOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t border-gray-100 pt-4 animate-slide-down">
+          <div className="lg-header:hidden mt-4 pb-4 border-t border-gray-100 pt-4 animate-slide-down">
             <SearchBar 
               variant="compact"
               onSearch={handleSearch}
@@ -249,7 +249,7 @@ export function Header({
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t border-gray-100 pt-4">
+          <div className="lg-header:hidden mt-4 pb-4 border-t border-gray-100 pt-4">
             {/* Navigation Links */}
             <div className="flex flex-col gap-2 mb-4">
               {navLinks.map((link) => (
@@ -351,7 +351,7 @@ export function Header({
       {/* Category Filter Bar - Conditionally rendered below main navigation */}
       {showCategoryFilter && onCategorySelect && (
         <div className="border-t border-gray-100 py-3">
-          <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="max-w-7xl mx-auto px-4 lg-header:px-8">
             <CategoryFilterBar
               selectedCategoryId={selectedCategoryId}
               onCategorySelect={onCategorySelect}
