@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens: {
+        'lg-header': '1088px',
+      },
       colors: {
         primary: "#2bee2b",
         "primary-dark": "#1fa81f",
