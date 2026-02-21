@@ -6,9 +6,10 @@ import {
   CategoryImageDto,
   CreateCategoryRequest,
   CategoryResponse,
-  ApiError,
 } from '@/lib/types/admin-category';
-import { API_TIMEOUT_MS, ERROR_MESSAGES } from '@/lib/constants/admin-category';
+import { UpdateCategoryRequest } from '@/lib/types/admin-dashboard';
+import { API_TIMEOUT_MS } from '@/lib/constants/admin-category';
+import { handleApiError, createNetworkError } from '@/lib/api/admin-utils';
 
 /**
  * Upload category image to S3
@@ -52,10 +53,7 @@ export async function uploadCategoryImage(
     clearTimeout(timeoutId);
     
     if (error instanceof Error && error.name === 'AbortError') {
-      throw {
-        status: 0,
-        message: ERROR_MESSAGES.NETWORK_ERROR,
-      } as ApiError;
+      throw createNetworkError();
     }
     
     throw error;
@@ -102,10 +100,7 @@ export async function createCategory(
     clearTimeout(timeoutId);
     
     if (error instanceof Error && error.name === 'AbortError') {
-      throw {
-        status: 0,
-        message: ERROR_MESSAGES.NETWORK_ERROR,
-      } as ApiError;
+      throw createNetworkError();
     }
     
     throw error;
@@ -113,55 +108,141 @@ export async function createCategory(
 }
 
 /**
- * Handle API errors and convert to user-friendly messages
+ * Fetch category by ID for editing
  * 
- * @param response - Failed fetch response
- * @returns Promise with ApiError object
+ * @param id - Category ID
+ * @param token - Firebase ID token for authorization
+ * @returns Promise with category details
+ * @throws ApiError if fetch fails
  */
-async function handleApiError(response: Response): Promise<ApiError> {
-  const contentType = response.headers.get('content-type');
+export async function fetchCategoryById(
+  id: string,
+  token: string
+): Promise<CategoryResponse> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
 
-  if (contentType?.includes('application/json')) {
-    try {
-      const errorData = await response.json();
-      
-      // Handle specific error cases
-      if (response.status === 403) {
-        return {
-          status: response.status,
-          message: ERROR_MESSAGES.UNAUTHORIZED,
-        };
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/Category/${id}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        signal: controller.signal,
+        cache: 'no-store', // Always fetch fresh data for admin edit pages
       }
-      
-      if (response.status === 409) {
-        // Extract category name from error detail if available
-        const detail = errorData.detail || '';
-        const nameMatch = detail.match(/Category with name '([^']+)'/);
-        const categoryName = nameMatch ? nameMatch[1] : 'this name';
-        
-        return {
-          status: response.status,
-          message: ERROR_MESSAGES.CATEGORY_EXISTS(categoryName),
-        };
-      }
-      
-      return {
-        status: response.status,
-        message: errorData.detail || errorData.title || ERROR_MESSAGES.GENERIC_ERROR,
-        errors: errorData.errors,
-      };
-    } catch {
-      // Failed to parse JSON error response
-      return {
-        status: response.status,
-        message: ERROR_MESSAGES.GENERIC_ERROR,
-      };
+    );
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw await handleApiError(response);
     }
-  }
 
-  // Non-JSON error response
-  return {
-    status: response.status,
-    message: ERROR_MESSAGES.GENERIC_ERROR,
-  };
+    return response.json();
+  } catch (error) {
+    clearTimeout(timeoutId);
+    
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw createNetworkError();
+    }
+    
+    throw error;
+  }
+}
+
+/**
+ * Update existing category
+ * 
+ * @param id - Category ID
+ * @param data - Category update request data
+ * @param token - Firebase ID token for authorization
+ * @returns Promise with updated category
+ * @throws ApiError if update fails
+ */
+export async function updateCategory(
+  id: string,
+  data: UpdateCategoryRequest,
+  token: string
+): Promise<CategoryResponse> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/categories/${id}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+        signal: controller.signal,
+      }
+    );
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw await handleApiError(response);
+    }
+
+    return response.json();
+  } catch (error) {
+    clearTimeout(timeoutId);
+    
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw createNetworkError();
+    }
+    
+    throw error;
+  }
+}
+
+/**
+ * Soft-delete category
+ * 
+ * @param id - Category ID
+ * @param token - Firebase ID token for authorization
+ * @returns Promise that resolves when deletion is complete
+ * @throws ApiError if deletion fails
+ */
+export async function deleteCategory(
+  id: string,
+  token: string
+): Promise<void> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/categories/${id}`,
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        signal: controller.signal,
+      }
+    );
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw await handleApiError(response);
+    }
+
+    // 204 No Content - no response body
+  } catch (error) {
+    clearTimeout(timeoutId);
+    
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw createNetworkError();
+    }
+    
+    throw error;
+  }
 }

@@ -2,10 +2,11 @@
 
 import { useState, useCallback, ChangeEvent, FormEvent, DragEvent, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import * as Sentry from '@sentry/nextjs';
 import { useAuth } from '@/lib/auth/auth-context';
-import { uploadCategoryImage, createCategory } from '@/lib/api/admin-category';
-import { ValidationErrors } from '@/lib/types/admin-category';
+import { uploadCategoryImage, createCategory, updateCategory } from '@/lib/api/admin-category';
+import { ValidationErrors, CategoryResponse, CategoryImageDto } from '@/lib/types/admin-category';
 import {
   CATEGORY_NAME_MIN_LENGTH,
   CATEGORY_NAME_MAX_LENGTH,
@@ -25,13 +26,38 @@ interface FormState {
   isDragOver: boolean;
 }
 
-export function CategoryForm() {
+interface CategoryFormCreateProps {
+  mode: 'create';
+  initialData?: never;
+  categoryId?: never;
+}
+
+interface CategoryFormEditProps {
+  mode: 'edit';
+  initialData: CategoryResponse;
+  categoryId: string;
+}
+
+type CategoryFormProps = CategoryFormCreateProps | CategoryFormEditProps;
+
+export function CategoryForm(props: CategoryFormProps) {
+  // Type guard and validation
+  if (props.mode === 'edit' && !props.categoryId) {
+    throw new Error('categoryId is required when mode is "edit"');
+  }
+  
+  if (props.mode === 'edit' && !props.initialData) {
+    throw new Error('initialData is required when mode is "edit"');
+  }
+
+  const { mode, initialData, categoryId } = props;
+  const router = useRouter();
   const { idToken } = useAuth();
   
   const [formState, setFormState] = useState<FormState>({
-    categoryName: '',
+    categoryName: initialData?.name || '',
     selectedFile: null,
-    previewUrl: null,
+    previewUrl: initialData?.image?.imageUrl || null,
     isSubmitting: false,
     error: null,
     successMessage: null,
@@ -184,7 +210,8 @@ export function CategoryForm() {
 
     // Validate form
     const nameError = validateCategoryName(formState.categoryName);
-    const imageError = formState.selectedFile ? null : ERROR_MESSAGES.IMAGE_REQUIRED;
+    // Image is required only in create mode or if a new file is selected in edit mode
+    const imageError = (mode === 'create' && !formState.selectedFile) ? ERROR_MESSAGES.IMAGE_REQUIRED : null;
 
     if (nameError || imageError) {
       setFormState((prev) => ({
@@ -208,53 +235,92 @@ export function CategoryForm() {
       await Sentry.startSpan(
         {
           op: 'ui.action',
-          name: 'Create Category Form Submit',
+          name: mode === 'edit' ? 'Update Category Form Submit' : 'Create Category Form Submit',
         },
         async (span) => {
           span.setAttribute('category.name', formState.categoryName.trim());
-          span.setAttribute('image.size', formState.selectedFile!.size);
-          span.setAttribute('image.type', formState.selectedFile!.type);
+          span.setAttribute('category.mode', mode);
+          if (formState.selectedFile) {
+            span.setAttribute('image.size', formState.selectedFile.size);
+            span.setAttribute('image.type', formState.selectedFile.type);
+          }
 
           // Get Firebase ID token from auth context
           if (!idToken) {
             throw new Error('Authentication required');
           }
 
-          // Step 1: Upload image
-          const imageMetadata = await uploadCategoryImage(formState.selectedFile!, idToken);
-          span.setAttribute('image.uploaded', true);
+          if (mode === 'edit') {
+            // Edit mode: Update existing category
+            if (!categoryId) {
+              throw new Error('Category ID is required for edit mode');
+            }
 
-          // Step 2: Create category
-          await createCategory(
-            {
-              name: formState.categoryName.trim(),
-              image: imageMetadata,
-            },
-            idToken
-          );
-          span.setAttribute('category.created', true);
+            let image: CategoryImageDto | undefined;
+
+            // Upload new image if selected
+            if (formState.selectedFile) {
+              image = await uploadCategoryImage(formState.selectedFile, idToken);
+              span.setAttribute('image.uploaded', true);
+            } else if (initialData?.image) {
+              // Keep existing image
+              image = initialData.image;
+            }
+
+            await updateCategory(
+              categoryId,
+              {
+                name: formState.categoryName.trim(),
+                image,
+              },
+              idToken
+            );
+            span.setAttribute('category.updated', true);
+
+            // Success - navigate to categories list
+            router.push('/admin/categories');
+          } else {
+            // Create mode: Create new category
+            if (!formState.selectedFile) {
+              throw new Error('Image file is required for create mode');
+            }
+
+            // Step 1: Upload image
+            const imageMetadata = await uploadCategoryImage(formState.selectedFile, idToken);
+            span.setAttribute('image.uploaded', true);
+
+            // Step 2: Create category
+            await createCategory(
+              {
+                name: formState.categoryName.trim(),
+                image: imageMetadata,
+              },
+              idToken
+            );
+            span.setAttribute('category.created', true);
+
+            // Success - reset form
+            if (formState.previewUrl && formState.selectedFile) {
+              URL.revokeObjectURL(formState.previewUrl);
+            }
+
+            setFormState({
+              categoryName: '',
+              selectedFile: null,
+              previewUrl: null,
+              isSubmitting: false,
+              error: null,
+              successMessage: 'Category created successfully!',
+              validationErrors: {},
+              isDragOver: false,
+            });
+
+            if (fileInputRef.current) {
+              fileInputRef.current.value = '';
+            }
+          }
         }
       );
-
-      // Success - reset form
-      if (formState.previewUrl) {
-        URL.revokeObjectURL(formState.previewUrl);
-      }
-
-      setFormState({
-        categoryName: '',
-        selectedFile: null,
-        previewUrl: null,
-        isSubmitting: false,
-        error: null,
-        successMessage: 'Category created successfully!',
-        validationErrors: {},
-        isDragOver: false,
-      });
-
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
     } catch (err) {
       // Capture exception in Sentry
       Sentry.captureException(err);
@@ -266,10 +332,23 @@ export function CategoryForm() {
         return;
       }
 
+      // Handle 409 Conflict - category name already exists
+      if (error.status === 409) {
+        setFormState((prev) => ({
+          ...prev,
+          isSubmitting: false,
+          validationErrors: {
+            ...prev.validationErrors,
+            categoryName: error.message || 'A category with this name already exists',
+          },
+        }));
+        return;
+      }
+
       setFormState((prev) => ({
         ...prev,
         isSubmitting: false,
-        error: error.message || ERROR_MESSAGES.GENERIC_ERROR,
+        error: error.message || (mode === 'edit' ? 'Failed to update category' : ERROR_MESSAGES.GENERIC_ERROR),
       }));
     }
   };
@@ -277,9 +356,11 @@ export function CategoryForm() {
   const isFormValid =
     formState.categoryName.trim().length >= CATEGORY_NAME_MIN_LENGTH &&
     formState.categoryName.trim().length <= CATEGORY_NAME_MAX_LENGTH &&
-    formState.selectedFile !== null &&
+    (mode === 'edit' || formState.selectedFile !== null) &&
     !formState.validationErrors.categoryName &&
     !formState.validationErrors.image;
+
+  const submitButtonText = mode === 'edit' ? 'Update Category' : 'Create Category';
 
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl">
@@ -344,7 +425,7 @@ export function CategoryForm() {
       </div>
 
       {/* Image Upload */}
-      {!formState.selectedFile ? (
+      {!formState.selectedFile && !formState.previewUrl ? (
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Category Image
@@ -411,8 +492,8 @@ export function CategoryForm() {
           <div className="border border-gray-300 rounded-lg p-4">
             <div className="relative w-full h-48 rounded-lg overflow-hidden mb-3">
               <Image
-                src={formState.previewUrl!}
-                alt={`Preview of ${formState.selectedFile.name}`}
+                src={formState.selectedFile ? formState.previewUrl! : (formState.previewUrl || '')}
+                alt={formState.selectedFile ? `Preview of ${formState.selectedFile.name}` : 'Category image'}
                 fill
                 className="object-cover"
               />
@@ -420,11 +501,13 @@ export function CategoryForm() {
             <div className="flex justify-between items-center">
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">
-                  {formState.selectedFile.name}
+                  {formState.selectedFile ? formState.selectedFile.name : 'Current image'}
                 </p>
-                <p className="text-xs text-gray-500">
-                  {(formState.selectedFile.size / 1024).toFixed(1)} KB
-                </p>
+                {formState.selectedFile && (
+                  <p className="text-xs text-gray-500">
+                    {(formState.selectedFile.size / 1024).toFixed(1)} KB
+                  </p>
+                )}
               </div>
               <button
                 type="button"
@@ -433,7 +516,7 @@ export function CategoryForm() {
                 className="ml-4 px-3 py-1 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label="Remove selected image"
               >
-                Remove
+                {mode === 'edit' && !formState.selectedFile ? 'Change Image' : 'Remove'}
               </button>
             </div>
           </div>
@@ -445,7 +528,7 @@ export function CategoryForm() {
         type="submit"
         disabled={!isFormValid || formState.isSubmitting}
         className="w-full px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-        aria-label={formState.isSubmitting ? 'Creating category...' : 'Create category'}
+        aria-label={formState.isSubmitting ? `${mode === 'edit' ? 'Updating' : 'Creating'} category...` : submitButtonText}
       >
         {formState.isSubmitting ? (
           <span className="flex items-center justify-center">
@@ -470,10 +553,10 @@ export function CategoryForm() {
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               ></path>
             </svg>
-            Creating Category...
+            {mode === 'edit' ? 'Updating Category...' : 'Creating Category...'}
           </span>
         ) : (
-          'Create Category'
+          submitButtonText
         )}
       </button>
     </form>

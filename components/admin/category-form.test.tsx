@@ -16,6 +16,14 @@ vi.mock('@/lib/auth/auth-context', () => ({
   useAuth: () => mockUseAuth(),
 }));
 
+// Mock Next.js router
+const mockPush = vi.fn();
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockPush,
+  }),
+}));
+
 // Mock Next.js Image component
 vi.mock('next/image', () => ({
   default: ({ src, alt, fill, className }: { src: string; alt: string; fill?: boolean; className?: string }) => (
@@ -28,6 +36,7 @@ vi.mock('next/image', () => ({
 vi.mock('@/lib/api/admin-category', () => ({
   uploadCategoryImage: vi.fn(),
   createCategory: vi.fn(),
+  updateCategory: vi.fn(),
 }));
 
 describe('CategoryForm', () => {
@@ -43,6 +52,7 @@ describe('CategoryForm', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockPush.mockClear();
     mockUseAuth.mockReturnValue({
       idToken: mockIdToken,
       user: { uid: '123', email: 'admin@example.com' },
