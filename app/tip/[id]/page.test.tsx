@@ -416,7 +416,7 @@ describe('generateMetadata', () => {
 
       const metadata = await generateMetadata({ params: { id: mockTip.id } });
 
-      expect(metadata.alternates?.canonical).toBe(`https://lifehackbuddy.com/tip/${mockTip.id}`);
+      expect(metadata.alternates?.canonical).toBe(`https://lifehackbuddy.com/tips/${mockTip.id}`);
     });
   });
 
@@ -429,7 +429,7 @@ describe('generateMetadata', () => {
       expect(metadata.openGraph?.title).toBe(mockTip.title);
       expect(metadata.openGraph?.description).toBe(mockTip.description.slice(0, 160));
       expect(metadata.openGraph?.type).toBe('article');
-      expect(metadata.openGraph?.url).toBe(`https://lifehackbuddy.com/tip/${mockTip.id}`);
+      expect(metadata.openGraph?.url).toBe(`https://lifehackbuddy.com/tips/${mockTip.id}`);
     });
 
     it('Should_IncludeImageInOpenGraph_When_TipHasImage', async () => {
