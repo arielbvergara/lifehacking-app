@@ -2,14 +2,17 @@
 
 import { useState, useCallback, ChangeEvent, FormEvent, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth/auth-context';
-import { uploadTipImage, createTip, fetchCategories } from '@/lib/api/admin-tip';
+import { uploadTipImage, createTip, updateTip, fetchCategories } from '@/lib/api/admin-tip';
 import { generateTipContentFromVideo, validateVideoUrl } from '@/lib/services/gemini';
 import {
   GeminiTipContent,
   TipValidationErrors,
   CategoryResponse,
+  TipDetailResponse,
 } from '@/lib/types/admin-tip';
+import { TipImageDto } from '@/lib/types/admin-dashboard';
 import {
   MAX_IMAGE_SIZE_BYTES,
   ALLOWED_IMAGE_TYPES,
@@ -44,18 +47,43 @@ interface FormState {
   isDragOver: boolean;
 }
 
-export function TipForm() {
+interface TipFormCreateProps {
+  mode: 'create';
+  initialData?: never;
+  tipId?: never;
+}
+
+interface TipFormEditProps {
+  mode: 'edit';
+  initialData: TipDetailResponse;
+  tipId: string;
+}
+
+type TipFormProps = TipFormCreateProps | TipFormEditProps;
+
+export function TipForm(props: TipFormProps) {
+  // Type guard and validation
+  if (props.mode === 'edit' && !props.tipId) {
+    throw new Error('tipId is required when mode is "edit"');
+  }
+  
+  if (props.mode === 'edit' && !props.initialData) {
+    throw new Error('initialData is required when mode is "edit"');
+  }
+
+  const { mode, initialData, tipId } = props;
+  const router = useRouter();
   const { idToken } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formState, setFormState] = useState<FormState>({
-    videoUrl: '',
+    videoUrl: initialData?.videoUrl || '',
     isProcessingVideo: false,
     geminiContent: null,
     contentJson: '',
-    selectedCategoryId: '',
+    selectedCategoryId: initialData?.categoryId || '',
     selectedFile: null,
-    previewUrl: null,
+    previewUrl: initialData?.image?.imageUrl || null,
     categories: [],
     isLoadingCategories: false,
     isSubmitting: false,
@@ -65,10 +93,27 @@ export function TipForm() {
     isDragOver: false,
   });
 
-  // Load categories on mount
+  // Load categories on mount and pre-populate form in edit mode
   useEffect(() => {
     loadCategories();
-  }, []);
+    
+    // Pre-populate form fields when in edit mode
+    if (mode === 'edit' && initialData) {
+      const geminiContent: GeminiTipContent = {
+        title: initialData.title,
+        description: initialData.description,
+        steps: initialData.steps,
+        tags: initialData.tags,
+        videoUrl: initialData.videoUrl || '',
+      };
+      
+      setFormState((prev) => ({
+        ...prev,
+        geminiContent,
+        contentJson: JSON.stringify(geminiContent, null, 2),
+      }));
+    }
+  }, [mode, initialData]);
 
   // Cleanup object URL on unmount
   useEffect(() => {
@@ -286,7 +331,8 @@ export function TipForm() {
       errors.categoryId = ERROR_MESSAGES.CATEGORY_REQUIRED;
     }
 
-    if (!formState.selectedFile) {
+    // Image is required only in create mode or if a new file is selected in edit mode
+    if (mode === 'create' && !formState.selectedFile) {
       errors.image = ERROR_MESSAGES.IMAGE_REQUIRED;
     }
 
@@ -325,47 +371,84 @@ export function TipForm() {
         throw new Error('Authentication required');
       }
 
-      // Step 1: Upload image
-      const imageMetadata = await uploadTipImage(formState.selectedFile!, idToken);
+      if (mode === 'edit') {
+        // Edit mode: Update existing tip
+        if (!tipId) {
+          throw new Error('Tip ID is required for edit mode');
+        }
 
-      // Step 2: Create tip with merged data
-      await createTip(
-        {
-          title: parsedContent.title,
-          description: parsedContent.description,
-          steps: parsedContent.steps,
-          categoryId: formState.selectedCategoryId,
-          tags: parsedContent.tags,
-          videoUrl: parsedContent.videoUrl || null,
-          image: imageMetadata,
-        },
-        idToken
-      );
+        let image: TipImageDto | undefined;
 
-      // Success - reset form
-      if (formState.previewUrl) {
-        URL.revokeObjectURL(formState.previewUrl);
-      }
+        // Upload new image if selected
+        if (formState.selectedFile) {
+          image = await uploadTipImage(formState.selectedFile, idToken);
+        } else if (initialData?.image) {
+          // Keep existing image
+          image = initialData.image;
+        }
 
-      setFormState({
-        videoUrl: '',
-        isProcessingVideo: false,
-        geminiContent: null,
-        contentJson: '',
-        selectedCategoryId: '',
-        selectedFile: null,
-        previewUrl: null,
-        categories: formState.categories,
-        isLoadingCategories: false,
-        isSubmitting: false,
-        error: null,
-        successMessage: 'Tip created successfully!',
-        validationErrors: {},
-        isDragOver: false,
-      });
+        await updateTip(
+          tipId,
+          {
+            title: parsedContent.title,
+            description: parsedContent.description,
+            steps: parsedContent.steps,
+            categoryId: formState.selectedCategoryId,
+            tags: parsedContent.tags,
+            videoUrl: parsedContent.videoUrl || null,
+            image,
+          },
+          idToken
+        );
 
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+        // Success - navigate to tips list
+        router.push('/admin/tips');
+      } else {
+        // Create mode: Create new tip
+        if (!formState.selectedFile) {
+          throw new Error('Image file is required for create mode');
+        }
+
+        const imageMetadata = await uploadTipImage(formState.selectedFile, idToken);
+
+        await createTip(
+          {
+            title: parsedContent.title,
+            description: parsedContent.description,
+            steps: parsedContent.steps,
+            categoryId: formState.selectedCategoryId,
+            tags: parsedContent.tags,
+            videoUrl: parsedContent.videoUrl || null,
+            image: imageMetadata,
+          },
+          idToken
+        );
+
+        // Success - reset form
+        if (formState.previewUrl && formState.selectedFile) {
+          URL.revokeObjectURL(formState.previewUrl);
+        }
+
+        setFormState({
+          videoUrl: '',
+          isProcessingVideo: false,
+          geminiContent: null,
+          contentJson: '',
+          selectedCategoryId: '',
+          selectedFile: null,
+          previewUrl: null,
+          categories: formState.categories,
+          isLoadingCategories: false,
+          isSubmitting: false,
+          error: null,
+          successMessage: 'Tip created successfully!',
+          validationErrors: {},
+          isDragOver: false,
+        });
+
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
       }
     } catch (err) {
       // Handle 403 Forbidden - redirect to 404
@@ -378,7 +461,7 @@ export function TipForm() {
       setFormState((prev) => ({
         ...prev,
         isSubmitting: false,
-        error: error.message || ERROR_MESSAGES.TIP_CREATION_FAILED,
+        error: error.message || (mode === 'edit' ? 'Failed to update tip' : ERROR_MESSAGES.TIP_CREATION_FAILED),
       }));
     }
   };
@@ -386,8 +469,10 @@ export function TipForm() {
   const canSubmit =
     formState.geminiContent !== null &&
     formState.selectedCategoryId !== '' &&
-    formState.selectedFile !== null &&
+    (mode === 'edit' || formState.selectedFile !== null) &&
     !formState.isSubmitting;
+
+  const submitButtonText = mode === 'edit' ? 'Update Tip' : 'Create Tip';
 
   return (
     <form onSubmit={handleSubmit} className="max-w-4xl">
@@ -411,9 +496,10 @@ export function TipForm() {
         </div>
       )}
 
-      {/* Step 1: Video URL Input */}
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Step 1: Enter Video URL</h2>
+      {/* Step 1: Video URL Input - Only show in create mode or if no content yet */}
+      {(mode === 'create' || !formState.geminiContent) && (
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">Step 1: Enter Video URL</h2>
         <div className="flex gap-2">
           <div className="flex-1">
             <input
@@ -463,6 +549,7 @@ export function TipForm() {
           </div>
         )}
       </div>
+      )}
 
       {/* Loading State */}
       {formState.isProcessingVideo && (
@@ -540,7 +627,7 @@ export function TipForm() {
           {/* Step 4: Upload Image */}
           <div className="mb-8">
             <h2 className="text-xl font-semibold mb-4">Step 4: Upload Image</h2>
-            {!formState.selectedFile ? (
+            {!formState.selectedFile && !formState.previewUrl ? (
               <div>
                 <div
                   onClick={handleClickUploadZone}
@@ -597,8 +684,8 @@ export function TipForm() {
               <div className="border border-gray-300 rounded-lg p-4">
                 <div className="relative w-full h-48 rounded-lg overflow-hidden mb-3">
                   <Image
-                    src={formState.previewUrl!}
-                    alt={`Preview of ${formState.selectedFile.name}`}
+                    src={formState.selectedFile ? formState.previewUrl! : (formState.previewUrl || '')}
+                    alt={formState.selectedFile ? `Preview of ${formState.selectedFile.name}` : 'Tip image'}
                     fill
                     className="object-cover"
                   />
@@ -606,11 +693,13 @@ export function TipForm() {
                 <div className="flex justify-between items-center">
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 truncate">
-                      {formState.selectedFile.name}
+                      {formState.selectedFile ? formState.selectedFile.name : 'Current image'}
                     </p>
-                    <p className="text-xs text-gray-500">
-                      {(formState.selectedFile.size / 1024).toFixed(1)} KB
-                    </p>
+                    {formState.selectedFile && (
+                      <p className="text-xs text-gray-500">
+                        {(formState.selectedFile.size / 1024).toFixed(1)} KB
+                      </p>
+                    )}
                   </div>
                   <button
                     type="button"
@@ -619,7 +708,7 @@ export function TipForm() {
                     className="ml-4 px-3 py-1 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Remove selected image"
                   >
-                    Remove
+                    {mode === 'edit' && !formState.selectedFile ? 'Change Image' : 'Remove'}
                   </button>
                 </div>
               </div>
@@ -631,7 +720,7 @@ export function TipForm() {
             type="submit"
             disabled={!canSubmit}
             className="w-full px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-            aria-label={formState.isSubmitting ? 'Creating tip...' : 'Create tip'}
+            aria-label={formState.isSubmitting ? `${mode === 'edit' ? 'Updating' : 'Creating'} tip...` : `${submitButtonText}`}
           >
             {formState.isSubmitting ? (
               <span className="flex items-center justify-center">
@@ -656,10 +745,10 @@ export function TipForm() {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                Creating Tip...
+                {mode === 'edit' ? 'Updating Tip...' : 'Creating Tip...'}
               </span>
             ) : (
-              'Create Tip'
+              submitButtonText
             )}
           </button>
         </>
