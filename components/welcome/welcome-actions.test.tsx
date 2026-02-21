@@ -3,8 +3,6 @@
  * 
  * Unit tests for the WelcomeActions component.
  * Tests button and link rendering, callback invocation, icon presence, and styling.
- * 
- * Requirements: 2.1, 2.3, 2.5, 2.6
  */
 
 import { describe, it, expect, vi } from 'vitest';

@@ -1,8 +1,6 @@
 /**
  * Unit tests for FilterSidebar mobile behavior
  * Tests overlay rendering, animations, and interaction
- * 
- * Validates Requirements: 3.4, 3.5, 3.6, 3.7, 16.1-16.10
  */
 
 import { render, screen, fireEvent } from '@testing-library/react';

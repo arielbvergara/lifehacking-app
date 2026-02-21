@@ -39,7 +39,7 @@ export function FeaturedTip({ tip }: FeaturedTipProps) {
 
   const handleReadGuide = () => {
     if (tip) {
-      router.push(`/tip/${tip.id}`);
+      router.push(`/tips/${tip.id}`);
     }
   };
 

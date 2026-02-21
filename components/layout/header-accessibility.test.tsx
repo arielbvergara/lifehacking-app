@@ -57,7 +57,6 @@ vi.mock('@/components/layout/user-avatar', () => ({
 /**
  * Header Accessibility Tests
  * Task 7: Verify styling consistency and accessibility
- * Requirements: 6.4, 6.5
  */
 describe('Header - Accessibility', () => {
   beforeEach(() => {

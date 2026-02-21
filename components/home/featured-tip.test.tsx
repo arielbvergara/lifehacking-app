@@ -87,7 +87,7 @@ describe('FeaturedTip', () => {
     const readGuideButton = screen.getByRole('button', { name: /read guide/i });
     await user.click(readGuideButton);
 
-    expect(mockPush).toHaveBeenCalledWith(`/tip/${mockTip.id}`);
+    expect(mockPush).toHaveBeenCalledWith(`/tips/${mockTip.id}`);
     expect(mockPush).toHaveBeenCalledTimes(1);
   });
 
@@ -175,7 +175,7 @@ describe('FeaturedTip - Property Tests', () => {
       await user.click(readGuideButton);
 
       // Verify the exact ID is preserved in the navigation URL
-      expect(mockPush).toHaveBeenCalledWith(`/tip/${tipId}`);
+      expect(mockPush).toHaveBeenCalledWith(`/tips/${tipId}`);
       expect(mockPush).toHaveBeenCalledTimes(1);
     }
   );
