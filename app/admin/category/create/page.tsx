@@ -12,7 +12,8 @@ export const metadata: Metadata = {
 export default function CreateCategoryPage() {
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'Categories', href: '/categories' },
+    { label: 'Admin', href: '/admin' },
+    { label: 'Categories', href: '/admin/categories' },
     { label: 'Create category' },
   ];
 
@@ -32,7 +33,7 @@ export default function CreateCategoryPage() {
           </p>
         </div>
 
-        <CategoryForm />
+        <CategoryForm mode="create" />
       </main>
       
       <Footer />
