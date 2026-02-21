@@ -9,6 +9,7 @@ import { SearchBar } from '@/components/shared/search-bar';
 import { CategoryFilterBar } from '@/components/search/category-filter-bar';
 import { useAuth } from '@/lib/auth/auth-context';
 import { useFavorites } from '@/lib/hooks/use-favorites';
+import { useUserProfile } from '@/lib/hooks/use-user-profile';
 
 export interface HeaderProps {
   showSearchBar?: boolean;
@@ -44,6 +45,7 @@ export function Header({
   const pathname = usePathname();
   const { user, signOut, loading: authLoading } = useAuth();
   const { count: favoritesCount } = useFavorites();
+  const { isAdmin } = useUserProfile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -171,6 +173,16 @@ export function Header({
                       
                       {/* Dropdown Content */}
                       <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-20">
+                        {isAdmin && (
+                          <Link
+                            href="/admin"
+                            className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                            onClick={() => setIsDropdownOpen(false)}
+                          >
+                            <span className="material-icons-round text-lg">dashboard</span>
+                            Admin Dashboard
+                          </Link>
+                        )}
                         <button
                           onClick={handleProfileClick}
                           className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
@@ -317,6 +329,16 @@ export function Header({
                       {user.displayName || user.email}
                     </span>
                   </div>
+                  {isAdmin && (
+                    <Link
+                      href="/admin"
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors rounded-lg"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <span className="material-icons-round text-lg">dashboard</span>
+                      Admin Dashboard
+                    </Link>
+                  )}
                   <button
                     onClick={handleProfileClick}
                     className="text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors rounded-lg"
