@@ -16,6 +16,7 @@ export interface Category {
   createdAt: string; // ISO 8601 date-time
   updatedAt: string | null; // ISO 8601 date-time
   image?: CategoryImage;
+  tipCount?: number; // Number of tips in this category
 }
 
 export interface CategoryListResponse {

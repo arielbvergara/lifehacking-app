@@ -46,13 +46,12 @@ export function CategoriesManagementClient() {
     try {
       const response = await fetchCategories();
       
-      // Transform categories to add tipCount: 0 as placeholder
-      // The backend API should be extended to include tipCount in the future
+      // Transform categories to include tipCount from API response
       const categoriesWithTipCount = (response.items || []).map((cat: Category) => ({
         id: cat.id,
         name: cat.name,
         iconUrl: cat.image?.imageUrl || undefined,
-        tipCount: 0, // Placeholder for MVP
+        tipCount: cat.tipCount ?? 0, // Use API-provided tipCount, fallback to 0
       }));
       
       setCategories(categoriesWithTipCount);
