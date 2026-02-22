@@ -65,7 +65,7 @@ describe('CategoryCard', () => {
     const card = screen.getByRole('button');
     await user.click(card);
     
-    expect(mockPush).toHaveBeenCalledWith('/category/123e4567-e89b-12d3-a456-426614174000');
+    expect(mockPush).toHaveBeenCalledWith('/categories/123e4567-e89b-12d3-a456-426614174000');
   });
 
   it('should navigate on Enter key press', async () => {
@@ -76,7 +76,7 @@ describe('CategoryCard', () => {
     card.focus();
     await user.keyboard('{Enter}');
     
-    expect(mockPush).toHaveBeenCalledWith('/category/123e4567-e89b-12d3-a456-426614174000');
+    expect(mockPush).toHaveBeenCalledWith('/categories/123e4567-e89b-12d3-a456-426614174000');
   });
 
   it('should navigate on Space key press', async () => {
@@ -87,7 +87,7 @@ describe('CategoryCard', () => {
     card.focus();
     await user.keyboard(' ');
     
-    expect(mockPush).toHaveBeenCalledWith('/category/123e4567-e89b-12d3-a456-426614174000');
+    expect(mockPush).toHaveBeenCalledWith('/categories/123e4567-e89b-12d3-a456-426614174000');
   });
 
   it('should render default icon for unknown category', () => {
@@ -191,7 +191,7 @@ describe('CategoryCard - Property Tests', () => {
       await user.click(card);
       
       // Verify the exact ID is preserved in the navigation URL
-      expect(mockPush).toHaveBeenCalledWith(`/category/${categoryId}`);
+      expect(mockPush).toHaveBeenCalledWith(`/categories/${categoryId}`);
       expect(mockPush).toHaveBeenCalledTimes(1);
     }
   );

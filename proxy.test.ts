@@ -17,7 +17,7 @@ describe('Middleware - Admin Route Protection', () => {
 
   describe('Admin Route Protection', () => {
     it('Middleware_ShouldAllowAccess_WhenAuthenticatedAdmin', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       // Mock session cookie
       mockRequest.cookies.set('session', 'valid-token');
@@ -36,7 +36,7 @@ describe('Middleware - Admin Route Protection', () => {
     });
 
     it('Middleware_ShouldRedirectTo404_WhenNoSessionCookie', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       // No session cookie set
 
@@ -48,7 +48,7 @@ describe('Middleware - Admin Route Protection', () => {
     });
 
     it('Middleware_ShouldRedirectTo404_WhenBackendReturnsNonAdmin', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       mockRequest.cookies.set('session', 'valid-token');
 
@@ -67,7 +67,7 @@ describe('Middleware - Admin Route Protection', () => {
     });
 
     it('Middleware_ShouldRedirectTo404_WhenBackendReturns401', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       mockRequest.cookies.set('session', 'invalid-token');
 
@@ -85,7 +85,7 @@ describe('Middleware - Admin Route Protection', () => {
     });
 
     it('Middleware_ShouldRedirectTo404_WhenBackendReturns403', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       mockRequest.cookies.set('session', 'valid-token');
 
@@ -103,7 +103,7 @@ describe('Middleware - Admin Route Protection', () => {
     });
 
     it('Middleware_ShouldRedirectTo404_WhenBackendThrowsError', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       mockRequest.cookies.set('session', 'valid-token');
 
@@ -118,7 +118,7 @@ describe('Middleware - Admin Route Protection', () => {
     });
 
     it('Middleware_ShouldCallBackendAPI_WithCorrectEndpoint', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       mockRequest.cookies.set('session', 'valid-token');
 
@@ -141,7 +141,7 @@ describe('Middleware - Admin Route Protection', () => {
     });
 
     it('Middleware_ShouldIncludeAuthorizationHeader_WhenCallingBackend', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       const testToken = 'test-firebase-token';
       
       mockRequest.cookies.set('session', testToken);
@@ -183,7 +183,7 @@ describe('Middleware - Admin Route Protection', () => {
     });
 
     it('Middleware_ShouldProtectNestedAdminRoutes_WhenPathIsNested', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       mockRequest.cookies.set('session', 'valid-token');
 
@@ -237,7 +237,7 @@ describe('Middleware - Admin Route Protection', () => {
 
   describe('Role Verification', () => {
     it('RoleVerification_ShouldAllowAccess_WhenRoleIsAdmin', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       mockRequest.cookies.set('session', 'valid-token');
 
@@ -253,7 +253,7 @@ describe('Middleware - Admin Route Protection', () => {
     });
 
     it('RoleVerification_ShouldDenyAccess_WhenRoleIsUser', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       mockRequest.cookies.set('session', 'valid-token');
 
@@ -270,7 +270,7 @@ describe('Middleware - Admin Route Protection', () => {
     });
 
     it('RoleVerification_ShouldDenyAccess_WhenRoleIsMissing', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       mockRequest.cookies.set('session', 'valid-token');
 
@@ -287,7 +287,7 @@ describe('Middleware - Admin Route Protection', () => {
     });
 
     it('RoleVerification_ShouldDenyAccess_WhenRoleIsNull', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       mockRequest.cookies.set('session', 'valid-token');
 
@@ -304,7 +304,7 @@ describe('Middleware - Admin Route Protection', () => {
     });
 
     it('RoleVerification_ShouldBeCaseSensitive_WhenCheckingRole', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       mockRequest.cookies.set('session', 'valid-token');
 
@@ -324,7 +324,7 @@ describe('Middleware - Admin Route Protection', () => {
 
   describe('Error Handling', () => {
     it('ErrorHandling_ShouldHandleNetworkError_WhenBackendUnreachable', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       mockRequest.cookies.set('session', 'valid-token');
 
@@ -337,7 +337,7 @@ describe('Middleware - Admin Route Protection', () => {
     });
 
     it('ErrorHandling_ShouldHandleTimeout_WhenBackendSlow', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       mockRequest.cookies.set('session', 'valid-token');
 
@@ -350,7 +350,7 @@ describe('Middleware - Admin Route Protection', () => {
     });
 
     it('ErrorHandling_ShouldHandleInvalidJSON_WhenBackendReturnsInvalidResponse', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       mockRequest.cookies.set('session', 'valid-token');
 
@@ -369,7 +369,7 @@ describe('Middleware - Admin Route Protection', () => {
     });
 
     it('ErrorHandling_ShouldHandleEmptyResponse_WhenBackendReturnsEmpty', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       mockRequest.cookies.set('session', 'valid-token');
 
@@ -388,7 +388,7 @@ describe('Middleware - Admin Route Protection', () => {
 
   describe('Security', () => {
     it('Security_ShouldNotExposeTokenInURL_WhenRedirecting', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       mockRequest.cookies.set('session', 'secret-token');
 
@@ -404,7 +404,7 @@ describe('Middleware - Admin Route Protection', () => {
     });
 
     it('Security_ShouldValidateToken_BeforeAllowingAccess', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       mockRequest.cookies.set('session', 'valid-token');
 
@@ -428,7 +428,7 @@ describe('Middleware - Admin Route Protection', () => {
     });
 
     it('Security_ShouldRejectExpiredToken_WhenBackendReturns401', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       mockRequest.cookies.set('session', 'expired-token');
 
@@ -444,7 +444,7 @@ describe('Middleware - Admin Route Protection', () => {
     });
 
     it('Security_ShouldRejectTamperedToken_WhenBackendReturns403', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       mockRequest.cookies.set('session', 'tampered-token');
 
@@ -462,7 +462,7 @@ describe('Middleware - Admin Route Protection', () => {
 
   describe('Redirect Behavior', () => {
     it('Redirect_ShouldRedirectTo404_NotLogin', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       // No session cookie
 
@@ -473,7 +473,7 @@ describe('Middleware - Admin Route Protection', () => {
     });
 
     it('Redirect_ShouldPreserveProtocol_WhenRedirecting', async () => {
-      const mockRequest = new NextRequest('https://example.com/admin/category/create');
+      const mockRequest = new NextRequest('https://example.com/admin/categories/create');
       
       // No session cookie
 
@@ -484,7 +484,7 @@ describe('Middleware - Admin Route Protection', () => {
     });
 
     it('Redirect_ShouldUseCorrectDomain_WhenRedirecting', async () => {
-      const mockRequest = new NextRequest('http://localhost:3000/admin/category/create');
+      const mockRequest = new NextRequest('http://localhost:3000/admin/categories/create');
       
       // No session cookie
 

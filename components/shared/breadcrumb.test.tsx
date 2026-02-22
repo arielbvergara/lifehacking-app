@@ -5,7 +5,7 @@ import { Breadcrumb, BreadcrumbItem } from './breadcrumb';
 describe('Breadcrumb', () => {
   const mockItems: BreadcrumbItem[] = [
     { label: 'Home', href: '/' },
-    { label: 'Kitchen', href: '/category/kitchen-id' },
+    { label: 'Kitchen', href: '/categories/kitchen-id' },
     { label: 'Peel Garlic in 10 Seconds' },
   ];
 
@@ -46,7 +46,7 @@ describe('Breadcrumb', () => {
 
       const kitchenLink = screen.getByRole('link', { name: /kitchen/i });
       expect(kitchenLink).toBeInTheDocument();
-      expect(kitchenLink).toHaveAttribute('href', '/category/kitchen-id');
+      expect(kitchenLink).toHaveAttribute('href', '/categories/kitchen-id');
     });
 
     it('Breadcrumb_ShouldNotRenderLink_WhenLastItem', () => {
