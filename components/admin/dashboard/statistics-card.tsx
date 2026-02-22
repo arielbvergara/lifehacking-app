@@ -43,11 +43,6 @@ export function StatisticsCard({
     );
   }
 
-  // Calculate display value based on statistics type
-  const displayValue = statisticsType === 'percentage' 
-    ? calculatePercentageChange(currentPeriod, previousPeriod)
-    : formatStatNumber(total);
-
   // Calculate growth
   const growth = calculateGrowthText(
     currentPeriod, 
@@ -55,6 +50,9 @@ export function StatisticsCard({
     period,
     statisticsType === 'percentage'
   );
+
+  // Format the display value
+  const formattedTotal = formatStatNumber(total);
 
   // Background color classes
   const bgColorClasses = {
@@ -106,9 +104,18 @@ export function StatisticsCard({
           <h3 className="text-sm font-medium text-gray-600 leading-tight">{title}</h3>
         </div>
 
-        {/* Display total */}
+        {/* Display total or percentage based on mode */}
         <div className="mb-3">
-          <p className="text-4xl font-bold text-gray-900">{total}</p>
+          {statisticsType === 'percentage' ? (
+            <>
+              <p className="text-4xl font-bold text-gray-900">
+                {calculatePercentageChange(currentPeriod, previousPeriod)}
+              </p>
+              <p className="text-sm text-gray-600 mt-1">Total: {formattedTotal}</p>
+            </>
+          ) : (
+            <p className="text-4xl font-bold text-gray-900">{formattedTotal}</p>
+          )}
         </div>
 
         {/* Growth indicator */}

@@ -29,43 +29,43 @@ describe('Dashboard Utilities', () => {
 
   describe('calculateGrowthText', () => {
     it('calculateGrowthText_ShouldReturnPositiveAbsolute_WhenLastMonthIsZero', () => {
-      const result = calculateGrowthText(12, 0);
+      const result = calculateGrowthText(12, 0, 'month');
       expect(result.text).toBe('+12 this month');
       expect(result.type).toBe('positive');
     });
 
     it('calculateGrowthText_ShouldReturnPositivePercentage_WhenLastMonthIsLarge', () => {
-      const result = calculateGrowthText(105, 100);
+      const result = calculateGrowthText(105, 100, 'month');
       expect(result.text).toBe('+5% growth');
       expect(result.type).toBe('positive');
     });
 
     it('calculateGrowthText_ShouldReturnNegativeAbsolute_WhenLastMonthIsSmall', () => {
-      const result = calculateGrowthText(5, 8);
+      const result = calculateGrowthText(5, 8, 'month');
       expect(result.text).toBe('-3 this month');
       expect(result.type).toBe('negative');
     });
 
     it('calculateGrowthText_ShouldReturnNegativePercentage_WhenLastMonthIsLarge', () => {
-      const result = calculateGrowthText(95, 100);
+      const result = calculateGrowthText(95, 100, 'month');
       expect(result.text).toBe('-5% decline');
       expect(result.type).toBe('negative');
     });
 
     it('calculateGrowthText_ShouldReturnNoChange_WhenValuesAreEqual', () => {
-      const result = calculateGrowthText(100, 100);
+      const result = calculateGrowthText(100, 100, 'month');
       expect(result.text).toBe('No change');
       expect(result.type).toBe('neutral');
     });
 
     it('calculateGrowthText_ShouldHandleZeroToZero_WhenBothAreZero', () => {
-      const result = calculateGrowthText(0, 0);
+      const result = calculateGrowthText(0, 0, 'month');
       expect(result.text).toBe('No change');
       expect(result.type).toBe('neutral');
     });
 
     it('calculateGrowthText_ShouldUseAbsoluteForSmallNumbers_WhenLastMonthIsLessThan10', () => {
-      const result = calculateGrowthText(7, 5);
+      const result = calculateGrowthText(7, 5, 'month');
       expect(result.text).toBe('+2 this month');
       expect(result.type).toBe('positive');
     });
