@@ -28,25 +28,25 @@ describe('Dashboard Utilities', () => {
   });
 
   describe('calculateGrowthText', () => {
-    it('calculateGrowthText_ShouldReturnPositiveAbsolute_WhenLastMonthIsZero', () => {
+    it('calculateGrowthText_ShouldReturnPositiveAbsolute_WhenPreviousIsZero', () => {
       const result = calculateGrowthText(12, 0, 'month');
       expect(result.text).toBe('+12 this month');
       expect(result.type).toBe('positive');
     });
 
-    it('calculateGrowthText_ShouldReturnPositivePercentage_WhenLastMonthIsLarge', () => {
+    it('calculateGrowthText_ShouldReturnPositivePercentage_WhenPreviousIsLarge', () => {
       const result = calculateGrowthText(105, 100, 'month');
       expect(result.text).toBe('+5% growth');
       expect(result.type).toBe('positive');
     });
 
-    it('calculateGrowthText_ShouldReturnNegativeAbsolute_WhenLastMonthIsSmall', () => {
+    it('calculateGrowthText_ShouldReturnNegativeAbsolute_WhenPreviousIsSmall', () => {
       const result = calculateGrowthText(5, 8, 'month');
       expect(result.text).toBe('-3 this month');
       expect(result.type).toBe('negative');
     });
 
-    it('calculateGrowthText_ShouldReturnNegativePercentage_WhenLastMonthIsLarge', () => {
+    it('calculateGrowthText_ShouldReturnNegativePercentage_WhenPreviousIsLarge', () => {
       const result = calculateGrowthText(95, 100, 'month');
       expect(result.text).toBe('-5% decline');
       expect(result.type).toBe('negative');
@@ -64,7 +64,7 @@ describe('Dashboard Utilities', () => {
       expect(result.type).toBe('neutral');
     });
 
-    it('calculateGrowthText_ShouldUseAbsoluteForSmallNumbers_WhenLastMonthIsLessThan10', () => {
+    it('calculateGrowthText_ShouldUseAbsoluteForSmallNumbers_WhenPreviousIsLessThan10', () => {
       const result = calculateGrowthText(7, 5, 'month');
       expect(result.text).toBe('+2 this month');
       expect(result.type).toBe('positive');
