@@ -1,14 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { formatStatNumber, calculateGrowthText } from '@/lib/utils/dashboard';
+import { formatStatNumber, calculateGrowthText, calculatePercentageChange } from '@/lib/utils/dashboard';
+import type { Period, StatisticsType } from '@/lib/types/admin-dashboard';
 
 interface StatisticsCardProps {
   title: string;
   icon: React.ReactNode;
   total: number;
-  thisMonth: number;
-  lastMonth: number;
+  currentPeriod: number;
+  previousPeriod: number;
+  period: Period;
+  statisticsType: StatisticsType;
   loading?: boolean;
   bgColor: 'green' | 'yellow' | 'blue';
   href: string;
@@ -18,8 +21,10 @@ export function StatisticsCard({
   title,
   icon,
   total,
-  thisMonth,
-  lastMonth,
+  currentPeriod,
+  previousPeriod,
+  period,
+  statisticsType,
   loading = false,
   bgColor,
   href,
@@ -38,9 +43,18 @@ export function StatisticsCard({
     );
   }
 
+  // Calculate display value based on statistics type
+  const displayValue = statisticsType === 'percentage' 
+    ? calculatePercentageChange(currentPeriod, previousPeriod)
+    : formatStatNumber(total);
+
   // Calculate growth
-  const growth = calculateGrowthText(thisMonth, lastMonth);
-  const formattedTotal = formatStatNumber(total);
+  const growth = calculateGrowthText(
+    currentPeriod, 
+    previousPeriod, 
+    period,
+    statisticsType === 'percentage'
+  );
 
   // Background color classes
   const bgColorClasses = {
@@ -92,9 +106,9 @@ export function StatisticsCard({
           <h3 className="text-sm font-medium text-gray-600 leading-tight">{title}</h3>
         </div>
 
-        {/* Total count */}
+        {/* Display total */}
         <div className="mb-3">
-          <p className="text-4xl font-bold text-gray-900">{formattedTotal}</p>
+          <p className="text-4xl font-bold text-gray-900">{total}</p>
         </div>
 
         {/* Growth indicator */}
