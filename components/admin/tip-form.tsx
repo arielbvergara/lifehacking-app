@@ -12,7 +12,6 @@ import {
   CategoryResponse,
   TipDetailResponse,
 } from '@/lib/types/admin-tip';
-import { TipImageDto } from '@/lib/types/admin-dashboard';
 import {
   MAX_IMAGE_SIZE_BYTES,
   ALLOWED_IMAGE_TYPES,
@@ -377,14 +376,9 @@ export function TipForm(props: TipFormProps) {
           throw new Error('Tip ID is required for edit mode');
         }
 
-        let image: TipImageDto | undefined;
-
-        // Upload new image if selected
+        // Upload new image if selected (image updates are handled separately)
         if (formState.selectedFile) {
-          image = await uploadTipImage(formState.selectedFile, idToken);
-        } else if (initialData?.image) {
-          // Keep existing image
-          image = initialData.image;
+          await uploadTipImage(formState.selectedFile, idToken);
         }
 
         await updateTip(
@@ -396,7 +390,6 @@ export function TipForm(props: TipFormProps) {
             categoryId: formState.selectedCategoryId,
             tags: parsedContent.tags,
             videoUrl: parsedContent.videoUrl || null,
-            image,
           },
           idToken
         );
