@@ -7,6 +7,9 @@ import type { Period } from '@/lib/types/admin-dashboard';
 /**
  * Calculate percentage change between current and previous values
  * Returns formatted percentage string like "+15%" or "-8%"
+ * 
+ * Special case: When previous is 0, returns "+100%" if current > 0, otherwise "0%"
+ * This avoids division by zero and provides a meaningful indicator for growth from zero
  */
 export function calculatePercentageChange(current: number, previous: number): string {
   if (previous === 0) {
@@ -61,7 +64,18 @@ export function formatStatNumber(num: number): string {
 
 /**
  * Calculate growth indicator text based on current and previous period values
- * Returns text like "+12 this month" or "+5% growth"
+ * 
+ * @param current - Current period value
+ * @param previous - Previous period value
+ * @param period - Time period (day, week, month, year)
+ * @param displayAsPercentage - If true, returns only percentage change; if false, returns contextual text
+ * 
+ * @returns Object with text (e.g., "+12 this month", "+5%", "No change") and type (positive/negative/neutral)
+ * 
+ * Examples:
+ * - calculateGrowthText(105, 100, 'month', false) → { text: "+5% growth", type: "positive" }
+ * - calculateGrowthText(105, 100, 'month', true) → { text: "+5%", type: "positive" }
+ * - calculateGrowthText(12, 0, 'week', false) → { text: "+12 this week", type: "positive" }
  */
 export function calculateGrowthText(
   current: number, 
