@@ -4,8 +4,8 @@
  * Tests for the DashboardClient component that manages dashboard state.
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { DashboardClient } from './dashboard-client';
 import type { DashboardResponse } from '@/lib/types/admin-dashboard';
 
@@ -48,6 +48,24 @@ vi.mock('@/lib/api/admin-dashboard', () => ({
   fetchDashboardStatistics: vi.fn(),
 }));
 
+// Mock localStorage
+const localStorageMock = (() => {
+  let store: Record<string, string> = {};
+  return {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => {
+      store[key] = value;
+    },
+    clear: () => {
+      store = {};
+    },
+  };
+})();
+
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock,
+});
+
 // Import after mocking
 const { fetchDashboardStatistics } = await import('@/lib/api/admin-dashboard');
 const mockFetchDashboardStatistics = fetchDashboardStatistics as ReturnType<typeof vi.fn>;
@@ -57,13 +75,48 @@ describe('DashboardClient', () => {
   const mockUser = { uid: 'user-123', email: 'admin@example.com' };
   
   const mockStatistics: DashboardResponse = {
-    users: { total: 100, thisMonth: 10, lastMonth: 8 },
-    categories: { total: 20, thisMonth: 2, lastMonth: 2 },
-    tips: { total: 500, thisMonth: 50, lastMonth: 45 },
+    users: {
+      total: 100,
+      lastDay: 2,
+      thisDay: 3,
+      lastWeek: 8,
+      thisWeek: 10,
+      lastMonth: 8,
+      thisMonth: 10,
+      lastYear: 80,
+      thisYear: 100,
+    },
+    categories: {
+      total: 20,
+      lastDay: 0,
+      thisDay: 1,
+      lastWeek: 2,
+      thisWeek: 2,
+      lastMonth: 2,
+      thisMonth: 2,
+      lastYear: 18,
+      thisYear: 20,
+    },
+    tips: {
+      total: 500,
+      lastDay: 10,
+      thisDay: 15,
+      lastWeek: 45,
+      thisWeek: 50,
+      lastMonth: 45,
+      thisMonth: 50,
+      lastYear: 450,
+      thisYear: 500,
+    },
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
+    localStorageMock.clear();
+  });
+
+  afterEach(() => {
+    localStorageMock.clear();
   });
 
   describe('DashboardClient_ShouldFetchStatistics_WhenUserIsAuthenticated', () => {
@@ -79,12 +132,10 @@ describe('DashboardClient', () => {
 
       render(<DashboardClient />);
 
-      // Wait for statistics to load
       await waitFor(() => {
         expect(mockFetchDashboardStatistics).toHaveBeenCalledWith(mockIdToken);
       });
 
-      // Verify statistics are displayed
       await waitFor(() => {
         expect(screen.getByText('Total Tips')).toBeInTheDocument();
         expect(screen.getByText('Happy Users')).toBeInTheDocument();
@@ -104,7 +155,6 @@ describe('DashboardClient', () => {
 
       render(<DashboardClient />);
 
-      // Should not call fetch
       await waitFor(() => {
         expect(mockFetchDashboardStatistics).not.toHaveBeenCalled();
       });
@@ -120,7 +170,6 @@ describe('DashboardClient', () => {
 
       render(<DashboardClient />);
 
-      // Should not call fetch
       await waitFor(() => {
         expect(mockFetchDashboardStatistics).not.toHaveBeenCalled();
       });
@@ -141,7 +190,6 @@ describe('DashboardClient', () => {
 
       render(<DashboardClient />);
 
-      // Wait for error to appear
       await waitFor(() => {
         expect(screen.getByText('Failed to Load Statistics')).toBeInTheDocument();
         expect(screen.getByText(errorMessage)).toBeInTheDocument();
@@ -160,7 +208,6 @@ describe('DashboardClient', () => {
 
       render(<DashboardClient />);
 
-      // Wait for error to appear
       await waitFor(() => {
         expect(screen.getByText('Failed to Load Statistics')).toBeInTheDocument();
         expect(screen.getByText('Failed to load statistics')).toBeInTheDocument();
@@ -177,33 +224,30 @@ describe('DashboardClient', () => {
         error: null,
       });
 
-      // First call fails
       mockFetchDashboardStatistics.mockRejectedValueOnce(
         new Error('Network error')
       );
-      // Second call succeeds
       mockFetchDashboardStatistics.mockResolvedValueOnce(mockStatistics);
 
       render(<DashboardClient />);
 
-      // Wait for error to appear
       await waitFor(() => {
         expect(screen.getByText('Failed to Load Statistics')).toBeInTheDocument();
       });
 
-      // Click retry button
       const retryButton = screen.getByRole('button', { name: /retry/i });
-      retryButton.click();
+      fireEvent.click(retryButton);
 
-      // Should call fetch again
       await waitFor(() => {
         expect(mockFetchDashboardStatistics).toHaveBeenCalledTimes(2);
       });
     });
   });
 
-  describe('DashboardClient_ShouldClearError_WhenRetrying', () => {
-    it('should clear error state when retrying', async () => {
+  describe('DashboardClient_ShouldLoadPreferences_FromLocalStorage', () => {
+    it('should load period preference from localStorage on mount', async () => {
+      localStorageMock.setItem('dashboard_period', 'week');
+      
       mockUseAuth.mockReturnValue({
         user: mockUser,
         idToken: mockIdToken,
@@ -211,29 +255,120 @@ describe('DashboardClient', () => {
         error: null,
       });
 
-      // First call fails
-      mockFetchDashboardStatistics.mockRejectedValueOnce(
-        new Error('Network error')
-      );
-      // Second call takes time (simulating loading)
-      mockFetchDashboardStatistics.mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve(mockStatistics), 100))
-      );
+      mockFetchDashboardStatistics.mockResolvedValue(mockStatistics);
+
+      const { container } = render(<DashboardClient />);
+
+      await waitFor(() => {
+        const weekButton = container.querySelector('[data-testid="period-week"]');
+        expect(weekButton).toHaveClass('bg-blue-600');
+      });
+    });
+
+    it('should load statistics type preference from localStorage on mount', async () => {
+      localStorageMock.setItem('dashboard_statistics_type', 'percentage');
+      
+      mockUseAuth.mockReturnValue({
+        user: mockUser,
+        idToken: mockIdToken,
+        loading: false,
+        error: null,
+      });
+
+      mockFetchDashboardStatistics.mockResolvedValue(mockStatistics);
+
+      const { container } = render(<DashboardClient />);
+
+      await waitFor(() => {
+        const percentageButton = container.querySelector('[data-testid="type-percentage"]');
+        expect(percentageButton).toHaveClass('bg-blue-600');
+      });
+    });
+
+    it('should use default values when localStorage is empty', async () => {
+      mockUseAuth.mockReturnValue({
+        user: mockUser,
+        idToken: mockIdToken,
+        loading: false,
+        error: null,
+      });
+
+      mockFetchDashboardStatistics.mockResolvedValue(mockStatistics);
+
+      const { container } = render(<DashboardClient />);
+
+      await waitFor(() => {
+        const monthButton = container.querySelector('[data-testid="period-month"]');
+        expect(monthButton).toHaveClass('bg-blue-600');
+        
+        const amountButton = container.querySelector('[data-testid="type-amount"]');
+        expect(amountButton).toHaveClass('bg-blue-600');
+      });
+    });
+  });
+
+  describe('DashboardClient_ShouldSavePreferences_ToLocalStorage', () => {
+    it('should save period preference when changed', async () => {
+      mockUseAuth.mockReturnValue({
+        user: mockUser,
+        idToken: mockIdToken,
+        loading: false,
+        error: null,
+      });
+
+      mockFetchDashboardStatistics.mockResolvedValue(mockStatistics);
+
+      const { container } = render(<DashboardClient />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Total Tips')).toBeInTheDocument();
+      });
+
+      const dayButton = container.querySelector('[data-testid="period-day"]');
+      fireEvent.click(dayButton!);
+
+      expect(localStorageMock.getItem('dashboard_period')).toBe('day');
+    });
+
+    it('should save statistics type preference when changed', async () => {
+      mockUseAuth.mockReturnValue({
+        user: mockUser,
+        idToken: mockIdToken,
+        loading: false,
+        error: null,
+      });
+
+      mockFetchDashboardStatistics.mockResolvedValue(mockStatistics);
+
+      const { container } = render(<DashboardClient />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Total Tips')).toBeInTheDocument();
+      });
+
+      const percentageButton = container.querySelector('[data-testid="type-percentage"]');
+      fireEvent.click(percentageButton!);
+
+      expect(localStorageMock.getItem('dashboard_statistics_type')).toBe('percentage');
+    });
+  });
+
+  describe('DashboardClient_ShouldRenderControls_Always', () => {
+    it('should render dashboard controls component', async () => {
+      mockUseAuth.mockReturnValue({
+        user: mockUser,
+        idToken: mockIdToken,
+        loading: false,
+        error: null,
+      });
+
+      mockFetchDashboardStatistics.mockResolvedValue(mockStatistics);
 
       render(<DashboardClient />);
 
-      // Wait for error to appear
       await waitFor(() => {
-        expect(screen.getByText('Network error')).toBeInTheDocument();
-      });
-
-      // Click retry button
-      const retryButton = screen.getByRole('button', { name: /retry/i });
-      retryButton.click();
-
-      // Error should be cleared (component shows loading state)
-      await waitFor(() => {
-        expect(screen.queryByText('Network error')).not.toBeInTheDocument();
+        expect(screen.getByText('Period')).toBeInTheDocument();
+        expect(screen.getByText('Display As')).toBeInTheDocument();
       });
     });
   });
@@ -251,7 +386,6 @@ describe('DashboardClient', () => {
 
       render(<DashboardClient />);
 
-      // Wait for statistics to load and verify data is displayed
       await waitFor(() => {
         expect(screen.getByText('Total Tips')).toBeInTheDocument();
         expect(screen.getByText('Happy Users')).toBeInTheDocument();

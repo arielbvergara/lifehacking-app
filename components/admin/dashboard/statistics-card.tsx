@@ -1,14 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { formatStatNumber, calculateGrowthText } from '@/lib/utils/dashboard';
+import { formatStatNumber, calculateGrowthText, calculatePercentageChange } from '@/lib/utils/dashboard';
+import type { Period, StatisticsType } from '@/lib/types/admin-dashboard';
 
 interface StatisticsCardProps {
   title: string;
   icon: React.ReactNode;
   total: number;
-  thisMonth: number;
-  lastMonth: number;
+  currentPeriod: number;
+  previousPeriod: number;
+  period: Period;
+  statisticsType: StatisticsType;
   loading?: boolean;
   bgColor: 'green' | 'yellow' | 'blue';
   href: string;
@@ -18,8 +21,10 @@ export function StatisticsCard({
   title,
   icon,
   total,
-  thisMonth,
-  lastMonth,
+  currentPeriod,
+  previousPeriod,
+  period,
+  statisticsType,
   loading = false,
   bgColor,
   href,
@@ -39,7 +44,14 @@ export function StatisticsCard({
   }
 
   // Calculate growth
-  const growth = calculateGrowthText(thisMonth, lastMonth);
+  const growth = calculateGrowthText(
+    currentPeriod, 
+    previousPeriod, 
+    period,
+    statisticsType === 'percentage'
+  );
+
+  // Format the display value
   const formattedTotal = formatStatNumber(total);
 
   // Background color classes
@@ -92,9 +104,18 @@ export function StatisticsCard({
           <h3 className="text-sm font-medium text-gray-600 leading-tight">{title}</h3>
         </div>
 
-        {/* Total count */}
+        {/* Display total or percentage based on mode */}
         <div className="mb-3">
-          <p className="text-4xl font-bold text-gray-900">{formattedTotal}</p>
+          {statisticsType === 'percentage' ? (
+            <>
+              <p className="text-4xl font-bold text-gray-900">
+                {calculatePercentageChange(currentPeriod, previousPeriod)}
+              </p>
+              <p className="text-sm text-gray-600 mt-1">Total: {formattedTotal}</p>
+            </>
+          ) : (
+            <p className="text-4xl font-bold text-gray-900">{formattedTotal}</p>
+          )}
         </div>
 
         {/* Growth indicator */}

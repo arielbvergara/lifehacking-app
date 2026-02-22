@@ -5,12 +5,28 @@
 import { CategoryImageDto } from '@/lib/types/admin-category';
 
 /**
+ * Period options for dashboard statistics
+ */
+export type Period = 'day' | 'week' | 'month' | 'year';
+
+/**
+ * Statistics display type
+ */
+export type StatisticsType = 'amount' | 'percentage';
+
+/**
  * Statistics for a single entity type (users, categories, or tips)
  */
 export interface EntityStatistics {
   total: number;
+  lastDay: number;
+  thisDay: number;
+  lastWeek: number;
+  thisWeek: number;
   lastMonth: number;
   thisMonth: number;
+  lastYear: number;
+  thisYear: number;
 }
 
 /**
