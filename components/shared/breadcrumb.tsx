@@ -31,7 +31,7 @@ export interface BreadcrumbProps {
  * <Breadcrumb
  *   items={[
  *     { label: 'Home', href: '/' },
- *     { label: 'Kitchen', href: '/category/kitchen-id' },
+ *     { label: 'Kitchen', href: '/categories/kitchen-id' },
  *     { label: 'Peel Garlic in 10 Seconds' } // current page
  *   ]}
  * />
