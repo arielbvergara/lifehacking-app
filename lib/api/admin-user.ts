@@ -10,8 +10,10 @@ import type {
   FetchUsersParams,
   CreateAdminUserRequest,
 } from '@/lib/types/admin-user';
+import { handleApiError, createNetworkError } from '@/lib/api/admin-utils';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000';
+const API_TIMEOUT_MS = 30000; // 30 seconds timeout for admin operations
 
 /**
  * Fetch paginated list of users with optional filtering and sorting
@@ -57,25 +59,35 @@ export async function fetchUsers(
 
   const url = `${API_BASE_URL}/api/admin/User?${queryParams.toString()}`;
 
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${idToken}`,
-      'Content-Type': 'application/json',
-    },
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
 
-  if (!response.ok) {
-    if (response.status === 401) {
-      throw new Error('Unauthorized');
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${idToken}`,
+        'Content-Type': 'application/json',
+      },
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw await handleApiError(response);
     }
-    if (response.status === 403) {
-      throw new Error('Forbidden - Admin access required');
+
+    return response.json();
+  } catch (error) {
+    clearTimeout(timeoutId);
+    
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw createNetworkError();
     }
-    throw new Error('Failed to fetch users');
+    
+    throw error;
   }
-
-  return response.json();
 }
 
 /**
@@ -97,27 +109,33 @@ export async function createAdminUser(
   data: CreateAdminUserRequest,
   idToken: string
 ): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/api/admin/User`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${idToken}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
 
-  if (!response.ok) {
-    if (response.status === 401) {
-      throw new Error('Unauthorized');
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/admin/User`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${idToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw await handleApiError(response);
     }
-    if (response.status === 403) {
-      throw new Error('Forbidden - Admin access required');
+  } catch (error) {
+    clearTimeout(timeoutId);
+    
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw createNetworkError();
     }
-    if (response.status === 400) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Invalid user data');
-    }
-    throw new Error('Failed to create admin user');
+    
+    throw error;
   }
 }
 
@@ -136,27 +154,30 @@ export async function deleteUser(
   userId: string,
   idToken: string
 ): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/api/admin/User/${userId}`, {
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${idToken}`,
-    },
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
 
-  if (!response.ok) {
-    if (response.status === 401) {
-      throw new Error('Unauthorized');
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/admin/User/${userId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${idToken}`,
+      },
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw await handleApiError(response);
     }
-    if (response.status === 403) {
-      throw new Error('Forbidden - Admin access required');
+  } catch (error) {
+    clearTimeout(timeoutId);
+    
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw createNetworkError();
     }
-    if (response.status === 404) {
-      throw new Error('User not found');
-    }
-    if (response.status === 409) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Cannot delete user');
-    }
-    throw new Error('Failed to delete user');
+    
+    throw error;
   }
 }
