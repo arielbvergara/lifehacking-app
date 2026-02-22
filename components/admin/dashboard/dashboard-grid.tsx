@@ -57,22 +57,6 @@ export function DashboardGrid({
         href="/admin/tips"
       />
 
-      {/* Users Statistics Card */}
-      <StatisticsCard
-        title="Happy Users"
-        icon={
-          <span className="material-icons-round">
-            sentiment_satisfied_alt
-          </span>
-        }
-        total={statistics?.users.total ?? 0}
-        thisMonth={statistics?.users.thisMonth ?? 0}
-        lastMonth={statistics?.users.lastMonth ?? 0}
-        loading={loading}
-        bgColor="yellow"
-        href="/admin/users"
-      />
-
       {/* Categories Statistics Card */}
       <StatisticsCard
         title="Active Categories"
@@ -87,6 +71,22 @@ export function DashboardGrid({
         loading={loading}
         bgColor="blue"
         href="/admin/categories"
+      />
+
+      {/* Users Statistics Card */}
+      <StatisticsCard
+        title="Happy Users"
+        icon={
+          <span className="material-icons-round">
+            sentiment_satisfied_alt
+          </span>
+        }
+        total={statistics?.users.total ?? 0}
+        thisMonth={statistics?.users.thisMonth ?? 0}
+        lastMonth={statistics?.users.lastMonth ?? 0}
+        loading={loading}
+        bgColor="yellow"
+        href="/admin/users"
       />
     </div>
   );

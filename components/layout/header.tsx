@@ -178,10 +178,9 @@ export function Header({
                         {isAdmin && (
                           <Link
                             href="/admin"
-                            className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                            className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 bg-amber-50 hover:bg-amber-100 transition-colors"
                             onClick={() => setIsDropdownOpen(false)}
                           >
-                            <span className="material-icons-round text-lg">dashboard</span>
                             Admin Dashboard
                           </Link>
                         )}
@@ -334,10 +333,9 @@ export function Header({
                   {isAdmin && (
                     <Link
                       href="/admin"
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors rounded-lg"
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 bg-amber-50 hover:bg-amber-100 transition-colors rounded-lg"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      <span className="material-icons-round text-lg">dashboard</span>
                       Admin Dashboard
                     </Link>
                   )}
