@@ -1,10 +1,12 @@
 'use client';
 
 import { StatisticsCard } from './statistics-card';
-import type { DashboardResponse } from '@/lib/types/admin-dashboard';
+import type { DashboardResponse, Period, StatisticsType } from '@/lib/types/admin-dashboard';
 
 interface DashboardGridProps {
   statistics: DashboardResponse | null;
+  period: Period;
+  statisticsType: StatisticsType;
   loading: boolean;
   error: string | null;
   onRetry: () => void;
@@ -12,6 +14,8 @@ interface DashboardGridProps {
 
 export function DashboardGrid({
   statistics,
+  period,
+  statisticsType,
   loading,
   error,
   onRetry,
@@ -39,6 +43,42 @@ export function DashboardGrid({
     );
   }
 
+  // Helper function to get current and previous values based on selected period
+  const getPeriodValues = (stats: typeof statistics) => {
+    const defaultValues = {
+      tips: { current: 0, previous: 0 },
+      categories: { current: 0, previous: 0 },
+      users: { current: 0, previous: 0 },
+    };
+    
+    if (!stats) return defaultValues;
+    
+    const periodMap = {
+      day: { current: 'thisDay', previous: 'lastDay' },
+      week: { current: 'thisWeek', previous: 'lastWeek' },
+      month: { current: 'thisMonth', previous: 'lastMonth' },
+      year: { current: 'thisYear', previous: 'lastYear' },
+    } as const;
+    
+    const keys = periodMap[period];
+    return {
+      tips: {
+        current: stats.tips[keys.current] ?? 0,
+        previous: stats.tips[keys.previous] ?? 0,
+      },
+      categories: {
+        current: stats.categories[keys.current] ?? 0,
+        previous: stats.categories[keys.previous] ?? 0,
+      },
+      users: {
+        current: stats.users[keys.current] ?? 0,
+        previous: stats.users[keys.previous] ?? 0,
+      },
+    };
+  };
+
+  const periodValues = getPeriodValues(statistics);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* Tips Statistics Card */}
@@ -50,8 +90,10 @@ export function DashboardGrid({
           </span>
         }
         total={statistics?.tips.total ?? 0}
-        thisMonth={statistics?.tips.thisMonth ?? 0}
-        lastMonth={statistics?.tips.lastMonth ?? 0}
+        currentPeriod={periodValues.tips?.current ?? 0}
+        previousPeriod={periodValues.tips?.previous ?? 0}
+        period={period}
+        statisticsType={statisticsType}
         loading={loading}
         bgColor="green"
         href="/admin/tips"
@@ -66,8 +108,10 @@ export function DashboardGrid({
           </span>
         }
         total={statistics?.categories.total ?? 0}
-        thisMonth={statistics?.categories.thisMonth ?? 0}
-        lastMonth={statistics?.categories.lastMonth ?? 0}
+        currentPeriod={periodValues.categories?.current ?? 0}
+        previousPeriod={periodValues.categories?.previous ?? 0}
+        period={period}
+        statisticsType={statisticsType}
         loading={loading}
         bgColor="blue"
         href="/admin/categories"
@@ -82,8 +126,10 @@ export function DashboardGrid({
           </span>
         }
         total={statistics?.users.total ?? 0}
-        thisMonth={statistics?.users.thisMonth ?? 0}
-        lastMonth={statistics?.users.lastMonth ?? 0}
+        currentPeriod={periodValues.users?.current ?? 0}
+        previousPeriod={periodValues.users?.previous ?? 0}
+        period={period}
+        statisticsType={statisticsType}
         loading={loading}
         bgColor="yellow"
         href="/admin/users"
