@@ -2882,11 +2882,35 @@
             "type": "integer",
             "format": "int32"
           },
+          "lastDay": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "thisDay": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lastWeek": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "thisWeek": {
+            "type": "integer",
+            "format": "int32"
+          },
           "lastMonth": {
             "type": "integer",
             "format": "int32"
           },
           "thisMonth": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lastYear": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "thisYear": {
             "type": "integer",
             "format": "int32"
           }
