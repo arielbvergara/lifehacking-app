@@ -82,7 +82,7 @@ export function CategoriesManagementClient() {
    * Requirement 7.1: Implement edit handler (navigate to edit page)
    */
   const handleEdit = (categoryId: string) => {
-    router.push(`/admin/category/${categoryId}/edit`);
+    router.push(`/admin/categories/${categoryId}/edit`);
   };
 
   /**

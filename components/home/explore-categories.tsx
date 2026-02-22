@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Category } from '@/lib/types/api';
 import { CategoryCard } from '../shared/category/category-card';
 
@@ -24,12 +25,12 @@ export function ExploreCategories({ categories }: ExploreCategoriesProps) {
               Find simple tricks for every area of your life
             </p>
           </div>
-          <a
+          <Link
             href="/categories"
             className="text-primary font-semibold hover:text-primary-dark transition-colors"
           >
             View all &gt;
-          </a>
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

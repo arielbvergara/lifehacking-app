@@ -166,7 +166,7 @@ describe('CategoriesManagementClient', () => {
       
       await userEvent.click(editButton);
 
-      expect(mockPush).toHaveBeenCalledWith('/admin/category/cat-1/edit');
+      expect(mockPush).toHaveBeenCalledWith('/admin/categories/cat-1/edit');
     });
   });
 
