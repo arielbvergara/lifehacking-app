@@ -3,9 +3,10 @@ import Link from "next/link";
 interface LogoProps {
   size?: "sm" | "md" | "lg";
   href?: string;
+  isAdmin?: boolean;
 }
 
-export function Logo({ size = "md", href = "/" }: LogoProps) {
+export function Logo({ size = "md", href = "/", isAdmin = false }: LogoProps) {
   const iconSize = {
     sm: "w-8 h-8 text-xl",
     md: "w-10 h-10 text-2xl",
@@ -27,7 +28,7 @@ export function Logo({ size = "md", href = "/" }: LogoProps) {
       </div>
       <span className={`${textSize} font-bold tracking-tight text-gray-900`}>
         LifeHacking
-        <span className="text-primary-dark">Buddy</span>
+        <span className="text-primary-dark">{isAdmin ? "Admin" : "Buddy"}</span>
       </span>
     </Link>
   );
