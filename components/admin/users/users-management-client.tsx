@@ -43,19 +43,11 @@ export function UsersManagementClient() {
       setLoading(true);
 
       try {
-        console.log('[UsersManagementClient] Fetching users with params:', {
-          search: searchQuery || undefined,
-          pageNumber: currentPage,
-          pageSize: PAGE_SIZE,
-        });
-        
         const response = await fetchUsers({
           search: searchQuery || undefined,
           pageNumber: currentPage,
           pageSize: PAGE_SIZE,
         }, idToken);
-        
-        console.log('[UsersManagementClient] Received response:', response);
         
         setUsers(response.items || []);
         setTotalItems(response.pagination?.totalItems || 0);
