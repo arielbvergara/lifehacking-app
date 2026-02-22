@@ -52,7 +52,6 @@ export interface TipImageDto {
 
 /**
  * Request to update an existing tip
- * Note: Image updates are handled separately via the image upload endpoint
  */
 export interface UpdateTipRequest {
   title: string;
@@ -64,6 +63,7 @@ export interface UpdateTipRequest {
   }>;
   tags: string[];
   videoUrl?: string | null;
+  image?: TipImageDto;
 }
 
 /**

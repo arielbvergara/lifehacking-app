@@ -260,6 +260,57 @@ describe('updateTip', () => {
     await expect(updateTip(mockTipId, mockUpdateData, mockToken)).rejects.toBeDefined();
     expect(clearTimeoutSpy).toHaveBeenCalled();
   });
+
+  it('updateTip_ShouldIncludeImageMetadata_WhenImageProvided', async () => {
+    const mockImageMetadata = {
+      imageUrl: 'https://example.com/new-image.jpg',
+      imageStoragePath: 'path/to/new-image.jpg',
+      originalFileName: 'new-image.jpg',
+      contentType: 'image/jpeg',
+      fileSizeBytes: 2048,
+      uploadedAt: '2024-01-03T00:00:00Z',
+    };
+
+    const updateDataWithImage = {
+      ...mockUpdateData,
+      image: mockImageMetadata,
+    };
+
+    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ ...mockUpdatedTip, image: mockImageMetadata }),
+    });
+
+    const result = await updateTip(mockTipId, updateDataWithImage, mockToken);
+
+    expect(result.image).toEqual(mockImageMetadata);
+    expect(global.fetch).toHaveBeenCalledWith(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/tips/${mockTipId}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${mockToken}`,
+        },
+        body: JSON.stringify(updateDataWithImage),
+        signal: expect.any(AbortSignal),
+      }
+    );
+  });
+
+  it('updateTip_ShouldWorkWithoutImage_WhenImageNotProvided', async () => {
+    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockUpdatedTip,
+    });
+
+    const result = await updateTip(mockTipId, mockUpdateData, mockToken);
+
+    expect(result).toEqual(mockUpdatedTip);
+    const callArgs = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
+    const requestBody = JSON.parse(callArgs[1].body);
+    expect(requestBody.image).toBeUndefined();
+  });
 });
 
 describe('deleteTip', () => {
