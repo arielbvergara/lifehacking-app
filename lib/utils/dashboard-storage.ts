@@ -15,9 +15,20 @@ const DEFAULTS = {
 } as const;
 
 /**
+ * Check if localStorage is available (client-side only)
+ */
+function isLocalStorageAvailable(): boolean {
+  return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+}
+
+/**
  * Save selected period to localStorage
  */
 export function savePeriod(period: Period): void {
+  if (!isLocalStorageAvailable()) {
+    return;
+  }
+  
   try {
     localStorage.setItem(STORAGE_KEYS.PERIOD, period);
   } catch (error) {
@@ -29,6 +40,10 @@ export function savePeriod(period: Period): void {
  * Load selected period from localStorage
  */
 export function loadPeriod(): Period {
+  if (!isLocalStorageAvailable()) {
+    return DEFAULTS.PERIOD;
+  }
+  
   try {
     const stored = localStorage.getItem(STORAGE_KEYS.PERIOD);
     if (stored && ['day', 'week', 'month', 'year'].includes(stored)) {
@@ -44,6 +59,10 @@ export function loadPeriod(): Period {
  * Save selected statistics type to localStorage
  */
 export function saveStatisticsType(type: StatisticsType): void {
+  if (!isLocalStorageAvailable()) {
+    return;
+  }
+  
   try {
     localStorage.setItem(STORAGE_KEYS.STATISTICS_TYPE, type);
   } catch (error) {
@@ -55,6 +74,10 @@ export function saveStatisticsType(type: StatisticsType): void {
  * Load selected statistics type from localStorage
  */
 export function loadStatisticsType(): StatisticsType {
+  if (!isLocalStorageAvailable()) {
+    return DEFAULTS.STATISTICS_TYPE;
+  }
+  
   try {
     const stored = localStorage.getItem(STORAGE_KEYS.STATISTICS_TYPE);
     if (stored && ['amount', 'percentage'].includes(stored)) {
