@@ -49,6 +49,8 @@ export function Header({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  
+  const isAdminPage = pathname?.startsWith('/admin');
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -98,10 +100,10 @@ export function Header({
         <div className="flex justify-between items-center">
           {/* Logo - Smaller on mobile */}
           <div className="lg-header:hidden">
-            <Logo size="sm" />
+            <Logo size="sm" isAdmin={isAdminPage} />
           </div>
           <div className="hidden lg-header:block">
-            <Logo />
+            <Logo isAdmin={isAdminPage} />
           </div>
 
           {/* Desktop Navigation */}
