@@ -123,12 +123,6 @@ export function UsersTable({
               itemLabel="users"
             />
           )}
-
-          {/* Results Summary */}
-          <div className="text-center text-sm text-gray-600">
-            Showing {(currentPage - 1) * pageSize + 1} to{' '}
-            {Math.min(currentPage * pageSize, totalItems)} of {totalItems} users
-          </div>
         </>
       )}
     </div>

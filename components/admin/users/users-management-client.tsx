@@ -31,41 +31,43 @@ export function UsersManagementClient() {
   const [userToDelete, setUserToDelete] = useState<{ id: string; email: string } | null>(null);
 
   /**
-   * Fetch users when page or search query changes
+   * Load users from API
    */
-  useEffect(() => {
+  const loadUsers = useCallback(async () => {
     if (!idToken) {
       setLoading(false);
       return;
     }
 
-    const loadUsers = async () => {
-      setLoading(true);
+    setLoading(true);
 
-      try {
-        const response = await fetchUsers({
-          search: searchQuery || undefined,
-          pageNumber: currentPage,
-          pageSize: PAGE_SIZE,
-        }, idToken);
-        
-        setUsers(response.items || []);
-        setTotalItems(response.pagination?.totalItems || 0);
-      } catch (err) {
-        const errorMessage = (err as Error).message || 'Failed to load users';
-        showToast({
-          type: 'error',
-          message: errorMessage,
-          duration: 7000,
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
+    try {
+      const response = await fetchUsers({
+        search: searchQuery || undefined,
+        pageNumber: currentPage,
+        pageSize: PAGE_SIZE,
+      }, idToken);
+      
+      setUsers(response.items || []);
+      setTotalItems(response.pagination?.totalItems || 0);
+    } catch (err) {
+      const errorMessage = (err as Error).message || 'Failed to load users';
+      showToast({
+        type: 'error',
+        message: errorMessage,
+        duration: 7000,
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, searchQuery, idToken, showToast]);
 
+  /**
+   * Fetch users when page or search query changes
+   */
+  useEffect(() => {
     loadUsers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, searchQuery, idToken]);
+  }, [loadUsers]);
 
   /**
    * Handle search query changes
@@ -111,8 +113,10 @@ export function UsersManagementClient() {
       // If current page will be empty after deletion, go to previous page
       if (users.length === 1 && currentPage > 1) {
         setCurrentPage(currentPage - 1);
+      } else {
+        // When staying on the same page, explicitly reload users
+        await loadUsers();
       }
-      // Note: useEffect will automatically reload users when currentPage or other deps change
     } catch (err) {
       const errorMessage = (err as Error).message || 'Failed to delete user';
       showToast({
