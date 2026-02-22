@@ -34,11 +34,17 @@ export function DashboardControls({
         <label className="text-sm font-medium text-gray-700">
           Period
         </label>
-        <div className="inline-flex rounded-lg border border-gray-300 bg-white p-1">
+        <div 
+          className="inline-flex rounded-lg border border-gray-300 bg-white p-1"
+          role="group"
+          aria-label="Period selection"
+        >
           {PERIODS.map((period) => (
             <button
               key={period.value}
+              type="button"
               onClick={() => onPeriodChange(period.value)}
+              aria-pressed={selectedPeriod === period.value}
               className={`
                 px-4 py-2 text-sm font-medium rounded-md transition-colors
                 ${
@@ -60,11 +66,17 @@ export function DashboardControls({
         <label className="text-sm font-medium text-gray-700">
           Display As
         </label>
-        <div className="inline-flex rounded-lg border border-gray-300 bg-white p-1">
+        <div 
+          className="inline-flex rounded-lg border border-gray-300 bg-white p-1"
+          role="group"
+          aria-label="Statistics type selection"
+        >
           {STATISTICS_TYPES.map((type) => (
             <button
               key={type.value}
+              type="button"
               onClick={() => onTypeChange(type.value)}
+              aria-pressed={selectedType === type.value}
               className={`
                 px-4 py-2 text-sm font-medium rounded-md transition-colors
                 ${
