@@ -3,11 +3,13 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth/auth-context';
 import { fetchDashboardStatistics } from '@/lib/api/admin-dashboard';
+import { loadPeriod, loadStatisticsType, savePeriod, saveStatisticsType } from '@/lib/utils/dashboard-storage';
+import { DashboardControls } from './dashboard-controls';
 import { DashboardGrid } from './dashboard-grid';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { Breadcrumb } from '@/components/shared/breadcrumb';
-import type { DashboardResponse } from '@/lib/types/admin-dashboard';
+import type { DashboardResponse, Period, StatisticsType } from '@/lib/types/admin-dashboard';
 
 /**
  * Dashboard Client Component
@@ -21,6 +23,14 @@ export function DashboardClient() {
   const [statistics, setStatistics] = useState<DashboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedPeriod, setSelectedPeriod] = useState<Period>('month');
+  const [selectedType, setSelectedType] = useState<StatisticsType>('amount');
+
+  // Load preferences from localStorage on mount
+  useEffect(() => {
+    setSelectedPeriod(loadPeriod());
+    setSelectedType(loadStatisticsType());
+  }, []);
 
   /**
    * Load dashboard statistics from API
@@ -52,6 +62,18 @@ export function DashboardClient() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, idToken]);
 
+  // Handle period change
+  const handlePeriodChange = (period: Period) => {
+    setSelectedPeriod(period);
+    savePeriod(period);
+  };
+
+  // Handle statistics type change
+  const handleTypeChange = (type: StatisticsType) => {
+    setSelectedType(type);
+    saveStatisticsType(type);
+  };
+
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
     { label: 'Admin' },
@@ -73,8 +95,17 @@ export function DashboardClient() {
           </p>
         </div>
 
+        <DashboardControls
+          selectedPeriod={selectedPeriod}
+          selectedType={selectedType}
+          onPeriodChange={handlePeriodChange}
+          onTypeChange={handleTypeChange}
+        />
+
         <DashboardGrid
           statistics={statistics}
+          period={selectedPeriod}
+          statisticsType={selectedType}
           loading={loading}
           error={error}
           onRetry={loadStatistics}
