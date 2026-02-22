@@ -19,7 +19,7 @@ export function CategoryCard({ category, priority = false }: CategoryCardProps) 
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`/category/${category.id}`);
+    router.push(`/categories/${category.id}`);
   };
 
   const icon = getCategoryIcon(category.name);
