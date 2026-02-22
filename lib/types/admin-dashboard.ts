@@ -2,6 +2,8 @@
  * TypeScript type definitions for admin dashboard management
  */
 
+import { CategoryImageDto } from '@/lib/types/admin-category';
+
 /**
  * Statistics for a single entity type (users, categories, or tips)
  */
@@ -34,6 +36,7 @@ export interface TipImageDto {
 
 /**
  * Request to update an existing tip
+ * Note: Image updates are handled separately via the image upload endpoint
  */
 export interface UpdateTipRequest {
   title: string;
@@ -45,7 +48,6 @@ export interface UpdateTipRequest {
   }>;
   tags: string[];
   videoUrl?: string | null;
-  image?: TipImageDto;
 }
 
 /**
@@ -53,14 +55,7 @@ export interface UpdateTipRequest {
  */
 export interface UpdateCategoryRequest {
   name: string;
-  image?: {
-    imageUrl: string;
-    imageStoragePath: string;
-    originalFileName: string;
-    contentType: string;
-    fileSizeBytes: number;
-    uploadedAt: string;
-  };
+  image?: CategoryImageDto;
 }
 
 /**
