@@ -53,6 +53,12 @@ export default withSentryConfig(nextConfig, {
   // Note: Check that the Sentry DSN is publicly available and not behind a firewall.
   tunnelRoute: "/monitoring",
 
+  // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
+  // See the following for more information:
+  // https://docs.sentry.io/product/crons/
+  // https://vercel.com/docs/cron-jobs
+  automaticVercelMonitors: true,
+
   // Webpack-specific options
   webpack: {
     // Automatically annotate React components to show their full name in breadcrumbs and session replay
@@ -64,11 +70,5 @@ export default withSentryConfig(nextConfig, {
     treeshake: {
       removeDebugLogging: true,
     },
-
-    // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
-    // See the following for more information:
-    // https://docs.sentry.io/product/crons/
-    // https://vercel.com/docs/cron-jobs
-    automaticVercelMonitors: true,
   },
 });
