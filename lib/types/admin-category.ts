@@ -31,6 +31,7 @@ export interface CategoryResponse {
   createdAt: string;
   updatedAt: string | null;
   image: CategoryImageDto;
+  tipCount: number;
 }
 
 /**

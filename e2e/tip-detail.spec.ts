@@ -19,7 +19,7 @@ test.describe('Tip Detail Page', () => {
     });
 
     test('should display all tip content correctly', async ({ page }) => {
-      await page.goto(`/tip/${validTipId}`);
+      await page.goto(`/tips/${validTipId}`);
 
       // Check breadcrumb navigation
       const breadcrumb = page.getByRole('navigation', { name: /breadcrumb/i });
@@ -42,7 +42,7 @@ test.describe('Tip Detail Page', () => {
     });
 
     test('should display breadcrumb navigation correctly', async ({ page }) => {
-      await page.goto(`/tip/${validTipId}`);
+      await page.goto(`/tips/${validTipId}`);
 
       const breadcrumb = page.getByRole('navigation', { name: /breadcrumb/i });
       
@@ -63,7 +63,7 @@ test.describe('Tip Detail Page', () => {
 
   test.describe('Breadcrumb Navigation', () => {
     test('should navigate back to home via breadcrumb', async ({ page }) => {
-      await page.goto(`/tip/${validTipId}`);
+      await page.goto(`/tips/${validTipId}`);
 
       const homeLink = page.getByRole('navigation', { name: /breadcrumb/i })
         .getByRole('link', { name: /home/i });
@@ -76,7 +76,7 @@ test.describe('Tip Detail Page', () => {
   test.describe('Video Embeds', () => {
     test('should load video embed when present', async ({ page }) => {
       // This test assumes the tip has a video URL
-      await page.goto(`/tip/${validTipId}`);
+      await page.goto(`/tips/${validTipId}`);
 
       // Check if video iframe is present
       const videoIframe = page.locator('iframe[title*="Video"]');
@@ -94,7 +94,7 @@ test.describe('Tip Detail Page', () => {
 
   test.describe('Related Tips', () => {
     test('should display related tips section', async ({ page }) => {
-      await page.goto(`/tip/${validTipId}`);
+      await page.goto(`/tips/${validTipId}`);
 
       // Check for "More like this" section
       const relatedSection = page.getByText(/more like this/i);
@@ -115,7 +115,7 @@ test.describe('Tip Detail Page', () => {
     });
 
     test('should navigate to related tip when clicked', async ({ page }) => {
-      await page.goto(`/tip/${validTipId}`);
+      await page.goto(`/tips/${validTipId}`);
 
       // Wait for related tips to load
       const relatedTipCard = page.locator('[data-testid="tip-card"]').first();
@@ -139,7 +139,7 @@ test.describe('Tip Detail Page', () => {
 
   test.describe('Error Handling', () => {
     test('should show 404 page for invalid tip ID', async ({ page }) => {
-      await page.goto(`/tip/${invalidTipId}`);
+      await page.goto(`/tips/${invalidTipId}`);
 
       // Check for 404 error message
       await expect(page.getByText(/404/i)).toBeVisible();
@@ -152,7 +152,7 @@ test.describe('Tip Detail Page', () => {
     });
 
     test('should navigate back to home from 404 page', async ({ page }) => {
-      await page.goto(`/tip/${invalidTipId}`);
+      await page.goto(`/tips/${invalidTipId}`);
 
       const backButton = page.getByRole('link', { name: /back to home/i });
       await backButton.click();
@@ -165,7 +165,7 @@ test.describe('Tip Detail Page', () => {
     test('should display correctly on mobile viewport', async ({ page }) => {
       // Set mobile viewport
       await page.setViewportSize({ width: 375, height: 667 });
-      await page.goto(`/tip/${validTipId}`);
+      await page.goto(`/tips/${validTipId}`);
 
       // Check that content is visible and not overflowing
       await expect(page.locator('h1')).toBeVisible();
@@ -186,7 +186,7 @@ test.describe('Tip Detail Page', () => {
 
     test('should display related tips in single column on mobile', async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 667 });
-      await page.goto(`/tip/${validTipId}`);
+      await page.goto(`/tips/${validTipId}`);
 
       const relatedTipCards = page.locator('[data-testid="tip-card"]');
       const cardCount = await relatedTipCards.count();
@@ -209,7 +209,7 @@ test.describe('Tip Detail Page', () => {
     test('should display correctly on tablet viewport', async ({ page }) => {
       // Set tablet viewport
       await page.setViewportSize({ width: 768, height: 1024 });
-      await page.goto(`/tip/${validTipId}`);
+      await page.goto(`/tips/${validTipId}`);
 
       // Check that content is visible
       await expect(page.locator('h1')).toBeVisible();
@@ -219,7 +219,7 @@ test.describe('Tip Detail Page', () => {
     test('should display correctly on desktop viewport', async ({ page }) => {
       // Set desktop viewport
       await page.setViewportSize({ width: 1920, height: 1080 });
-      await page.goto(`/tip/${validTipId}`);
+      await page.goto(`/tips/${validTipId}`);
 
       // Check that content is visible and properly constrained
       await expect(page.locator('h1')).toBeVisible();
@@ -237,7 +237,7 @@ test.describe('Tip Detail Page', () => {
 
   test.describe('Keyboard Navigation', () => {
     test('should support keyboard navigation through interactive elements', async ({ page }) => {
-      await page.goto(`/tip/${validTipId}`);
+      await page.goto(`/tips/${validTipId}`);
 
       // Start from the top of the page
       await page.keyboard.press('Tab');
@@ -252,7 +252,7 @@ test.describe('Tip Detail Page', () => {
     });
 
     test('should have visible focus indicators', async ({ page }) => {
-      await page.goto(`/tip/${validTipId}`);
+      await page.goto(`/tips/${validTipId}`);
 
       // Tab to first interactive element
       await page.keyboard.press('Tab');
@@ -278,7 +278,7 @@ test.describe('Tip Detail Page', () => {
     });
 
     test('should allow keyboard navigation to breadcrumb links', async ({ page }) => {
-      await page.goto(`/tip/${validTipId}`);
+      await page.goto(`/tips/${validTipId}`);
 
       // Tab until we reach the breadcrumb home link
       let attempts = 0;
@@ -307,21 +307,21 @@ test.describe('Tip Detail Page', () => {
 
   test.describe('SEO and Metadata', () => {
     test('should have proper page title', async ({ page }) => {
-      await page.goto(`/tip/${validTipId}`);
+      await page.goto(`/tips/${validTipId}`);
 
       // Title should include tip title and site name
       await expect(page).toHaveTitle(/LifeHackBuddy/);
     });
 
     test('should have meta description', async ({ page }) => {
-      await page.goto(`/tip/${validTipId}`);
+      await page.goto(`/tips/${validTipId}`);
 
       const metaDescription = page.locator('meta[name="description"]');
       await expect(metaDescription).toHaveAttribute('content', /.+/);
     });
 
     test('should have Open Graph meta tags', async ({ page }) => {
-      await page.goto(`/tip/${validTipId}`);
+      await page.goto(`/tips/${validTipId}`);
 
       // Check for essential OG tags
       const ogTitle = page.locator('meta[property="og:title"]');
@@ -334,7 +334,7 @@ test.describe('Tip Detail Page', () => {
     });
 
     test('should have structured data (JSON-LD)', async ({ page }) => {
-      await page.goto(`/tip/${validTipId}`);
+      await page.goto(`/tips/${validTipId}`);
 
       // Check for JSON-LD script tag
       const structuredData = await page.evaluate(() => {
@@ -351,7 +351,7 @@ test.describe('Tip Detail Page', () => {
 
   test.describe('Accessibility', () => {
     test('should have proper heading hierarchy', async ({ page }) => {
-      await page.goto(`/tip/${validTipId}`);
+      await page.goto(`/tips/${validTipId}`);
 
       // Check that there's exactly one h1
       const h1Count = await page.locator('h1').count();
@@ -363,7 +363,7 @@ test.describe('Tip Detail Page', () => {
     });
 
     test('should have alt text for images', async ({ page }) => {
-      await page.goto(`/tip/${validTipId}`);
+      await page.goto(`/tips/${validTipId}`);
 
       // Get all images
       const images = page.locator('img');
@@ -378,7 +378,7 @@ test.describe('Tip Detail Page', () => {
     });
 
     test('should have ARIA labels for navigation', async ({ page }) => {
-      await page.goto(`/tip/${validTipId}`);
+      await page.goto(`/tips/${validTipId}`);
 
       // Check breadcrumb has aria-label
       const breadcrumb = page.getByRole('navigation', { name: /breadcrumb/i });

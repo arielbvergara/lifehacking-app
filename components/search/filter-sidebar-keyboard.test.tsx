@@ -1,8 +1,6 @@
 /**
  * Unit tests for FilterSidebar keyboard navigation
  * Tests Escape key handling, focusability, and ARIA attributes
- * 
- * Validates Requirements: 12.5, 12.8, 12.9
  */
 
 import { render, screen, waitFor } from '@testing-library/react';

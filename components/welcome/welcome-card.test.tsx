@@ -4,8 +4,6 @@
  * Unit tests for the WelcomeCard component.
  * Tests heading and subtext rendering, CelebrationIcon presence, 
  * WelcomeActions integration, and card styling classes.
- * 
- * Requirements: 1.2, 1.3, 1.4, 1.6
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';

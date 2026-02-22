@@ -2,18 +2,21 @@ import { Metadata } from 'next';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { Breadcrumb } from '@/components/shared/breadcrumb';
-import { TipForm } from '@/components/admin/tip-form';
+import { TipEditClient } from '@/components/admin/tips/tip-edit-client';
 
 export const metadata: Metadata = {
-  title: 'Create Tip | Admin',
-  description: 'Create a new life hack tip with AI-powered content generation',
+  title: 'Edit Tip | Admin',
+  description: 'Edit tip details',
 };
 
-export default function CreateTipPage() {
+export default async function TipEditPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'Tips', href: '/tips/latest' },
-    { label: 'Create tip' },
+    { label: 'Admin', href: '/admin' },
+    { label: 'Tips', href: '/admin/tips' },
+    { label: 'Edit' },
   ];
 
   return (
@@ -25,14 +28,14 @@ export default function CreateTipPage() {
 
         <div className="mt-8 mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Create Tip
+            Edit Tip
           </h1>
           <p className="text-gray-600">
-            Generate a new life hack tip from a video URL using AI
+            Update tip details and content
           </p>
         </div>
 
-        <TipForm />
+        <TipEditClient tipId={id} />
       </main>
       
       <Footer />

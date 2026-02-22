@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     
     const description = tip.description.slice(0, 160);
     const imageUrl = tip.image?.imageUrl || '/default.png';
-    const canonicalUrl = `https://lifehackbuddy.com/tip/${tip.id}`;
+    const canonicalUrl = `https://lifehackbuddy.com/tips/${tip.id}`;
     
     return {
       title: `${tip.title} - LifeHackBuddy`,

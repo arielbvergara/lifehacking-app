@@ -16,6 +16,7 @@ export interface UserProfile {
   id: string;
   email: string;
   displayName: string | null;
+  role: string;
   createdAt: string;
 }
 
@@ -169,8 +170,6 @@ export async function handleUserSync(idToken: string): Promise<UserProfile> {
  * @returns Promise resolving when display name is updated
  * @throws Error if API request fails or network error occurs
  * 
- * Requirements: 1.5, 7.1, 7.3, 7.4, 7.6
- * 
  * @example
  * try {
  *   await updateDisplayName(idToken, 'JohnDoe123');
@@ -222,8 +221,6 @@ export async function updateDisplayName(
  * @param idToken - Firebase ID token for authentication
  * @returns Promise resolving when account is deleted
  * @throws Error if API request fails or network error occurs
- * 
- * Requirements: 2.7, 7.2, 7.3, 7.4, 7.6
  * 
  * @example
  * try {

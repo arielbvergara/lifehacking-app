@@ -50,7 +50,6 @@ const mockCategories: Category[] = [
 /**
  * CategoryFilterBar Keyboard Navigation Tests
  * Task 5.1: Write unit tests for CategoryFilterBar keyboard navigation
- * Requirements: 8.1, 8.3, 8.4, 8.6, 8.7
  */
 describe('CategoryFilterBar - Keyboard Navigation', () => {
   beforeEach(() => {

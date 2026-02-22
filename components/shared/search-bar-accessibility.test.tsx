@@ -14,7 +14,6 @@ vi.mock('next/navigation', () => ({
 /**
  * Styling Consistency and Accessibility Tests
  * Task 7: Verify styling consistency and accessibility
- * Requirements: 6.1, 6.2, 6.3, 6.4, 6.5
  */
 describe('SearchBar - Styling and Accessibility', () => {
   describe('Compact Variant Styling', () => {

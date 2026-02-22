@@ -17,8 +17,6 @@ interface DisplayNameFormProps {
  * 
  * Provides an editable form for updating the user's display name with real-time validation.
  * Validates that the display name is alphanumeric only and not empty/whitespace.
- * 
- * Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.8, 4.1, 4.2, 4.3, 4.4, 4.5, 7.1, 7.3, 7.4, 7.6
  */
 export function DisplayNameForm({ currentName, idToken, onUpdate }: DisplayNameFormProps) {
   const [displayName, setDisplayName] = useState(currentName || '');
