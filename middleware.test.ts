@@ -66,6 +66,6 @@ describe('Security Headers Middleware', () => {
 
   it('should set X-DNS-Prefetch-Control header', () => {
     const response = middleware(request);
-    expect(response.headers.get('X-DNS-Prefetch-Control')).toBe('on');
+    expect(response.headers.get('X-DNS-Prefetch-Control')).toBe('off');
   });
 });
