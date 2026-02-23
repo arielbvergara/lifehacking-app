@@ -2,19 +2,14 @@
  * Constants for admin category creation feature
  */
 
+import { MAX_IMAGE_SIZE_BYTES, ALLOWED_IMAGE_TYPES } from './image';
+
+// Re-export shared image constants for backward compatibility
+export { MAX_IMAGE_SIZE_BYTES, ALLOWED_IMAGE_TYPES };
+
 // Validation constraints
 export const CATEGORY_NAME_MIN_LENGTH = 2;
 export const CATEGORY_NAME_MAX_LENGTH = 100;
-export const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
-export const ALLOWED_IMAGE_TYPES = [
-  'image/jpeg',
-  'image/png',
-  'image/gif',
-  'image/webp',
-] as const;
-
-// API configuration
-export const API_TIMEOUT_MS = 30000; // 30 seconds
 
 // Error messages
 export const ERROR_MESSAGES = {

@@ -9,7 +9,7 @@ import {
   CategoryResponse,
 } from '@/lib/types/admin-tip';
 import { UpdateTipRequest } from '@/lib/types/admin-dashboard';
-import { API_TIMEOUT_MS } from '@/lib/constants/admin-tip';
+import { ADMIN_API_TIMEOUT_MS } from '@/lib/config/api';
 import { handleApiError, createNetworkError } from '@/lib/api/admin-utils';
 
 /**
@@ -28,7 +28,7 @@ export async function uploadTipImage(
   formData.append('file', file);
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), ADMIN_API_TIMEOUT_MS);
 
   try {
     const response = await fetch(
@@ -74,7 +74,7 @@ export async function createTip(
   token: string
 ): Promise<TipDetailResponse> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), ADMIN_API_TIMEOUT_MS);
 
   try {
     const response = await fetch(
@@ -116,7 +116,7 @@ export async function createTip(
  */
 export async function fetchCategories(): Promise<CategoryResponse[]> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), ADMIN_API_TIMEOUT_MS);
 
   try {
     const response = await fetch(
@@ -159,7 +159,7 @@ export async function fetchTipById(
   token: string
 ): Promise<TipDetailResponse> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), ADMIN_API_TIMEOUT_MS);
 
   try {
     const response = await fetch(
@@ -206,7 +206,7 @@ export async function updateTip(
   token: string
 ): Promise<TipDetailResponse> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), ADMIN_API_TIMEOUT_MS);
 
   try {
     const response = await fetch(
@@ -253,7 +253,7 @@ export async function deleteTip(
   token: string
 ): Promise<void> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), ADMIN_API_TIMEOUT_MS);
 
   try {
     const response = await fetch(

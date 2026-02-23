@@ -4,9 +4,7 @@
  */
 
 import { TipSummary, ProblemDetails } from '@/lib/types/api';
-
-// Constants
-const API_TIMEOUT_MS = 30000; // 30 seconds
+import { ADMIN_API_TIMEOUT_MS } from '@/lib/config/api';
 
 // Request/Response Types
 export interface GetFavoritesParams {
@@ -71,7 +69,7 @@ export async function getFavorites(
   token: string
 ): Promise<PaginatedFavoritesResponse> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), ADMIN_API_TIMEOUT_MS);
 
   try {
     // Build query string
@@ -140,7 +138,7 @@ export async function addFavorite(
   token: string
 ): Promise<void> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), ADMIN_API_TIMEOUT_MS);
 
   try {
     const response = await fetch(
@@ -190,7 +188,7 @@ export async function removeFavorite(
   token: string
 ): Promise<void> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), ADMIN_API_TIMEOUT_MS);
 
   try {
     const response = await fetch(
@@ -241,7 +239,7 @@ export async function mergeFavorites(
   token: string
 ): Promise<MergeResult> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), ADMIN_API_TIMEOUT_MS);
 
   try {
     const response = await fetch(

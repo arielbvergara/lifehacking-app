@@ -2,6 +2,11 @@
  * Constants for admin tip creation feature
  */
 
+import { MAX_IMAGE_SIZE_BYTES, ALLOWED_IMAGE_TYPES } from './image';
+
+// Re-export shared image constants for backward compatibility
+export { MAX_IMAGE_SIZE_BYTES, ALLOWED_IMAGE_TYPES };
+
 // Validation constraints (from API schema)
 export const TIP_TITLE_MIN_LENGTH = 5;
 export const TIP_TITLE_MAX_LENGTH = 200;
@@ -14,16 +19,7 @@ export const TIP_TAG_MAX_LENGTH = 50;
 export const TIP_MAX_TAGS = 10;
 export const TIP_MIN_STEPS = 1;
 
-export const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
-export const ALLOWED_IMAGE_TYPES = [
-  'image/jpeg',
-  'image/png',
-  'image/gif',
-  'image/webp',
-] as const;
-
 // API configuration
-export const API_TIMEOUT_MS = 30000; // 30 seconds
 export const GEMINI_TIMEOUT_MS = 60000; // 60 seconds for AI processing
 
 // Gemini model configuration
