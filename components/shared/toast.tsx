@@ -107,7 +107,7 @@ function Toast({ toast, onDismiss }: ToastProps) {
             className={`
               mt-2 px-3 py-1 rounded text-xs font-semibold ms-2
               ${toast.type === 'warning' ? 'bg-yellow-600 hover:bg-yellow-700 text-white' : ''}
-              ${toast.type === 'info' ? 'bg-blue-600 hover:bg-blue-700 text-white' : ''}
+              ${toast.type === 'info' ? 'bg-primary hover:bg-primary-dark text-white' : ''}
               ${toast.type === 'success' ? 'bg-green-600 hover:bg-green-700 text-white' : ''}
               ${toast.type === 'error' ? 'bg-red-600 hover:bg-red-700 text-white' : ''}
               transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white

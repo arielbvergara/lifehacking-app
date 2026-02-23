@@ -49,7 +49,7 @@ export function DashboardControls({
                 px-4 py-2 text-sm font-medium rounded-md transition-colors
                 ${
                   selectedPeriod === period.value
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-primary text-white'
                     : 'text-gray-700 hover:bg-gray-100'
                 }
               `}
@@ -81,7 +81,7 @@ export function DashboardControls({
                 px-4 py-2 text-sm font-medium rounded-md transition-colors
                 ${
                   selectedType === type.value
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-primary text-white'
                     : 'text-gray-700 hover:bg-gray-100'
                 }
               `}
