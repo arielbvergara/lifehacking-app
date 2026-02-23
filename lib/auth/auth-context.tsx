@@ -84,7 +84,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           const token = await firebaseGetIdToken(firebaseUser);
           
           // Store token in cookie for middleware access
-          document.cookie = `session=${token}; path=/; max-age=3600; SameSite=Lax`;
+          document.cookie = `session=${token}; path=/; max-age=3600; SameSite=Strict; Secure`;
           
           setUser(firebaseUser);
           setIdToken(token);

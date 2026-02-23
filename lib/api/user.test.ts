@@ -435,7 +435,7 @@ describe('User API Functions', () => {
       );
     });
 
-    it('createUserInBackend_ShouldThrowError_WhenAPICallFails', async () => {
+    it('createUserInBackend_ShouldThrowGenericError_WhenAPICallFails', async () => {
       // Arrange
       const mockToken = 'test-token';
       const mockPayload: CreateUserPayload = {
@@ -443,17 +443,26 @@ describe('User API Functions', () => {
         name: 'Fail User',
       };
 
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
       global.fetch = vi.fn().mockResolvedValue({
         ok: false,
         status: 400,
         json: async () => ({ detail: 'Invalid email format' }),
       } as Response);
 
-      // Act & Assert
+      // Act & Assert - should NOT expose backend detail to caller
       await expect(createUserInBackend(mockToken, mockPayload)).rejects.toThrow(
-        'Invalid email format'
+        'Failed to create user in backend'
       );
       expect(global.fetch).toHaveBeenCalledTimes(1);
+      // Detail should be logged, not thrown
+      expect(consoleError).toHaveBeenCalledWith(
+        '[createUserInBackend] Backend error detail:',
+        'Invalid email format'
+      );
+
+      consoleError.mockRestore();
     });
 
     it('createUserInBackend_ShouldThrowGenericError_WhenResponseHasNoDetail', async () => {
@@ -516,12 +525,14 @@ describe('User API Functions', () => {
       expect(global.fetch).toHaveBeenCalledTimes(1);
     });
 
-    it('createUserInBackend_ShouldThrowError_When401Unauthorized', async () => {
+    it('createUserInBackend_ShouldThrowGenericError_When401Unauthorized', async () => {
       // Arrange
       const mockToken = 'invalid-token';
       const mockPayload: CreateUserPayload = {
         email: 'unauth@example.com',
       };
+
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       global.fetch = vi.fn().mockResolvedValue({
         ok: false,
@@ -529,11 +540,13 @@ describe('User API Functions', () => {
         json: async () => ({ detail: 'Unauthorized' }),
       } as Response);
 
-      // Act & Assert
+      // Act & Assert - should NOT expose backend detail to caller
       await expect(createUserInBackend(mockToken, mockPayload)).rejects.toThrow(
-        'Unauthorized'
+        'Failed to create user in backend'
       );
       expect(global.fetch).toHaveBeenCalledTimes(1);
+
+      consoleError.mockRestore();
     });
   });
 
