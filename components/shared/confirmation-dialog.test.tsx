@@ -199,7 +199,7 @@ describe('ConfirmationDialog', () => {
     );
 
     const confirmButton = screen.getByRole('button', { name: /confirm/i });
-    expect(confirmButton).toHaveClass('bg-blue-600');
+    expect(confirmButton).toHaveClass('bg-primary');
   });
 
   it('Should_HaveProperAriaAttributes_When_Rendered', () => {

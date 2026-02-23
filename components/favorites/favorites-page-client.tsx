@@ -304,7 +304,7 @@ export function FavoritesPageClient() {
                     </p>
                     <button
                       onClick={() => router.push('/login')}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                      className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors text-sm font-medium"
                     >
                       Sign Up / Log In
                     </button>
@@ -327,7 +327,7 @@ export function FavoritesPageClient() {
                 <p className="text-red-600 mb-4">{error}</p>
                 <button
                   onClick={() => window.location.reload()}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
                 >
                   Try Again
                 </button>
@@ -346,7 +346,7 @@ export function FavoritesPageClient() {
                 </p>
                 <button
                   onClick={handleBrowseTips}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors font-medium"
                 >
                   Browse Tips
                 </button>
@@ -438,7 +438,7 @@ export function FavoritesPageClient() {
                   <p className="text-red-600 mb-4">{error}</p>
                   <button
                     onClick={() => window.location.reload()}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
                   >
                     Try Again
                   </button>
@@ -462,7 +462,7 @@ export function FavoritesPageClient() {
                           </p>
                           <button
                             onClick={handleResetFilters}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
                           >
                             Reset All Filters
                           </button>
@@ -474,7 +474,7 @@ export function FavoritesPageClient() {
                           </p>
                           <button
                             onClick={handleBrowseTips}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
                           >
                             Browse Tips
                           </button>

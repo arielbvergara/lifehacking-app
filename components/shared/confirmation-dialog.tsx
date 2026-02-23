@@ -139,7 +139,7 @@ export function ConfirmationDialog({
         return {
           iconBg: 'bg-blue-100',
           iconColor: 'text-blue-600',
-          confirmButton: 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500',
+          confirmButton: 'bg-primary hover:bg-primary-dark focus:ring-blue-500',
         };
     }
   };

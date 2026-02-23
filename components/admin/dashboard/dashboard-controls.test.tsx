@@ -45,7 +45,7 @@ describe('DashboardControls', () => {
       );
 
       const weekButton = container.querySelector('[data-testid="period-week"]');
-      expect(weekButton).toHaveClass('bg-blue-600');
+      expect(weekButton).toHaveClass('bg-primary');
       expect(weekButton).toHaveClass('text-white');
     });
 
@@ -56,7 +56,7 @@ describe('DashboardControls', () => {
 
       const dayButton = container.querySelector('[data-testid="period-day"]');
       expect(dayButton).toHaveClass('text-gray-700');
-      expect(dayButton).not.toHaveClass('bg-blue-600');
+      expect(dayButton).not.toHaveClass('bg-primary');
     });
   });
 
@@ -67,7 +67,7 @@ describe('DashboardControls', () => {
       );
 
       const percentageButton = container.querySelector('[data-testid="type-percentage"]');
-      expect(percentageButton).toHaveClass('bg-blue-600');
+      expect(percentageButton).toHaveClass('bg-primary');
       expect(percentageButton).toHaveClass('text-white');
     });
 
@@ -78,7 +78,7 @@ describe('DashboardControls', () => {
 
       const percentageButton = container.querySelector('[data-testid="type-percentage"]');
       expect(percentageButton).toHaveClass('text-gray-700');
-      expect(percentageButton).not.toHaveClass('bg-blue-600');
+      expect(percentageButton).not.toHaveClass('bg-primary');
     });
   });
 

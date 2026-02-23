@@ -261,7 +261,7 @@ describe('DashboardClient', () => {
 
       await waitFor(() => {
         const weekButton = container.querySelector('[data-testid="period-week"]');
-        expect(weekButton).toHaveClass('bg-blue-600');
+        expect(weekButton).toHaveClass('bg-primary');
       });
     });
 
@@ -281,7 +281,7 @@ describe('DashboardClient', () => {
 
       await waitFor(() => {
         const percentageButton = container.querySelector('[data-testid="type-percentage"]');
-        expect(percentageButton).toHaveClass('bg-blue-600');
+        expect(percentageButton).toHaveClass('bg-primary');
       });
     });
 
@@ -299,10 +299,10 @@ describe('DashboardClient', () => {
 
       await waitFor(() => {
         const monthButton = container.querySelector('[data-testid="period-month"]');
-        expect(monthButton).toHaveClass('bg-blue-600');
+        expect(monthButton).toHaveClass('bg-primary');
         
         const amountButton = container.querySelector('[data-testid="type-amount"]');
-        expect(amountButton).toHaveClass('bg-blue-600');
+        expect(amountButton).toHaveClass('bg-primary');
       });
     });
   });
