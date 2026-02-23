@@ -127,7 +127,7 @@ describe('TipCard', () => {
     const card = screen.getByRole('button', { name: /View tip: How to Clean Your Kitchen Faster/i });
     await user.click(card);
     
-    expect(mockPush).toHaveBeenCalledWith('/tip/123e4567-e89b-12d3-a456-426614174000');
+    expect(mockPush).toHaveBeenCalledWith('/tips/123e4567-e89b-12d3-a456-426614174000');
   });
 
   it('should navigate when Enter key is pressed on card', async () => {
@@ -138,7 +138,7 @@ describe('TipCard', () => {
     card.focus();
     await user.keyboard('{Enter}');
     
-    expect(mockPush).toHaveBeenCalledWith('/tip/123e4567-e89b-12d3-a456-426614174000');
+    expect(mockPush).toHaveBeenCalledWith('/tips/123e4567-e89b-12d3-a456-426614174000');
   });
 
   it('should navigate when Space key is pressed on card', async () => {
@@ -149,7 +149,7 @@ describe('TipCard', () => {
     card.focus();
     await user.keyboard(' ');
     
-    expect(mockPush).toHaveBeenCalledWith('/tip/123e4567-e89b-12d3-a456-426614174000');
+    expect(mockPush).toHaveBeenCalledWith('/tips/123e4567-e89b-12d3-a456-426614174000');
   });
 
   it('should render heart icon for favorites', () => {
@@ -227,7 +227,7 @@ describe('TipCard - Property Tests', () => {
       await user.click(card);
       
       // Verify the exact ID is preserved in the navigation URL
-      expect(mockPush).toHaveBeenCalledWith(`/tip/${tipId}`);
+      expect(mockPush).toHaveBeenCalledWith(`/tips/${tipId}`);
       expect(mockPush).toHaveBeenCalledTimes(1);
     }
   );

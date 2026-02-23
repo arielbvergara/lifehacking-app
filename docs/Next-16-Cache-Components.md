@@ -41,7 +41,7 @@ This project has been migrated to use Next.js 16's Cache Components feature for 
 
 ### Pages Updated
 - `app/page.tsx` - Home page (async server component with cached data)
-- `app/tip/[id]/page.tsx` - Tip detail page (async server component with cached data)
+- `app/tips/[id]/page.tsx` - Tip detail page (async server component with cached data)
 - `app/search/page.tsx` - Search page (async server component with cached data)
 - `app/categories/page.tsx` - Categories listing page (async server component with cached data)
 - `app/category/[id]/page.tsx` - Category detail page (async server component with cached data)
