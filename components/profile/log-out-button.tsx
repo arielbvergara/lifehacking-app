@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signOut } from '@/lib/auth/firebase-auth';
+import { clearSessionCookie } from '@/lib/auth/auth-utils';
 import { addToast } from '@/lib/hooks/use-toast';
 
 /**
@@ -25,7 +26,7 @@ export function LogOutButton() {
       await signOut();
       
       // Clear session cookie
-      document.cookie = 'session=; path=/; max-age=0';
+      clearSessionCookie();
       
       // Show success toast
       addToast({

@@ -398,7 +398,7 @@ describe("DisplayNameForm", () => {
       await waitFor(() => {
         expect(toastHook.addToast).toHaveBeenCalledWith({
           type: "error",
-          message: "Failed to update display name",
+          message: "Failed to update display name. Please try again.",
           duration: 5000,
         });
       });
@@ -426,7 +426,7 @@ describe("DisplayNameForm", () => {
       await waitFor(() => {
         expect(toastHook.addToast).toHaveBeenCalledWith({
           type: "error",
-          message: "Name too short",
+          message: "Failed to update display name. Please try again.",
           duration: 5000,
         });
       });
@@ -498,7 +498,7 @@ describe("DisplayNameForm", () => {
       await waitFor(() => {
         expect(toastHook.addToast).toHaveBeenCalledWith({
           type: "error",
-          message: "Network error. Please check your connection and try again.",
+          message: "Failed to update display name. Please try again.",
           duration: 5000,
         });
       });

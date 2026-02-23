@@ -188,13 +188,14 @@ export function TipForm(props: TipFormProps) {
       }));
     } catch (err) {
       const error = err as Error;
+      console.error('[TipForm] Gemini processing error:', error.message);
       
       setFormState((prev) => ({
         ...prev,
         isProcessingVideo: false,
         validationErrors: {
           ...prev.validationErrors,
-          gemini: error.message || ERROR_MESSAGES.GEMINI_API_ERROR,
+          gemini: ERROR_MESSAGES.GEMINI_API_ERROR,
         },
       }));
     }
@@ -454,10 +455,11 @@ export function TipForm(props: TipFormProps) {
         return;
       }
 
+      console.error('[TipForm] Submit error:', error.message);
       setFormState((prev) => ({
         ...prev,
         isSubmitting: false,
-        error: error.message || (mode === 'edit' ? 'Failed to update tip' : ERROR_MESSAGES.TIP_CREATION_FAILED),
+        error: mode === 'edit' ? 'Failed to update tip. Please try again.' : ERROR_MESSAGES.TIP_CREATION_FAILED,
       }));
     }
   };

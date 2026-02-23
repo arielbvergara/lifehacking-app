@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { updateDisplayName } from '@/lib/api/user';
 import { addToast } from '@/lib/hooks/use-toast';
 import { signOut } from '@/lib/auth/firebase-auth';
+import { clearSessionCookie } from '@/lib/auth/auth-utils';
 
 interface DisplayNameFormProps {
   currentName: string | null;
@@ -92,6 +93,7 @@ export function DisplayNameForm({ currentName, idToken, onUpdate }: DisplayNameF
     } catch (error) {
       // Handle 401 Unauthorized - sign out and redirect to login (Requirement 7.4)
       const errorMessage = error instanceof Error ? error.message : 'Failed to update display name';
+      console.error('[DisplayNameForm] Update error:', errorMessage);
       
       if (errorMessage === 'Unauthorized') {
         addToast({
@@ -106,7 +108,7 @@ export function DisplayNameForm({ currentName, idToken, onUpdate }: DisplayNameF
         } catch (signOutError) {
           console.error('[DisplayNameForm] Sign out failed after 401:', signOutError);
         } finally {
-          document.cookie = 'session=; path=/; max-age=0';
+          clearSessionCookie();
         }
         
         // Redirect to login page
@@ -122,10 +124,10 @@ export function DisplayNameForm({ currentName, idToken, onUpdate }: DisplayNameF
           duration: 5000,
         });
       } else {
-        // Show error toast for other errors (Requirement 1.7, 3.2)
+        // Show generic error toast for other errors (Requirement 1.7, 3.2)
         addToast({
           type: 'error',
-          message: errorMessage,
+          message: 'Failed to update display name. Please try again.',
           duration: 5000,
         });
       }

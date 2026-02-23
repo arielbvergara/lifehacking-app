@@ -6,6 +6,7 @@ import { UserProfile, deleteAccount } from "@/lib/api/user";
 import { DisplayNameForm } from "./display-name-form";
 import { ConfirmationDialog } from "@/components/shared/confirmation-dialog";
 import { signOut } from "@/lib/auth/firebase-auth";
+import { clearSessionCookie } from "@/lib/auth/auth-utils";
 import { addToast } from "@/lib/hooks/use-toast";
 
 // Delay before redirecting to allow user to see toast notification
@@ -44,7 +45,7 @@ export function ProfileCard({ profile, idToken }: ProfileCardProps) {
         });
       } finally {
         // Clear session cookie regardless of signOut success (Requirement 8.2)
-        document.cookie = 'session=; path=/; max-age=0';
+        clearSessionCookie();
       }
 
       // Wait 2 seconds to allow user to see the toast, then redirect (Requirement 2.9, 8.3)
@@ -55,6 +56,7 @@ export function ProfileCard({ profile, idToken }: ProfileCardProps) {
     } catch (error) {
       // Handle specific error cases (Requirements 2.10, 7.4, 7.5, 7.6)
       const errorMessage = error instanceof Error ? error.message : 'Failed to delete account';
+      console.error('[ProfileCard] Delete account error:', errorMessage);
       
       // Handle 401 Unauthorized - sign out and redirect to login (Requirement 7.4)
       if (errorMessage === 'Unauthorized') {
@@ -69,7 +71,7 @@ export function ProfileCard({ profile, idToken }: ProfileCardProps) {
         } catch (signOutError) {
           console.error('[ProfileCard] Sign out failed after 401:', signOutError);
         } finally {
-          document.cookie = 'session=; path=/; max-age=0';
+          clearSessionCookie();
         }
         
         // Close dialog and redirect to login
@@ -86,17 +88,17 @@ export function ProfileCard({ profile, idToken }: ProfileCardProps) {
         });
       } 
       // Handle network errors (Requirement 7.6)
-      else if (errorMessage.includes('Network error')) {
+      else if (error instanceof TypeError && errorMessage.includes('fetch')) {
         addToast({
           type: 'error',
-          message: errorMessage,
+          message: 'Network error. Please check your connection and try again.',
         });
       } 
-      // Handle all other errors (Requirement 7.6)
+      // Handle all other errors with generic message (Requirement 7.6)
       else {
         addToast({
           type: 'error',
-          message: errorMessage,
+          message: 'Failed to delete account. Please try again.',
         });
       }
       

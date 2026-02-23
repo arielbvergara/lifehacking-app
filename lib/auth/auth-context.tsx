@@ -11,7 +11,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { signInWithGoogle as firebaseSignInWithGoogle, signInWithEmail as firebaseSignInWithEmail, signOut as firebaseSignOut, getIdToken as firebaseGetIdToken, signUpWithGoogle as firebaseSignUpWithGoogle, signUpWithEmail as firebaseSignUpWithEmail, sendPasswordResetEmail as firebaseSendPasswordResetEmail } from '@/lib/auth/firebase-auth';
-import { formatAuthError } from '@/lib/auth/auth-utils';
+import { formatAuthError, clearSessionCookie } from '@/lib/auth/auth-utils';
 import { handleUserSync, createUserInBackend } from '@/lib/api/user';
 
 /**
@@ -108,7 +108,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           // User is signed out
           
           // Clear session cookie
-          document.cookie = 'session=; path=/; max-age=0';
+          clearSessionCookie();
           
           setUser(null);
           setIdToken(null);

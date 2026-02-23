@@ -488,7 +488,7 @@ describe('CategoryForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Upload failed')).toBeInTheDocument();
+        expect(screen.getByText(ERROR_MESSAGES.GENERIC_ERROR)).toBeInTheDocument();
       });
     });
 
@@ -513,7 +513,7 @@ describe('CategoryForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Creation failed')).toBeInTheDocument();
+        expect(screen.getByText(ERROR_MESSAGES.GENERIC_ERROR)).toBeInTheDocument();
       });
     });
 
@@ -591,7 +591,7 @@ describe('CategoryForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/authentication required/i)).toBeInTheDocument();
+        expect(screen.getByText(ERROR_MESSAGES.GENERIC_ERROR)).toBeInTheDocument();
       });
     });
   });

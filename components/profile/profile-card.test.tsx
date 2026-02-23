@@ -353,7 +353,7 @@ describe("ProfileCard - Account Deletion", () => {
 
       expect(toastHook.addToast).toHaveBeenCalledWith({
         type: 'error',
-        message: 'Failed to delete account',
+        message: 'Failed to delete account. Please try again.',
       });
     });
 
@@ -401,7 +401,7 @@ describe("ProfileCard - Account Deletion", () => {
   describe("ProfileCard_ShouldHandleNetworkError_WhenNetworkFailureOccurs", () => {
     it("shows network error toast when network error occurs", async () => {
       vi.mocked(userApi.deleteAccount).mockRejectedValue(
-        new Error('Network error. Please check your connection and try again.')
+        new TypeError('Failed to fetch')
       );
 
       render(<ProfileCard profile={mockProfile} idToken={mockIdToken} />);
@@ -419,7 +419,7 @@ describe("ProfileCard - Account Deletion", () => {
 
     it("closes dialog when network error occurs", async () => {
       vi.mocked(userApi.deleteAccount).mockRejectedValue(
-        new Error('Network error. Please check your connection and try again.')
+        new TypeError('Failed to fetch')
       );
 
       render(<ProfileCard profile={mockProfile} idToken={mockIdToken} />);
@@ -435,7 +435,7 @@ describe("ProfileCard - Account Deletion", () => {
 
     it("does not call signOut for network errors", async () => {
       vi.mocked(userApi.deleteAccount).mockRejectedValue(
-        new Error('Network error. Please check your connection and try again.')
+        new TypeError('Failed to fetch')
       );
 
       render(<ProfileCard profile={mockProfile} idToken={mockIdToken} />);
