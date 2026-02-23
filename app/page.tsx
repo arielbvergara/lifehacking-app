@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { connection } from 'next/server';
-import { generateWebsiteStructuredData } from '@/lib/seo/structured-data';
+import { generateWebsiteStructuredData, safeJsonLdStringify } from '@/lib/seo/structured-data';
 import { getHomePageData } from '@/lib/data/home-data';
 import { PageScrollWrapper } from './page-scroll-wrapper';
 import { HeroSection } from '@/components/home/hero-section';
@@ -76,7 +76,7 @@ export default async function Home() {
       {/* Structured Data (JSON-LD) */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(structuredData) }}
       />
       
       {/* Page with scroll-based header */}

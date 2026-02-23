@@ -3,6 +3,7 @@ import {
   generateWebsiteStructuredData,
   generateTipStructuredData,
   generateHowToStructuredData,
+  safeJsonLdStringify,
 } from './structured-data';
 import { TipSummary, TipDetail } from '@/lib/types/api';
 
@@ -244,6 +245,30 @@ describe('structured-data', () => {
       const result = generateHowToStructuredData(tipWithNullImageUrl);
 
       expect(result.image).toBeUndefined();
+    });
+  });
+
+  describe('safeJsonLdStringify', () => {
+    it('safeJsonLdStringify_ShouldEscapeScriptTags_WhenInputContainsCloseScript', () => {
+      const data = { title: '</script><script>alert("xss")</script>' };
+      const result = safeJsonLdStringify(data);
+      expect(result).not.toContain('</script>');
+      expect(result).not.toContain('</');
+      expect(result).toContain('\\u003c');
+    });
+
+    it('safeJsonLdStringify_ShouldReturnValidJSON_WhenParsedBack', () => {
+      const data = { title: 'Test </script> injection', nested: { value: '<b>html</b>' } };
+      const result = safeJsonLdStringify(data);
+      const parsed = JSON.parse(result);
+      expect(parsed.title).toBe('Test </script> injection');
+      expect(parsed.nested.value).toBe('<b>html</b>');
+    });
+
+    it('safeJsonLdStringify_ShouldHandleSafeData_WhenNoScriptTags', () => {
+      const data = { '@type': 'Article', headline: 'Normal Title' };
+      const result = safeJsonLdStringify(data);
+      expect(result).toContain('"Normal Title"');
     });
   });
 });

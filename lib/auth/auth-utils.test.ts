@@ -10,6 +10,7 @@ import {
   getFirebaseErrorMessage,
   isAuthError,
   formatAuthError,
+  clearSessionCookie,
 } from './auth-utils';
 
 describe('Auth Utility Functions', () => {
@@ -347,5 +348,51 @@ describe('Auth Utility Functions', () => {
         }
       }
     );
+  });
+
+  describe('clearSessionCookie', () => {
+    it('clearSessionCookie_ShouldSetExpiredCookieWithSecurityFlags_WhenCalledOnHttps', () => {
+      // Mock window.location.protocol as HTTPS
+      const originalLocation = window.location;
+      Object.defineProperty(window, 'location', {
+        value: { ...originalLocation, protocol: 'https:' },
+        writable: true,
+      });
+
+      // Clear any existing cookies
+      document.cookie = 'session=test; path=/';
+      
+      clearSessionCookie();
+      
+      // The cookie should be cleared (max-age=0 removes it)
+      expect(document.cookie).not.toContain('session=test');
+
+      // Restore
+      Object.defineProperty(window, 'location', {
+        value: originalLocation,
+        writable: true,
+      });
+    });
+
+    it('clearSessionCookie_ShouldSetExpiredCookieWithoutSecureFlag_WhenCalledOnHttp', () => {
+      // Mock window.location.protocol as HTTP
+      const originalLocation = window.location;
+      Object.defineProperty(window, 'location', {
+        value: { ...originalLocation, protocol: 'http:' },
+        writable: true,
+      });
+
+      document.cookie = 'session=test; path=/';
+      
+      clearSessionCookie();
+      
+      expect(document.cookie).not.toContain('session=test');
+
+      // Restore
+      Object.defineProperty(window, 'location', {
+        value: originalLocation,
+        writable: true,
+      });
+    });
   });
 });

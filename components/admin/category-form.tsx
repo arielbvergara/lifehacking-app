@@ -339,16 +339,17 @@ export function CategoryForm(props: CategoryFormProps) {
           isSubmitting: false,
           validationErrors: {
             ...prev.validationErrors,
-            categoryName: error.message || 'A category with this name already exists',
+            categoryName: 'A category with this name already exists',
           },
         }));
         return;
       }
 
+      console.error('[CategoryForm] Submit error:', error.message);
       setFormState((prev) => ({
         ...prev,
         isSubmitting: false,
-        error: error.message || (mode === 'edit' ? 'Failed to update category' : ERROR_MESSAGES.GENERIC_ERROR),
+        error: mode === 'edit' ? 'Failed to update category. Please try again.' : ERROR_MESSAGES.GENERIC_ERROR,
       }));
     }
   };

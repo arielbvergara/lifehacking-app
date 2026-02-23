@@ -236,6 +236,8 @@ export async function generateTipContentFromVideo(
     const genAI = new GoogleGenerativeAI(apiKey);
 
     // Create prompt for tip generation
+    // Sanitize user-supplied videoUrl by JSON-encoding to prevent prompt injection (OWASP A03:2021)
+    const safeVideoUrl = JSON.stringify(videoUrl);
     const promptText = `Analyze this ${validation.platform} video and generate a life hack tip in JSON format.
 
 Generate a JSON response with the following structure:
@@ -253,7 +255,7 @@ Generate a JSON response with the following structure:
     }
   ],
   "tags": ["tag1", "tag2", "tag3"],
-  "videoUrl": "${videoUrl}"
+  "videoUrl": ${safeVideoUrl}
 }
 
 Requirements:

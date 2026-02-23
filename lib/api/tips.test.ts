@@ -284,11 +284,10 @@ describe('Tips API Functions', () => {
 
       // Act & Assert
       await expect(fetchTips()).rejects.toThrow(APIError);
-      await expect(fetchTips()).rejects.toThrow('Invalid query parameters');
+      await expect(fetchTips()).rejects.toThrow('The request could not be completed. Please try again.');
 
       const error = await fetchTips().catch((e) => e);
       expect(error).toBeInstanceOf(APIError);
-      expect(error.problemDetails).toEqual(mockProblemDetails);
     });
 
     it('fetchTips_ShouldThrowAPIError_When500InternalServerError', async () => {
@@ -557,7 +556,7 @@ describe('Tips API Functions', () => {
       ).rejects.toThrow(APIError);
       await expect(
         fetchTipById('123e4567-e89b-12d3-a456-426614174000')
-      ).rejects.toThrow('Tip not found');
+      ).rejects.toThrow('The request could not be completed. Please try again.');
     });
 
     it('fetchTipById_ShouldThrowAPIError_When500InternalServerError', async () => {
@@ -943,11 +942,10 @@ describe('Tips API Functions', () => {
 
       // Act & Assert
       await expect(fetchTipsByCategory(categoryId)).rejects.toThrow(APIError);
-      await expect(fetchTipsByCategory(categoryId)).rejects.toThrow('Invalid category ID format');
+      await expect(fetchTipsByCategory(categoryId)).rejects.toThrow('The request could not be completed. Please try again.');
 
       const error = await fetchTipsByCategory(categoryId).catch((e) => e);
       expect(error).toBeInstanceOf(APIError);
-      expect(error.problemDetails).toEqual(mockProblemDetails);
     });
 
     it('fetchTipsByCategory_ShouldThrowAPIError_When404NotFound', async () => {
@@ -969,7 +967,7 @@ describe('Tips API Functions', () => {
 
       // Act & Assert
       await expect(fetchTipsByCategory(categoryId)).rejects.toThrow(APIError);
-      await expect(fetchTipsByCategory(categoryId)).rejects.toThrow('Category not found');
+      await expect(fetchTipsByCategory(categoryId)).rejects.toThrow('The request could not be completed. Please try again.');
     });
 
     it('fetchTipsByCategory_ShouldThrowAPIError_When500InternalServerError', async () => {
@@ -1157,6 +1155,71 @@ describe('Tips API Functions', () => {
       expect(fetchCall).not.toContain('categoryId=');
       expect(fetchCall).toContain('pageNumber=1');
       expect(fetchCall).toContain('pageSize=5');
+    });
+  });
+
+  describe('Pagination Parameter Validation', () => {
+    it('fetchTips_ShouldClampPageSize_WhenExceedsMaximum', async () => {
+      const mockResponse: PagedTipsResponse = {
+        items: [],
+        totalCount: 0,
+        pageNumber: 1,
+        pageSize: 100,
+        totalPages: 0,
+      };
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(mockResponse),
+      });
+
+      await fetchTips({ pageSize: 999 });
+
+      const fetchCall = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][0];
+      expect(fetchCall).toContain('pageSize=100');
+    });
+
+    it('fetchTips_ShouldClampPageSize_WhenBelowMinimum', async () => {
+      const mockResponse: PagedTipsResponse = {
+        items: [],
+        totalCount: 0,
+        pageNumber: 1,
+        pageSize: 1,
+        totalPages: 0,
+      };
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(mockResponse),
+      });
+
+      await fetchTips({ pageSize: -5 });
+
+      const fetchCall = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][0];
+      expect(fetchCall).toContain('pageSize=1');
+    });
+
+    it('fetchTips_ShouldClampPageNumber_WhenBelowMinimum', async () => {
+      const mockResponse: PagedTipsResponse = {
+        items: [],
+        totalCount: 0,
+        pageNumber: 1,
+        pageSize: 10,
+        totalPages: 0,
+      };
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(mockResponse),
+      });
+
+      await fetchTips({ pageNumber: -1, pageSize: 10 });
+
+      const fetchCall = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][0];
+      expect(fetchCall).toContain('pageNumber=1');
     });
   });
 });

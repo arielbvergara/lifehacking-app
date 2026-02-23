@@ -50,7 +50,8 @@ export function DashboardClient() {
       setStatistics(data);
     } catch (err) {
       const error = err as Error;
-      setError(error.message || 'Failed to load statistics');
+      console.error('[Dashboard] Failed to load statistics:', error.message);
+      setError('Failed to load statistics. Please try again.');
     } finally {
       setLoading(false);
     }

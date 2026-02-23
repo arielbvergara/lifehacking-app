@@ -36,9 +36,9 @@ export default function SearchError({
           We encountered an error while searching. Please try again.
         </p>
         
-        {error.message && (
+        {error.digest && (
           <p className="text-sm text-gray-500 mb-6 font-mono bg-gray-100 p-3 rounded">
-            {error.message}
+            Error ID: {error.digest}
           </p>
         )}
         

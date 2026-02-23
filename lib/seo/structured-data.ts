@@ -94,7 +94,22 @@ export function generateTipStructuredData(tip: TipSummary): ArticleStructuredDat
  * Converts structured data object to JSON-LD script tag string
  */
 export function structuredDataToScript(data: WebsiteStructuredData | ArticleStructuredData): string {
-  return JSON.stringify(data);
+  return safeJsonLdStringify(data);
+}
+
+/**
+ * Safely serializes data for embedding inside a <script> tag.
+ *
+ * JSON.stringify alone does NOT escape "</script>" sequences, which allows
+ * user-controlled content to break out of the script context and inject HTML.
+ * This function replaces the dangerous sequence with its escaped equivalent.
+ *
+ * References:
+ * - OWASP A03:2021 Injection (XSS via JSON-LD)
+ * - https://html.spec.whatwg.org/multipage/scripting.html#restrictions-for-contents-of-script-elements
+ */
+export function safeJsonLdStringify(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, '\\u003c');
 }
 
 /**

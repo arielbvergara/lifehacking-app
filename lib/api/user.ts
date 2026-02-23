@@ -326,15 +326,16 @@ export async function createUserInBackend(
   });
 
   if (!response.ok) {
-    let backendMessage = "Failed to create user in backend";
+    const errorMessage = "Failed to create user in backend";
     try {
       const problem = await response.json();
       if (problem && typeof problem.detail === "string") {
-        backendMessage = problem.detail;
+        // Log the original detail for debugging, but don't expose it to the client
+        console.error('[createUserInBackend] Backend error detail:', problem.detail);
       }
     } catch {
       // Ignore parse errors
     }
-    throw new Error(backendMessage);
+    throw new Error(errorMessage);
   }
 }

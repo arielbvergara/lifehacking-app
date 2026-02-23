@@ -5,7 +5,85 @@ import { proxy } from './proxy';
 // Mock environment variables
 vi.stubEnv('NEXT_PUBLIC_API_BASE_URL', 'http://localhost:8080');
 
-describe('Middleware - Admin Route Protection', () => {
+describe('Proxy - Security Headers', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    global.fetch = vi.fn();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('should set X-Content-Type-Options header', async () => {
+    const request = new NextRequest(new URL('http://localhost:3000/'));
+    const response = await proxy(request);
+    expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
+  });
+
+  it('should set X-Frame-Options header to DENY', async () => {
+    const request = new NextRequest(new URL('http://localhost:3000/'));
+    const response = await proxy(request);
+    expect(response.headers.get('X-Frame-Options')).toBe('DENY');
+  });
+
+  it('should set Referrer-Policy header', async () => {
+    const request = new NextRequest(new URL('http://localhost:3000/'));
+    const response = await proxy(request);
+    expect(response.headers.get('Referrer-Policy')).toBe('strict-origin-when-cross-origin');
+  });
+
+  it('should set Permissions-Policy header', async () => {
+    const request = new NextRequest(new URL('http://localhost:3000/'));
+    const response = await proxy(request);
+    expect(response.headers.get('Permissions-Policy')).toBe(
+      'camera=(), microphone=(), geolocation=()'
+    );
+  });
+
+  it('should set Strict-Transport-Security header', async () => {
+    const request = new NextRequest(new URL('http://localhost:3000/'));
+    const response = await proxy(request);
+    expect(response.headers.get('Strict-Transport-Security')).toBe(
+      'max-age=63072000; includeSubDomains; preload'
+    );
+  });
+
+  it('should set X-DNS-Prefetch-Control header', async () => {
+    const request = new NextRequest(new URL('http://localhost:3000/'));
+    const response = await proxy(request);
+    expect(response.headers.get('X-DNS-Prefetch-Control')).toBe('off');
+  });
+
+  it('should set security headers on admin routes for authenticated admins', async () => {
+    const request = new NextRequest(new URL('http://localhost:3000/admin/dashboard'));
+    request.cookies.set('session', 'valid-token');
+    vi.mocked(fetch).mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({ role: 'Admin' }),
+    } as Response);
+
+    const response = await proxy(request);
+    expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
+    expect(response.headers.get('X-Frame-Options')).toBe('DENY');
+  });
+
+  it('should set security headers on admin redirect responses', async () => {
+    const request = new NextRequest(new URL('http://localhost:3000/admin/dashboard'));
+    // No session cookie — triggers redirect
+
+    const response = await proxy(request);
+    expect(response.status).toBe(307);
+    expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
+    expect(response.headers.get('X-Frame-Options')).toBe('DENY');
+    expect(response.headers.get('Strict-Transport-Security')).toBe(
+      'max-age=63072000; includeSubDomains; preload'
+    );
+  });
+});
+
+describe('Proxy - Admin Route Protection', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     global.fetch = vi.fn();

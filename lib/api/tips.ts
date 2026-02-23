@@ -9,6 +9,22 @@ import type {
 } from '../types/api';
 import { fetchWithTimeout } from './utils';
 
+// Pagination bounds (OWASP A04:2021 Insecure Design)
+const MAX_PAGE_SIZE = 100;
+const MIN_PAGE_SIZE = 1;
+const MIN_PAGE_NUMBER = 1;
+
+/**
+ * Clamp pagination values to safe bounds to prevent resource exhaustion.
+ */
+function clampPageSize(size: number): number {
+  return Math.max(MIN_PAGE_SIZE, Math.min(size, MAX_PAGE_SIZE));
+}
+
+function clampPageNumber(page: number): number {
+  return Math.max(MIN_PAGE_NUMBER, page);
+}
+
 export { APIError } from './utils';
 
 /**
@@ -44,9 +60,9 @@ export async function fetchTips(
   if (params.sortDirection !== undefined)
     queryParams.append('sortDirection', params.sortDirection.toString());
   if (params.pageNumber)
-    queryParams.append('pageNumber', params.pageNumber.toString());
+    queryParams.append('pageNumber', clampPageNumber(params.pageNumber).toString());
   if (params.pageSize)
-    queryParams.append('pageSize', params.pageSize.toString());
+    queryParams.append('pageSize', clampPageSize(params.pageSize).toString());
 
   const url = `${API_BASE_URL}/api/Tip${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
 
@@ -102,9 +118,9 @@ export async function fetchTipsByCategory(
   const queryParams = new URLSearchParams();
 
   if (params.pageNumber)
-    queryParams.append('pageNumber', params.pageNumber.toString());
+    queryParams.append('pageNumber', clampPageNumber(params.pageNumber).toString());
   if (params.pageSize)
-    queryParams.append('pageSize', params.pageSize.toString());
+    queryParams.append('pageSize', clampPageSize(params.pageSize).toString());
   if (params.orderBy !== undefined)
     queryParams.append('orderBy', params.orderBy.toString());
   if (params.sortDirection !== undefined)

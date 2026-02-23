@@ -34,22 +34,31 @@ export async function handleApiError(response: Response): Promise<ApiError> {
       }
       
       if (response.status === 404) {
+        if (errorData.detail) {
+          console.error('[Admin API Error] 404 detail:', errorData.detail);
+        }
         return {
           status: response.status,
-          message: errorData.detail || ERROR_MESSAGES.GENERIC_ERROR,
+          message: ERROR_MESSAGES.GENERIC_ERROR,
         };
       }
       
       if (response.status === 409) {
+        if (errorData.detail) {
+          console.error('[Admin API Error] 409 detail:', errorData.detail);
+        }
         return {
           status: response.status,
-          message: errorData.detail || ERROR_MESSAGES.CATEGORY_NAME_EXISTS,
+          message: ERROR_MESSAGES.CATEGORY_NAME_EXISTS,
         };
       }
       
+      if (errorData.detail) {
+        console.error('[Admin API Error] detail:', errorData.detail);
+      }
       return {
         status: response.status,
-        message: errorData.detail || errorData.title || ERROR_MESSAGES.GENERIC_ERROR,
+        message: ERROR_MESSAGES.GENERIC_ERROR,
         errors: errorData.errors,
       };
     } catch {

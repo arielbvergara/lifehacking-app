@@ -3,6 +3,8 @@
 import { API_TIMEOUT_MS } from '../config/api';
 import type { ProblemDetails } from '../types/api';
 
+const GENERIC_API_ERROR = 'The request could not be completed. Please try again.';
+
 /**
  * Custom error class for API errors
  */
@@ -43,10 +45,19 @@ export async function fetchWithTimeout<T>(
         type: 'unknown',
         title: 'Request Failed',
         status: response.status,
-        detail: response.statusText,
-        instance: url,
+        detail: GENERIC_API_ERROR,
       }));
-      throw new APIError(errorData);
+      // Sanitize: never include the request URL or raw backend detail in client-facing errors
+      const sanitized: ProblemDetails = {
+        type: errorData.type,
+        title: errorData.title,
+        status: errorData.status,
+        detail: GENERIC_API_ERROR,
+      };
+      if (errorData.detail) {
+        console.error(`[API Error] ${response.status}: ${errorData.detail}`);
+      }
+      throw new APIError(sanitized);
     }
 
     return response.json();

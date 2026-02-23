@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { connection } from 'next/server';
 import { notFound } from 'next/navigation';
 import { getCachedTipById } from '@/lib/data/tip-data';
-import { generateHowToStructuredData } from '@/lib/seo/structured-data';
+import { generateHowToStructuredData, safeJsonLdStringify } from '@/lib/seo/structured-data';
 import { truncateForBreadcrumb } from '@/lib/utils/text';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
@@ -93,7 +93,7 @@ export default async function TipDetailPage({ params }: Props) {
       {/* Structured Data */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(structuredData) }}
       />
 
       {/* Page Layout */}

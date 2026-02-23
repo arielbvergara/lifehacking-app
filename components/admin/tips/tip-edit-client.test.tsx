@@ -244,7 +244,7 @@ describe('TipEditClient', () => {
       // Wait for error to appear
       await waitFor(() => {
         expect(screen.getByText('Failed to Load Tip')).toBeInTheDocument();
-        expect(screen.getByText(errorMessage)).toBeInTheDocument();
+        expect(screen.getByText('Something went wrong while loading the tip. Please try again.')).toBeInTheDocument();
       });
     });
 
@@ -263,7 +263,7 @@ describe('TipEditClient', () => {
       // Wait for error to appear
       await waitFor(() => {
         expect(screen.getByText('Failed to Load Tip')).toBeInTheDocument();
-        expect(screen.getByText('Failed to load tip')).toBeInTheDocument();
+        expect(screen.getByText('Something went wrong while loading the tip. Please try again.')).toBeInTheDocument();
       });
     });
 
@@ -393,7 +393,7 @@ describe('TipEditClient', () => {
 
       // Wait for error to appear
       await waitFor(() => {
-        expect(screen.getByText('Network error')).toBeInTheDocument();
+        expect(screen.getByText('Something went wrong while loading the tip. Please try again.')).toBeInTheDocument();
       });
 
       // Click retry button
@@ -402,7 +402,7 @@ describe('TipEditClient', () => {
 
       // Error should be cleared (component shows loading state)
       await waitFor(() => {
-        expect(screen.queryByText('Network error')).not.toBeInTheDocument();
+        expect(screen.queryByText('Something went wrong while loading the tip. Please try again.')).not.toBeInTheDocument();
       });
     });
   });

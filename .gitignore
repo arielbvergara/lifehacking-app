@@ -50,3 +50,6 @@ firebase-debug.log
 
 # Kiro
 .kiro
+
+# npm lock file (project uses pnpm)
+package-lock.json

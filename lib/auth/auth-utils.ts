@@ -97,6 +97,21 @@ export function isAuthError(error: unknown): error is FirebaseError {
 }
 
 /**
+ * Clear the session cookie with consistent security flags.
+ *
+ * Uses the same SameSite and Secure attributes used when setting
+ * the cookie so the browser can reliably identify and remove it.
+ *
+ * References:
+ * - OWASP A01:2021 Broken Access Control
+ * - MITRE ATT&CK T1539 Steal Web Session Cookie
+ */
+export function clearSessionCookie(): void {
+  const secureCookie = typeof window !== 'undefined' && window.location.protocol === 'https:' ? '; Secure' : '';
+  document.cookie = `session=; path=/; max-age=0; SameSite=Strict${secureCookie}`;
+}
+
+/**
  * Format authentication error for display to user
  * 
  * Takes any error object and formats it into a user-friendly message.

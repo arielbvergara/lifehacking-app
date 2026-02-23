@@ -19,7 +19,7 @@ describe('VideoEmbed', () => {
       const mockParsedVideo = {
         provider: 'youtube' as const,
         videoId: 'dQw4w9WgXcQ',
-        embedUrl: 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1',
+        embedUrl: 'https://www.youtube-nocookie.test/embed/dQw4w9WgXcQ?rel=0&modestbranding=1',
       };
 
       vi.mocked(videoUtils.parseVideoUrl).mockReturnValue(mockParsedVideo);
@@ -36,7 +36,7 @@ describe('VideoEmbed', () => {
       const mockParsedVideo = {
         provider: 'youtube' as const,
         videoId: 'abc123',
-        embedUrl: 'https://www.youtube-nocookie.com/embed/abc123?rel=0&modestbranding=1',
+        embedUrl: 'https://www.youtube-nocookie.test/embed/abc123?rel=0&modestbranding=1',
       };
 
       vi.mocked(videoUtils.parseVideoUrl).mockReturnValue(mockParsedVideo);
@@ -44,7 +44,7 @@ describe('VideoEmbed', () => {
       render(<VideoEmbed videoUrl={mockVideoUrl} title={mockTitle} />);
 
       const iframe = screen.getByTitle(`Video: ${mockTitle}`);
-      expect(iframe.getAttribute('src')).toContain('youtube-nocookie.com');
+      expect(iframe.getAttribute('src')).toContain('youtube-nocookie');
     });
   });
 
@@ -54,7 +54,7 @@ describe('VideoEmbed', () => {
       const mockParsedVideo = {
         provider: 'youtube-shorts' as const,
         videoId: 'xyz789',
-        embedUrl: 'https://www.youtube-nocookie.com/embed/xyz789?rel=0&modestbranding=1',
+        embedUrl: 'https://www.youtube-nocookie.test/embed/xyz789?rel=0&modestbranding=1',
       };
 
       vi.mocked(videoUtils.parseVideoUrl).mockReturnValue(mockParsedVideo);
@@ -73,7 +73,7 @@ describe('VideoEmbed', () => {
       const mockParsedVideo = {
         provider: 'instagram' as const,
         videoId: 'ABC123def',
-        embedUrl: 'https://www.instagram.com/p/ABC123def/embed',
+        embedUrl: 'https://www.instagram.test/p/ABC123def/embed',
       };
 
       vi.mocked(videoUtils.parseVideoUrl).mockReturnValue(mockParsedVideo);
@@ -120,7 +120,7 @@ describe('VideoEmbed', () => {
       const mockParsedVideo = {
         provider: 'youtube' as const,
         videoId: 'test123',
-        embedUrl: 'https://www.youtube-nocookie.com/embed/test123?rel=0&modestbranding=1',
+        embedUrl: 'https://www.youtube-nocookie.test/embed/test123?rel=0&modestbranding=1',
       };
       vi.mocked(videoUtils.parseVideoUrl).mockReturnValue(mockParsedVideo);
     });
@@ -179,7 +179,7 @@ describe('VideoEmbed', () => {
       const mockParsedVideo = {
         provider: 'youtube' as const,
         videoId: 'test123',
-        embedUrl: 'https://www.youtube-nocookie.com/embed/test123?rel=0&modestbranding=1',
+        embedUrl: 'https://www.youtube-nocookie.test/embed/test123?rel=0&modestbranding=1',
       };
       vi.mocked(videoUtils.parseVideoUrl).mockReturnValue(mockParsedVideo);
     });
@@ -243,7 +243,7 @@ describe('VideoEmbed', () => {
       const mockParsedVideo = {
         provider: 'youtube' as const,
         videoId: 'test123',
-        embedUrl: 'https://www.youtube-nocookie.com/embed/test123?rel=0&modestbranding=1',
+        embedUrl: 'https://www.youtube-nocookie.test/embed/test123?rel=0&modestbranding=1',
       };
 
       vi.mocked(videoUtils.parseVideoUrl).mockReturnValue(mockParsedVideo);
@@ -260,7 +260,7 @@ describe('VideoEmbed', () => {
       const mockParsedVideo = {
         provider: 'youtube' as const,
         videoId: 'test123',
-        embedUrl: 'https://www.youtube-nocookie.com/embed/test123?rel=0&modestbranding=1',
+        embedUrl: 'https://www.youtube-nocookie.test/embed/test123?rel=0&modestbranding=1',
       };
       vi.mocked(videoUtils.parseVideoUrl).mockReturnValue(mockParsedVideo);
     });
