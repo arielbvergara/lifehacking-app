@@ -302,7 +302,8 @@ async function handleApiError(response: Response): Promise<FavoritesApiError> {
       // Extract detail message
       detail = errorData.detail || errorData.title;
       
-      // Handle specific status codes
+      // Handle specific status codes with generic user-facing messages
+      // Log backend details internally for debugging (OWASP A10:2025)
       switch (response.status) {
         case 401:
           errorMessage = 'Your session has expired. Please sign in again.';
@@ -311,17 +312,19 @@ async function handleApiError(response: Response): Promise<FavoritesApiError> {
           errorMessage = 'You do not have permission to perform this action.';
           break;
         case 404:
-          errorMessage = detail || 'This tip is no longer available.';
+          errorMessage = 'This tip is no longer available.';
           break;
         case 409:
-          errorMessage = detail || 'This tip is already in your favorites.';
+          errorMessage = 'This tip is already in your favorites.';
           break;
         case 500:
           errorMessage = 'Something went wrong. Please try again later.';
-          console.error(`[Favorites API Error] Server error: ${detail || 'Unknown'}`);
           break;
         default:
-          errorMessage = detail || errorData.title || 'An error occurred';
+          errorMessage = 'An error occurred';
+      }
+      if (detail) {
+        console.error(`[Favorites API Error] Server detail: ${detail}`);
       }
     } catch (parseError) {
       // Failed to parse JSON error response
