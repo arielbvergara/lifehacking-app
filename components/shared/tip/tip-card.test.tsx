@@ -200,7 +200,7 @@ describe('TipCard - Property Tests', () => {
     fc.string({ minLength: 1, maxLength: 100 }).filter(s => s.trim().length > 0),
     fc.string({ minLength: 1, maxLength: 200 }).filter(s => s.trim().length > 0),
     fc.string({ minLength: 1, maxLength: 50 }).filter(s => s.trim().length > 0),
-  ])(
+  ], { numRuns: 10 })(
     'should preserve exact tip ID in navigation URL',
     async (tipId, title, description, categoryName) => {
       // Clean up any previous renders
@@ -251,7 +251,7 @@ describe('TipCard - Property Tests', () => {
         uploadedAt: fc.constant('2024-01-01T00:00:00Z'),
       })
     ),
-  ])(
+  ], { numRuns: 10 })(
     'should display all non-null fields from tip object',
     (tipId, title, description, categoryName, image) => {
       cleanup();

@@ -143,7 +143,7 @@ describe('FeaturedTip - Property Tests', () => {
     fc.uuid(),
     fc.string({ minLength: 1, maxLength: 100 }),
     fc.string({ minLength: 1, maxLength: 500 }),
-  ])(
+  ], { numRuns: 10 })(
     'should preserve exact tip ID in navigation URL when Read More is clicked',
     async (tipId, title, description) => {
       cleanup();

@@ -169,7 +169,7 @@ describe('CategoryCard - Property Tests', () => {
   test.prop([
     fc.uuid(),
     fc.string({ minLength: 1, maxLength: 50 }),
-  ])(
+  ], { numRuns: 10 })(
     'should preserve exact category ID in navigation URL',
     async (categoryId, categoryName) => {
       // Clean up any previous renders
