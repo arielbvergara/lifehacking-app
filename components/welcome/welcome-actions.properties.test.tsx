@@ -32,7 +32,7 @@ describe('WelcomeActions Property-Based Tests', () => {
      * Tag: Feature: welcome-and-profile-pages, Property 2: Explore Button Navigation
      * Validates: Requirements 2.2
      */
-    test.prop([fc.constant(null)], { numRuns: 10, timeout: 10000 })('ExploreButtonNavigation_ShouldInvokeOnExploreCallback_WhenButtonIsClicked', async () => {
+    test.prop([fc.constant(null)], { numRuns: 10 })('ExploreButtonNavigation_ShouldInvokeOnExploreCallback_WhenButtonIsClicked', async () => {
       // Arrange
       const user = userEvent.setup();
       const mockOnExplore = vi.fn();
