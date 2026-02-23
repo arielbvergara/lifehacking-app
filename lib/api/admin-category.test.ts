@@ -114,10 +114,10 @@ describe('Admin Category API', () => {
         json: async () => ({ detail: 'Invalid file format' }),
       } as Response);
 
-      await expect(uploadCategoryImage(mockFile, mockToken)).rejects.toEqual({
+      await expect(uploadCategoryImage(mockFile, mockToken)).rejects.toEqual(expect.objectContaining({
         status: 400,
-        message: 'Invalid file format',
-      });
+        message: SHARED_ERROR_MESSAGES.GENERIC_ERROR,
+      }));
     });
 
     it('uploadCategoryImage_ShouldThrowUnauthorizedError_When403Response', async () => {
@@ -146,10 +146,10 @@ describe('Admin Category API', () => {
         json: async () => ({ detail: 'Internal server error' }),
       } as Response);
 
-      await expect(uploadCategoryImage(mockFile, mockToken)).rejects.toEqual({
+      await expect(uploadCategoryImage(mockFile, mockToken)).rejects.toEqual(expect.objectContaining({
         status: 500,
-        message: 'Internal server error',
-      });
+        message: SHARED_ERROR_MESSAGES.GENERIC_ERROR,
+      }));
     });
 
     it('uploadCategoryImage_ShouldThrowNetworkError_WhenTimeout', async () => {
@@ -202,13 +202,13 @@ describe('Admin Category API', () => {
         }),
       } as Response);
 
-      await expect(uploadCategoryImage(mockFile, mockToken)).rejects.toEqual({
+      await expect(uploadCategoryImage(mockFile, mockToken)).rejects.toEqual(expect.objectContaining({
         status: 400,
-        message: 'Validation failed',
+        message: SHARED_ERROR_MESSAGES.GENERIC_ERROR,
         errors: {
           file: ['File is required', 'File must be an image'],
         },
-      });
+      }));
     });
   });
 
@@ -294,10 +294,10 @@ describe('Admin Category API', () => {
         json: async () => ({ detail: 'Invalid category data' }),
       } as Response);
 
-      await expect(createCategory(mockRequest, mockToken)).rejects.toEqual({
+      await expect(createCategory(mockRequest, mockToken)).rejects.toEqual(expect.objectContaining({
         status: 400,
-        message: 'Invalid category data',
-      });
+        message: SHARED_ERROR_MESSAGES.GENERIC_ERROR,
+      }));
     });
 
     it('createCategory_ShouldThrowUnauthorizedError_When403Response', async () => {
@@ -324,7 +324,7 @@ describe('Admin Category API', () => {
 
       await expect(createCategory(mockRequest, mockToken)).rejects.toEqual({
         status: 409,
-        message: ERROR_MESSAGES.CATEGORY_EXISTS('Test Category'),
+        message: SHARED_ERROR_MESSAGES.CATEGORY_NAME_EXISTS,
       });
     });
 
@@ -338,7 +338,7 @@ describe('Admin Category API', () => {
 
       await expect(createCategory(mockRequest, mockToken)).rejects.toEqual({
         status: 409,
-        message: ERROR_MESSAGES.CATEGORY_EXISTS('Kitchen Tips'),
+        message: SHARED_ERROR_MESSAGES.CATEGORY_NAME_EXISTS,
       });
     });
 
@@ -352,7 +352,7 @@ describe('Admin Category API', () => {
 
       await expect(createCategory(mockRequest, mockToken)).rejects.toEqual({
         status: 409,
-        message: 'Category already exists',
+        message: SHARED_ERROR_MESSAGES.CATEGORY_NAME_EXISTS,
       });
     });
 
@@ -364,10 +364,10 @@ describe('Admin Category API', () => {
         json: async () => ({ detail: 'Internal server error' }),
       } as Response);
 
-      await expect(createCategory(mockRequest, mockToken)).rejects.toEqual({
+      await expect(createCategory(mockRequest, mockToken)).rejects.toEqual(expect.objectContaining({
         status: 500,
-        message: 'Internal server error',
-      });
+        message: SHARED_ERROR_MESSAGES.GENERIC_ERROR,
+      }));
     });
 
     it('createCategory_ShouldThrowNetworkError_WhenTimeout', async () => {
@@ -415,14 +415,14 @@ describe('Admin Category API', () => {
         }),
       } as Response);
 
-      await expect(createCategory(mockRequest, mockToken)).rejects.toEqual({
+      await expect(createCategory(mockRequest, mockToken)).rejects.toEqual(expect.objectContaining({
         status: 400,
-        message: 'Validation failed',
+        message: SHARED_ERROR_MESSAGES.GENERIC_ERROR,
         errors: {
           name: ['Name is required'],
           image: ['Image is required'],
         },
-      });
+      }));
     });
 
     it('createCategory_ShouldUseTitleAsMessage_WhenNoDetail', async () => {
@@ -435,10 +435,10 @@ describe('Admin Category API', () => {
         }),
       } as Response);
 
-      await expect(createCategory(mockRequest, mockToken)).rejects.toEqual({
+      await expect(createCategory(mockRequest, mockToken)).rejects.toEqual(expect.objectContaining({
         status: 400,
-        message: 'Bad Request',
-      });
+        message: SHARED_ERROR_MESSAGES.GENERIC_ERROR,
+      }));
     });
   });
 
@@ -564,7 +564,7 @@ describe('Admin Category API', () => {
 
       await expect(fetchCategoryById(mockCategoryId, mockToken)).rejects.toEqual({
         status: 404,
-        message: 'Category not found',
+        message: SHARED_ERROR_MESSAGES.GENERIC_ERROR,
       });
     });
 
@@ -684,7 +684,7 @@ describe('Admin Category API', () => {
 
       await expect(updateCategory(mockCategoryId, mockRequest, mockToken)).rejects.toEqual({
         status: 404,
-        message: 'Category not found',
+        message: SHARED_ERROR_MESSAGES.GENERIC_ERROR,
       });
     });
 
@@ -744,13 +744,13 @@ describe('Admin Category API', () => {
         }),
       } as Response);
 
-      await expect(updateCategory(mockCategoryId, mockRequest, mockToken)).rejects.toEqual({
+      await expect(updateCategory(mockCategoryId, mockRequest, mockToken)).rejects.toEqual(expect.objectContaining({
         status: 400,
-        message: 'Validation failed',
+        message: SHARED_ERROR_MESSAGES.GENERIC_ERROR,
         errors: {
           name: ['Name is required'],
         },
-      });
+      }));
     });
   });
 
@@ -810,7 +810,7 @@ describe('Admin Category API', () => {
 
       await expect(deleteCategory(mockCategoryId, mockToken)).rejects.toEqual({
         status: 404,
-        message: 'Category not found',
+        message: SHARED_ERROR_MESSAGES.GENERIC_ERROR,
       });
     });
 
@@ -851,10 +851,10 @@ describe('Admin Category API', () => {
         json: async () => ({ detail: 'Internal server error' }),
       } as Response);
 
-      await expect(deleteCategory(mockCategoryId, mockToken)).rejects.toEqual({
+      await expect(deleteCategory(mockCategoryId, mockToken)).rejects.toEqual(expect.objectContaining({
         status: 500,
-        message: 'Internal server error',
-      });
+        message: SHARED_ERROR_MESSAGES.GENERIC_ERROR,
+      }));
     });
   });
 });

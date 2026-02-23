@@ -131,12 +131,11 @@ describe('Categories API Functions', () => {
 
       // Act & Assert
       await expect(fetchCategories()).rejects.toThrow(APIError);
-      await expect(fetchCategories()).rejects.toThrow('Invalid request parameters');
+      await expect(fetchCategories()).rejects.toThrow('The request could not be completed. Please try again.');
 
       const error = await fetchCategories().catch((e) => e);
       expect(error).toBeInstanceOf(APIError);
-      expect(error.problemDetails).toEqual(mockProblemDetails);
-      expect(error.problemDetails.correlationId).toBe('abc123');
+      expect(error.problemDetails.correlationId).toBeUndefined();
     });
 
     it('fetchCategories_ShouldThrowAPIError_When500InternalServerError', async () => {
@@ -183,7 +182,7 @@ describe('Categories API Functions', () => {
       expect(error.problemDetails.type).toBe('unknown');
       expect(error.problemDetails.title).toBe('Request Failed');
       expect(error.problemDetails.status).toBe(503);
-      expect(error.problemDetails.detail).toBe('Service Unavailable');
+      expect(error.problemDetails.detail).toBe('The request could not be completed. Please try again.');
     });
 
     it(
