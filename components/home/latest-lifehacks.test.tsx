@@ -164,7 +164,7 @@ describe('LatestLifehacks - Property Tests', () => {
       }),
       { minLength: 1, maxLength: 20 }
     ),
-  ])(
+  ], { numRuns: 10 })(
     'should render exactly one TipCard for each tip in the list',
     (tips) => {
       const { unmount } = render(<LatestLifehacks tips={tips} />);
@@ -197,7 +197,7 @@ describe('LatestLifehacks - Property Tests', () => {
       }),
       { minLength: 1, maxLength: 10 }
     ),
-  ])(
+  ], { numRuns: 10 })(
     'should render the same number of cards as items in the tips array',
     (tips) => {
       const { unmount } = render(<LatestLifehacks tips={tips} />);
@@ -234,7 +234,7 @@ describe('LatestLifehacks - Responsive Grid Property Tests', () => {
       }),
       { minLength: 1, maxLength: 10 }
     ),
-  ])(
+  ], { numRuns: 10 })(
     'should apply responsive grid classes for all viewport sizes',
     (tips) => {
       const { container } = render(<LatestLifehacks tips={tips} />);

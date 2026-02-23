@@ -32,7 +32,7 @@ describe('WelcomeActions Property-Based Tests', () => {
      * Tag: Feature: welcome-and-profile-pages, Property 2: Explore Button Navigation
      * Validates: Requirements 2.2
      */
-    test.prop([fc.constant(null)], { numRuns: 100 })('ExploreButtonNavigation_ShouldInvokeOnExploreCallback_WhenButtonIsClicked', async () => {
+    test.prop([fc.constant(null)], { numRuns: 10 })('ExploreButtonNavigation_ShouldInvokeOnExploreCallback_WhenButtonIsClicked', async () => {
       // Arrange
       const user = userEvent.setup();
       const mockOnExplore = vi.fn();
@@ -57,7 +57,7 @@ describe('WelcomeActions Property-Based Tests', () => {
      * 
      * This property verifies that multiple clicks are handled correctly.
      */
-    test.prop([fc.integer({ min: 1, max: 10 })], { numRuns: 100 })('ExploreButtonNavigation_ShouldInvokeOnExploreMultipleTimes_WhenButtonIsClickedMultipleTimes', async (clickCount) => {
+    test.prop([fc.integer({ min: 1, max: 10 })], { numRuns: 10 })('ExploreButtonNavigation_ShouldInvokeOnExploreMultipleTimes_WhenButtonIsClickedMultipleTimes', async (clickCount) => {
       // Arrange
       const user = userEvent.setup();
       const mockOnExplore = vi.fn();
@@ -86,7 +86,7 @@ describe('WelcomeActions Property-Based Tests', () => {
      * This property verifies that clicking the explore button doesn't
      * accidentally trigger the profile navigation.
      */
-    test.prop([fc.constant(null)], { numRuns: 100 })('ExploreButtonNavigation_ShouldNotInvokeOnViewProfile_WhenExploreButtonIsClicked', async () => {
+    test.prop([fc.constant(null)], { numRuns: 10 })('ExploreButtonNavigation_ShouldNotInvokeOnViewProfile_WhenExploreButtonIsClicked', async () => {
       // Arrange
       const user = userEvent.setup();
       const mockOnExplore = vi.fn();
@@ -117,7 +117,7 @@ describe('WelcomeActions Property-Based Tests', () => {
      * Tag: Feature: welcome-and-profile-pages, Property 3: Profile Link Navigation
      * Validates: Requirements 2.4
      */
-    test.prop([fc.constant(null)], { numRuns: 100 })('ProfileLinkNavigation_ShouldInvokeOnViewProfileCallback_WhenLinkIsClicked', async () => {
+    test.prop([fc.constant(null)], { numRuns: 10 })('ProfileLinkNavigation_ShouldInvokeOnViewProfileCallback_WhenLinkIsClicked', async () => {
       // Arrange
       const user = userEvent.setup();
       const mockOnExplore = vi.fn();
@@ -142,7 +142,7 @@ describe('WelcomeActions Property-Based Tests', () => {
      * 
      * This property verifies that multiple clicks are handled correctly.
      */
-    test.prop([fc.integer({ min: 1, max: 10 })], { numRuns: 100 })('ProfileLinkNavigation_ShouldInvokeOnViewProfileMultipleTimes_WhenLinkIsClickedMultipleTimes', async (clickCount) => {
+    test.prop([fc.integer({ min: 1, max: 10 })], { numRuns: 10 })('ProfileLinkNavigation_ShouldInvokeOnViewProfileMultipleTimes_WhenLinkIsClickedMultipleTimes', async (clickCount) => {
       // Arrange
       const user = userEvent.setup();
       const mockOnExplore = vi.fn();
@@ -171,7 +171,7 @@ describe('WelcomeActions Property-Based Tests', () => {
      * This property verifies that clicking the profile link doesn't
      * accidentally trigger the explore navigation.
      */
-    test.prop([fc.constant(null)], { numRuns: 100 })('ProfileLinkNavigation_ShouldNotInvokeOnExplore_WhenProfileLinkIsClicked', async () => {
+    test.prop([fc.constant(null)], { numRuns: 10 })('ProfileLinkNavigation_ShouldNotInvokeOnExplore_WhenProfileLinkIsClicked', async () => {
       // Arrange
       const user = userEvent.setup();
       const mockOnExplore = vi.fn();

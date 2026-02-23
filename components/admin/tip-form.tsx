@@ -11,6 +11,7 @@ import {
   TipValidationErrors,
   CategoryResponse,
   TipDetailResponse,
+  TipImageDto,
 } from '@/lib/types/admin-tip';
 import {
   MAX_IMAGE_SIZE_BYTES,
@@ -376,9 +377,10 @@ export function TipForm(props: TipFormProps) {
           throw new Error('Tip ID is required for edit mode');
         }
 
-        // Upload new image if selected (image updates are handled separately)
+        // Upload new image if selected and capture metadata
+        let imageMetadata: TipImageDto | undefined;
         if (formState.selectedFile) {
-          await uploadTipImage(formState.selectedFile, idToken);
+          imageMetadata = await uploadTipImage(formState.selectedFile, idToken);
         }
 
         await updateTip(
@@ -390,6 +392,7 @@ export function TipForm(props: TipFormProps) {
             categoryId: formState.selectedCategoryId,
             tags: parsedContent.tags,
             videoUrl: parsedContent.videoUrl || null,
+            image: imageMetadata,
           },
           idToken
         );

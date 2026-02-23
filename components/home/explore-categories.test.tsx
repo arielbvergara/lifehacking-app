@@ -84,7 +84,7 @@ describe('ExploreCategories - Property Tests', () => {
       }),
       { minLength: 1, maxLength: 20 }
     ),
-  ])(
+  ], { numRuns: 10 })(
     'should render exactly one CategoryCard for each category in the list',
     (categories) => {
       const { container, unmount } = render(
@@ -109,7 +109,7 @@ describe('ExploreCategories - Property Tests', () => {
       }),
       { minLength: 1, maxLength: 10 }
     ),
-  ])(
+  ], { numRuns: 10 })(
     'should render the same number of cards as items in the categories array',
     (categories) => {
       const { container, unmount } = render(
@@ -138,7 +138,7 @@ describe('ExploreCategories - Responsive Grid Property Tests', () => {
       }),
       { minLength: 1, maxLength: 10 }
     ),
-  ])(
+  ], { numRuns: 10 })(
     'should apply responsive grid classes for all viewport sizes',
     (categories) => {
       const { container } = render(

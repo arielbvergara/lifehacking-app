@@ -360,17 +360,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/CategoryImageDto"
+                  "$ref": "#/components/schemas/ImageDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CategoryImageDto"
+                  "$ref": "#/components/schemas/ImageDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CategoryImageDto"
+                  "$ref": "#/components/schemas/ImageDto"
                 }
               }
             }
@@ -829,17 +829,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/TipImageDto"
+                  "$ref": "#/components/schemas/ImageDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TipImageDto"
+                  "$ref": "#/components/schemas/ImageDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TipImageDto"
+                  "$ref": "#/components/schemas/ImageDto"
                 }
               }
             }
@@ -2697,36 +2697,6 @@
   },
   "components": {
     "schemas": {
-      "CategoryImageDto": {
-        "type": "object",
-        "properties": {
-          "imageUrl": {
-            "type": "string",
-            "nullable": true
-          },
-          "imageStoragePath": {
-            "type": "string",
-            "nullable": true
-          },
-          "originalFileName": {
-            "type": "string",
-            "nullable": true
-          },
-          "contentType": {
-            "type": "string",
-            "nullable": true
-          },
-          "fileSizeBytes": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "uploadedAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "additionalProperties": false
-      },
       "CategoryListResponse": {
         "type": "object",
         "properties": {
@@ -2761,7 +2731,7 @@
             "nullable": true
           },
           "image": {
-            "$ref": "#/components/schemas/CategoryImageDto"
+            "$ref": "#/components/schemas/ImageDto"
           },
           "tipCount": {
             "type": "integer",
@@ -2796,7 +2766,7 @@
             "nullable": true
           },
           "image": {
-            "$ref": "#/components/schemas/CategoryImageDto"
+            "$ref": "#/components/schemas/ImageDto"
           }
         },
         "additionalProperties": false
@@ -2835,7 +2805,7 @@
             "nullable": true
           },
           "image": {
-            "$ref": "#/components/schemas/TipImageDto"
+            "$ref": "#/components/schemas/ImageDto"
           }
         },
         "additionalProperties": false
@@ -2913,6 +2883,36 @@
           "thisYear": {
             "type": "integer",
             "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ImageDto": {
+        "type": "object",
+        "properties": {
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "imageStoragePath": {
+            "type": "string",
+            "nullable": true
+          },
+          "originalFileName": {
+            "type": "string",
+            "nullable": true
+          },
+          "contentType": {
+            "type": "string",
+            "nullable": true
+          },
+          "fileSizeBytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "uploadedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "additionalProperties": false
@@ -3059,37 +3059,7 @@
             "nullable": true
           },
           "image": {
-            "$ref": "#/components/schemas/TipImageDto"
-          }
-        },
-        "additionalProperties": false
-      },
-      "TipImageDto": {
-        "type": "object",
-        "properties": {
-          "imageUrl": {
-            "type": "string",
-            "nullable": true
-          },
-          "imageStoragePath": {
-            "type": "string",
-            "nullable": true
-          },
-          "originalFileName": {
-            "type": "string",
-            "nullable": true
-          },
-          "contentType": {
-            "type": "string",
-            "nullable": true
-          },
-          "fileSizeBytes": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "uploadedAt": {
-            "type": "string",
-            "format": "date-time"
+            "$ref": "#/components/schemas/ImageDto"
           }
         },
         "additionalProperties": false
@@ -3170,7 +3140,7 @@
             "format": "date-time"
           },
           "image": {
-            "$ref": "#/components/schemas/TipImageDto"
+            "$ref": "#/components/schemas/ImageDto"
           }
         },
         "additionalProperties": false
@@ -3183,7 +3153,7 @@
             "nullable": true
           },
           "image": {
-            "$ref": "#/components/schemas/CategoryImageDto"
+            "$ref": "#/components/schemas/ImageDto"
           }
         },
         "additionalProperties": false
@@ -3226,7 +3196,7 @@
             "nullable": true
           },
           "image": {
-            "$ref": "#/components/schemas/TipImageDto"
+            "$ref": "#/components/schemas/ImageDto"
           }
         },
         "additionalProperties": false

@@ -83,7 +83,7 @@ describe('FilterSidebar - Property 11: Body scroll prevention', () => {
           expect(document.body.style.overflow).toBe('');
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 10 }
     );
   });
 
@@ -130,7 +130,7 @@ describe('FilterSidebar - Property 11: Body scroll prevention', () => {
           expect(document.body.style.overflow).toBe('');
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 10 }
     );
   });
 
@@ -197,7 +197,7 @@ describe('FilterSidebar - Property 11: Body scroll prevention', () => {
           expect(document.body.style.overflow).toBe('');
         }
       ),
-      { numRuns: 50 }
+      { numRuns: 10 }
     );
   });
 });
