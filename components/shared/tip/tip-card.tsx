@@ -23,7 +23,7 @@ export function TipCard({ tip }: TipCardProps) {
   const router = useRouter();
 
   const handleCardClick = () => {
-    router.push(`/tip/${tip.id}`);
+    router.push(`/tips/${tip.id}`);
   };
 
   // Truncate title to 2 lines (approximately 60 characters)
