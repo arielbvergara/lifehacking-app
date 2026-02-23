@@ -23,7 +23,7 @@ import { proxy } from './proxy';
 export async function middleware(request: NextRequest) {
   // Check admin route protection first — may redirect before headers
   const proxyResponse = await proxy(request);
-  if (proxyResponse.status !== 200 || proxyResponse.headers.get('location')) {
+  if (proxyResponse.status !== 200) {
     return proxyResponse;
   }
 
