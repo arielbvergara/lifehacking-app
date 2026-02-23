@@ -43,9 +43,10 @@ export function TipEditClient({ tipId }: TipEditClientProps) {
       setTipData(data);
     } catch (err) {
       const apiError = err as { status?: number; message?: string };
+      console.error('[TipEdit] Failed to load tip:', apiError.message);
       setError({
         status: apiError.status,
-        message: apiError.message || 'Failed to load tip',
+        message: 'Something went wrong while loading the tip. Please try again.',
       });
     } finally {
       setLoading(false);
@@ -124,7 +125,9 @@ export function TipEditClient({ tipId }: TipEditClientProps) {
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
           Failed to Load Tip
         </h3>
-        <p className="text-gray-600 mb-6">{error.message}</p>
+        <p className="text-gray-600 mb-6">
+          Something went wrong while loading the tip. Please try again.
+        </p>
         <button
           onClick={loadTipData}
           className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"

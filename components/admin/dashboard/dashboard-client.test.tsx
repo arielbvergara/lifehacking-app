@@ -192,7 +192,7 @@ describe('DashboardClient', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Failed to Load Statistics')).toBeInTheDocument();
-        expect(screen.getByText(errorMessage)).toBeInTheDocument();
+        expect(screen.getByText('Failed to load statistics. Please try again.')).toBeInTheDocument();
       });
     });
 
@@ -210,7 +210,7 @@ describe('DashboardClient', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Failed to Load Statistics')).toBeInTheDocument();
-        expect(screen.getByText('Failed to load statistics')).toBeInTheDocument();
+        expect(screen.getByText('Failed to load statistics. Please try again.')).toBeInTheDocument();
       });
     });
   });

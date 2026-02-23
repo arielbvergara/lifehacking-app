@@ -123,6 +123,7 @@ vi.mock('@/lib/seo/structured-data', () => ({
       description: tip.description,
     };
   }),
+  safeJsonLdStringify: vi.fn((data) => JSON.stringify(data)),
 }));
 
 vi.mock('@/lib/utils/text', () => ({

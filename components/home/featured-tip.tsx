@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { TipSummary } from '@/lib/types/api';
 import { truncateText } from '@/lib/utils/text';
 import { generateTipImageAlt } from '@/lib/utils/seo';
-import { generateTipStructuredData } from '@/lib/seo/structured-data';
+import { generateTipStructuredData, safeJsonLdStringify } from '@/lib/seo/structured-data';
 import { VideoModal } from '@/components/shared/video-modal';
 
 export interface FeaturedTipProps {
@@ -58,7 +58,7 @@ export function FeaturedTip({ tip }: FeaturedTipProps) {
           {/* Structured Data (JSON-LD) */}
           <script
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+            dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(structuredData) }}
           />
           
           <div className="flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-12">

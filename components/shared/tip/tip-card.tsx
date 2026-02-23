@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { TipSummary } from '@/lib/types/api';
 import { truncateText } from '@/lib/utils/text';
 import { generateTipImageAlt } from '@/lib/utils/seo';
-import { generateTipStructuredData } from '@/lib/seo/structured-data';
+import { generateTipStructuredData, safeJsonLdStringify } from '@/lib/seo/structured-data';
 import { FavoriteButton } from '@/components/shared/favorite-button';
 
 export interface TipCardProps {
@@ -52,7 +52,7 @@ export function TipCard({ tip }: TipCardProps) {
       {/* Structured Data (JSON-LD) */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(structuredData) }}
       />
       
       {/* Tip Image with Category Badge Overlay */}

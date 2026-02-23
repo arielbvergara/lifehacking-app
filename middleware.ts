@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { proxy } from './proxy';
 
 /**
- * Middleware to add security headers to all responses.
+ * Middleware to enforce security headers on all responses
+ * and protect admin routes via server-side auth verification.
  *
  * Mitigates:
  * - Clickjacking (X-Frame-Options, CSP frame-ancestors)
@@ -10,12 +12,21 @@ import type { NextRequest } from 'next/server';
  * - Information leakage via Referrer (Referrer-Policy)
  * - Unwanted browser features (Permissions-Policy)
  * - Man-in-the-middle downgrade attacks (Strict-Transport-Security)
+ * - Unauthorized admin access (proxy auth check)
  *
  * References:
+ * - OWASP A01:2021 Broken Access Control
  * - OWASP A05:2021 Security Misconfiguration
+ * - MITRE ATT&CK T1078 Valid Accounts
  * - MITRE ATT&CK T1189 Drive-by Compromise
  */
-export function middleware(_request: NextRequest) {
+export async function middleware(request: NextRequest) {
+  // Check admin route protection first — may redirect before headers
+  const proxyResponse = await proxy(request);
+  if (proxyResponse.status !== 200 || proxyResponse.headers.get('location')) {
+    return proxyResponse;
+  }
+
   const response = NextResponse.next();
 
   response.headers.set('X-Content-Type-Options', 'nosniff');

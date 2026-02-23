@@ -243,7 +243,7 @@ describe('CategoryEditClient', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Failed to Load Category')).toBeInTheDocument();
-        expect(screen.getByText('Internal server error')).toBeInTheDocument();
+        expect(screen.getByText('Something went wrong while loading the category. Please try again.')).toBeInTheDocument();
       });
     });
 
@@ -255,7 +255,7 @@ describe('CategoryEditClient', () => {
       render(<CategoryEditClient categoryId={mockCategoryId} />);
 
       await waitFor(() => {
-        expect(screen.getByText('Failed to load category')).toBeInTheDocument();
+        expect(screen.getByText('Something went wrong while loading the category. Please try again.')).toBeInTheDocument();
       });
     });
 
