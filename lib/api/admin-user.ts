@@ -11,9 +11,7 @@ import type {
   CreateAdminUserRequest,
 } from '@/lib/types/admin-user';
 import { handleApiError, createNetworkError } from '@/lib/api/admin-utils';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000';
-const API_TIMEOUT_MS = 30000; // 30 seconds timeout for admin operations
+import { API_BASE_URL, ADMIN_API_TIMEOUT_MS } from '@/lib/config/api';
 
 /**
  * Fetch paginated list of users with optional filtering and sorting
@@ -60,7 +58,7 @@ export async function fetchUsers(
   const url = `${API_BASE_URL}/api/admin/User?${queryParams.toString()}`;
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), ADMIN_API_TIMEOUT_MS);
 
   try {
     const response = await fetch(url, {
@@ -110,7 +108,7 @@ export async function createAdminUser(
   idToken: string
 ): Promise<void> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), ADMIN_API_TIMEOUT_MS);
 
   try {
     const response = await fetch(`${API_BASE_URL}/api/admin/User`, {
@@ -155,7 +153,7 @@ export async function deleteUser(
   idToken: string
 ): Promise<void> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), ADMIN_API_TIMEOUT_MS);
 
   try {
     const response = await fetch(`${API_BASE_URL}/api/admin/User/${userId}`, {

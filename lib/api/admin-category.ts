@@ -8,7 +8,7 @@ import {
   CategoryResponse,
 } from '@/lib/types/admin-category';
 import { UpdateCategoryRequest } from '@/lib/types/admin-dashboard';
-import { API_TIMEOUT_MS } from '@/lib/constants/admin-category';
+import { ADMIN_API_TIMEOUT_MS } from '@/lib/config/api';
 import { handleApiError, createNetworkError } from '@/lib/api/admin-utils';
 
 /**
@@ -27,7 +27,7 @@ export async function uploadCategoryImage(
   formData.append('file', file);
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), ADMIN_API_TIMEOUT_MS);
 
   try {
     const response = await fetch(
@@ -73,7 +73,7 @@ export async function createCategory(
   token: string
 ): Promise<CategoryResponse> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), ADMIN_API_TIMEOUT_MS);
 
   try {
     const response = await fetch(
@@ -120,7 +120,7 @@ export async function fetchCategoryById(
   token: string
 ): Promise<CategoryResponse> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), ADMIN_API_TIMEOUT_MS);
 
   try {
     const response = await fetch(
@@ -168,7 +168,7 @@ export async function updateCategory(
   token: string
 ): Promise<CategoryResponse> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), ADMIN_API_TIMEOUT_MS);
 
   try {
     const response = await fetch(
@@ -215,7 +215,7 @@ export async function deleteCategory(
   token: string
 ): Promise<void> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), ADMIN_API_TIMEOUT_MS);
 
   try {
     const response = await fetch(

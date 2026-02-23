@@ -1,6 +1,6 @@
 // Shared API utilities
 
-import { API_TIMEOUT } from '../config/api';
+import { API_TIMEOUT_MS } from '../config/api';
 import type { ProblemDetails } from '../types/api';
 
 /**
@@ -17,7 +17,7 @@ export class APIError extends Error {
  * Fetch with timeout support using AbortController
  * @param url - The URL to fetch
  * @param options - Fetch options
- * @param timeout - Timeout in milliseconds (default: API_TIMEOUT)
+ * @param timeout - Timeout in milliseconds (default: API_TIMEOUT_MS)
  * @returns Promise resolving to the parsed JSON response
  * @throws {APIError} When the API returns an error response
  * @throws {Error} When the request times out or network fails
@@ -25,7 +25,7 @@ export class APIError extends Error {
 export async function fetchWithTimeout<T>(
   url: string,
   options: RequestInit = {},
-  timeout: number = API_TIMEOUT
+  timeout: number = API_TIMEOUT_MS
 ): Promise<T> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
