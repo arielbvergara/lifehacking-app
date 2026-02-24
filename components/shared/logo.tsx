@@ -32,6 +32,8 @@ export function Logo({ size = "md", href = "/", isAdmin = false }: LogoProps) {
           height={64}
           className="w-full h-full object-cover"
           priority
+          quality={85}
+          sizes="(max-width: 640px) 48px, (max-width: 1024px) 56px, 64px"
         />
       </div>
       <span className={`${textSize} font-bold tracking-tight text-gray-900`}>

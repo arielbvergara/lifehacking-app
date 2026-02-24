@@ -78,7 +78,8 @@ export function TipHero({ videoUrl, image, title }: TipHeroProps) {
           alt={altText}
           fill
           priority
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+          quality={85}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, (max-width: 1280px) 80vw, 1200px"
           className="object-cover"
         />
       </div>

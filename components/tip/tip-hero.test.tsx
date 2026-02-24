@@ -179,7 +179,7 @@ describe('TipHero', () => {
       );
 
       const image = screen.getByAltText(`${mockTitle} - Life hack demonstration`);
-      const expectedSizes = '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px';
+      const expectedSizes = '(max-width: 640px) 100vw, (max-width: 1024px) 90vw, (max-width: 1280px) 80vw, 1200px';
       expect(image).toHaveAttribute('data-sizes', expectedSizes);
     });
 
