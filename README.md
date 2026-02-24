@@ -66,6 +66,7 @@ This repository contains the **frontend** of the Lifehacking platform, a full-st
 | Technology | Purpose |
 |------------|---------|
 | [GitHub Actions](https://github.com/features/actions) | CI pipeline — type-checking, linting, unit tests, E2E tests, and build verification on every PR |
+| [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) | Automated performance, accessibility, and SEO audits on every PR and nightly |
 | [GitHub Copilot](https://github.com/features/copilot) | AI-powered code review integrated into pull request workflows |
 | [Dependabot](https://docs.github.com/en/code-security/dependabot) | Automated weekly dependency updates (every Monday) |
 | [Husky](https://typicode.github.io/husky) | Git hooks for pre-commit quality checks |
@@ -219,6 +220,86 @@ pnpm test:e2e:ui
 
 ---
 
+## 🔦 Lighthouse CI - Performance Auditing
+
+This project includes automated Lighthouse audits to track performance, accessibility, and SEO metrics over time.
+
+### Local Audits
+
+```bash
+# Quick audit of key pages (recommended for development)
+pnpm lighthouse:local
+
+# Full audit of all pages (comprehensive testing)
+pnpm lighthouse:full
+```
+
+### Authentication Setup
+
+For auditing authenticated pages (profile, favorites, etc.), you need to configure test credentials:
+
+1. Copy `.env.example` to `.env.local` if you haven't already
+2. Set the following variables:
+   ```bash
+   LHCI_TEST_EMAIL=your-test-user@example.com
+   LHCI_TEST_PASSWORD=your-test-password
+   LHCI_BASE_URL=http://localhost:3000
+   ```
+
+The authentication script (`scripts/lighthouse-auth.js`) will automatically log in and store the JWT token for Lighthouse to use.
+
+### CI/CD Integration
+
+Lighthouse audits run automatically in two scenarios:
+
+1. **Pull Request Checks** (`.github/workflows/lighthouse-ci.yml`)
+   - Runs on every PR
+   - Audits key pages (home, login, profile, favorites, popular tips, search)
+   - Enforces performance budgets
+   - Posts results as PR comment
+   - Fails PR if performance degrades below thresholds
+
+2. **Scheduled Audits** (`.github/workflows/lighthouse-scheduled.yml`)
+   - Runs nightly at 2 AM UTC
+   - Comprehensive audit of all pages
+   - Creates GitHub issue on failure
+   - Stores historical data for trend analysis
+
+### Performance Budgets
+
+The CI configuration enforces these thresholds:
+
+| Metric | Threshold | Level |
+|--------|-----------|-------|
+| Performance Score | ≥ 75 | Error |
+| Accessibility Score | ≥ 90 | Error |
+| Best Practices Score | ≥ 85 | Error |
+| SEO Score | ≥ 85 | Warning |
+| First Contentful Paint | ≤ 2000ms | Warning |
+| Largest Contentful Paint | ≤ 2500ms | Warning |
+| Cumulative Layout Shift | ≤ 0.1 | Warning |
+| Total Blocking Time | ≤ 300ms | Warning |
+| Speed Index | ≤ 3000ms | Warning |
+
+### GitHub Secrets Required
+
+Add these secrets to your GitHub repository for CI/CD:
+
+| Secret | Description |
+|--------|-------------|
+| `LHCI_TEST_EMAIL` | Test user email for authentication |
+| `LHCI_TEST_PASSWORD` | Test user password for authentication |
+| `LHCI_GITHUB_APP_TOKEN` | (Optional) GitHub token for enhanced Lighthouse CI features |
+
+### Configuration Files
+
+- `.lighthouserc.js` - Local development configuration
+- `.lighthouserc.full.js` - Full crawl configuration for comprehensive testing
+- `.lighthouserc.ci.js` - CI-optimized configuration with strict budgets
+- `scripts/lighthouse-auth.js` - JWT authentication handler
+
+---
+
 ## 🔄 CI/CD Pipeline
 
 Every pull request and push to `master`/`development` automatically runs the full quality gate via **GitHub Actions**:
@@ -243,6 +324,8 @@ Production deployments are handled by **Vercel** on merge to `main`, and contain
 | [`docs/Frontend-Quick-Reference.md`](docs/Frontend-Quick-Reference.md) | Quick reference for common patterns |
 | [`docs/CI-Setup.md`](docs/CI-Setup.md) | CI/CD setup and GitHub Secrets guide |
 | [`docs/Sentry-Setup-Guide.md`](docs/Sentry-Setup-Guide.md) | Sentry monitoring configuration guide |
+| [`docs/Lighthouse-Setup-Guide.md`](docs/Lighthouse-Setup-Guide.md) | Complete Lighthouse CI setup and usage guide |
+| [`docs/Lighthouse-Quick-Reference.md`](docs/Lighthouse-Quick-Reference.md) | Quick reference for Lighthouse commands and troubleshooting |
 | [`docs/Next-16-Cache-Components.md`](docs/Next-16-Cache-Components.md) | Next.js 16 caching patterns used in this project |
 | [`docs/api-schema.json`](docs/api-schema.json) | OpenAPI 3.0 schema for backend API integration |
 | [`docs/design-templates/`](docs/design-templates/) | Design templates and UI mockups for key pages |
