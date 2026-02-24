@@ -2,12 +2,13 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
+import { SITE_URL } from '@/lib/config/site';
 
 export const metadata: Metadata = {
   title: 'About Us | Lifehacking',
   description: 'Learn about Lifehacking - your trusted source for practical daily life tips and tricks to make everyday living easier.',
   alternates: {
-    canonical: 'https://lifehackbuddy.com/about',
+    canonical: `${SITE_URL}/about`,
   },
 };
 

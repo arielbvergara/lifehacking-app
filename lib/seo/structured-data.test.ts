@@ -7,6 +7,7 @@ import {
   safeJsonLdStringify,
 } from './structured-data';
 import { TipSummary, TipDetail } from '@/lib/types/api';
+import { SITE_URL } from '@/lib/config/site';
 
 describe('structured-data', () => {
   describe('generateWebsiteStructuredData', () => {
@@ -17,10 +18,10 @@ describe('structured-data', () => {
         '@context': 'https://schema.org',
         '@type': 'WebSite',
         name: 'LifeHackBuddy',
-        url: 'https://lifehackbuddy.com',
+        url: SITE_URL,
         potentialAction: {
           '@type': 'SearchAction',
-          target: 'https://lifehackbuddy.com/search?q={search_term_string}',
+          target: `${SITE_URL}/search?q={search_term_string}`,
           'query-input': 'required name=search_term_string',
         },
       });
@@ -283,7 +284,7 @@ describe('structured-data', () => {
 
       const result = generateBreadcrumbStructuredData(items);
 
-      expect(result.itemListElement[0].item).toBe('https://lifehackbuddy.com/');
+      expect(result.itemListElement[0].item).toBe(`${SITE_URL}/`);
     });
 
     it('generateBreadcrumbStructuredData_ShouldPreserveAbsoluteItemUrls_WhenHrefIsAbsolute', () => {

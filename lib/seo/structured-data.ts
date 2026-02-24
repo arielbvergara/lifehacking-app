@@ -1,4 +1,5 @@
 import { TipSummary, TipDetail } from '@/lib/types/api';
+import { SITE_URL } from '@/lib/config/site';
 
 /**
  * SEO Structured Data Utilities
@@ -74,7 +75,7 @@ export interface HowToStructuredData {
 /**
  * Generates website-level structured data with search action
  */
-export function generateWebsiteStructuredData(baseUrl: string = 'https://lifehackbuddy.com'): WebsiteStructuredData {
+export function generateWebsiteStructuredData(baseUrl: string = SITE_URL): WebsiteStructuredData {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -138,7 +139,7 @@ export function safeJsonLdStringify(data: unknown): string {
  */
 export function generateBreadcrumbStructuredData(
   items: BreadcrumbItem[],
-  baseUrl: string = 'https://lifehackbuddy.com'
+  baseUrl: string = SITE_URL
 ): BreadcrumbStructuredData {
   return {
     '@context': 'https://schema.org',

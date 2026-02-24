@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
+import { SITE_URL } from '@/lib/config/site';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy | Lifehacking',
   description: 'Learn how Lifehacking collects, uses, and protects your personal information.',
   alternates: {
-    canonical: 'https://lifehackbuddy.com/privacy',
+    canonical: `${SITE_URL}/privacy`,
   },
 };
 

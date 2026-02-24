@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { SITE_URL } from '@/lib/config/site';
 
 /**
  * robots.txt generation
@@ -7,8 +8,6 @@ import type { MetadataRoute } from 'next';
  * Blocks authenticated/admin routes and API routes.
  */
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://lifehackbuddy.com';
-
   return {
     rules: [
       {
@@ -26,6 +25,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

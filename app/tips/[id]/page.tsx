@@ -12,6 +12,7 @@ import { TipHero } from '@/components/tip/tip-hero';
 import { TipDescription } from '@/components/tip/tip-description';
 import { TipSteps } from '@/components/tip/tip-steps';
 import { RelatedTips } from '@/components/tip/related-tips';
+import { SITE_URL } from '@/lib/config/site';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -24,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     
     const description = tip.description.slice(0, 160);
     const imageUrl = tip.image?.imageUrl || '/default.png';
-    const canonicalUrl = `https://lifehackbuddy.com/tips/${tip.id}`;
+    const canonicalUrl = `${SITE_URL}/tips/${tip.id}`;
     
     return {
       title: `${tip.title} - LifeHackBuddy`,

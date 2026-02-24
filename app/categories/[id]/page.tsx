@@ -7,6 +7,7 @@ import { TipCard } from '@/components/shared/tip/tip-card';
 import { Breadcrumb } from '@/components/shared/breadcrumb';
 import { getCachedCategoryById, getCachedTipsByCategory } from '@/lib/data/category-data';
 import { generateBreadcrumbStructuredData, safeJsonLdStringify } from '@/lib/seo/structured-data';
+import { SITE_URL } from '@/lib/config/site';
 
 interface CategoryPageProps {
   params: Promise<{
@@ -32,7 +33,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
       title: `${category.name} - LifeHackBuddy`,
       description: `Browse ${category.name} tips and life hacks`,
       alternates: {
-        canonical: `https://lifehackbuddy.com/categories/${id}`,
+        canonical: `${SITE_URL}/categories/${id}`,
       },
     };
   } catch {

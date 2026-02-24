@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
+import { SITE_URL } from '@/lib/config/site';
 
 export const metadata: Metadata = {
   title: 'Terms of Service | Lifehacking',
   description: 'Read the Terms of Service for using Lifehacking.',
   alternates: {
-    canonical: 'https://lifehackbuddy.com/terms',
+    canonical: `${SITE_URL}/terms`,
   },
 };
 
