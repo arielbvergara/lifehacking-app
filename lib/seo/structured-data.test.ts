@@ -3,9 +3,11 @@ import {
   generateWebsiteStructuredData,
   generateTipStructuredData,
   generateHowToStructuredData,
+  generateBreadcrumbStructuredData,
   safeJsonLdStringify,
 } from './structured-data';
 import { TipSummary, TipDetail } from '@/lib/types/api';
+import { SITE_URL } from '@/lib/config/site';
 
 describe('structured-data', () => {
   describe('generateWebsiteStructuredData', () => {
@@ -16,10 +18,10 @@ describe('structured-data', () => {
         '@context': 'https://schema.org',
         '@type': 'WebSite',
         name: 'LifeHackBuddy',
-        url: 'https://lifehackbuddy.com',
+        url: SITE_URL,
         potentialAction: {
           '@type': 'SearchAction',
-          target: 'https://lifehackbuddy.com/search?q={search_term_string}',
+          target: `${SITE_URL}/search?q={search_term_string}`,
           'query-input': 'required name=search_term_string',
         },
       });
@@ -245,6 +247,76 @@ describe('structured-data', () => {
       const result = generateHowToStructuredData(tipWithNullImageUrl);
 
       expect(result.image).toBeUndefined();
+    });
+  });
+
+  describe('generateBreadcrumbStructuredData', () => {
+    it('generateBreadcrumbStructuredData_ShouldReturnValidSchema_WhenCalledWithItems', () => {
+      const items = [
+        { label: 'Home', href: '/' },
+        { label: 'Categories', href: '/categories' },
+        { label: 'Kitchen' },
+      ];
+
+      const result = generateBreadcrumbStructuredData(items);
+
+      expect(result['@context']).toBe('https://schema.org');
+      expect(result['@type']).toBe('BreadcrumbList');
+      expect(result.itemListElement).toHaveLength(3);
+    });
+
+    it('generateBreadcrumbStructuredData_ShouldAssignCorrectPositions_WhenCalledWithItems', () => {
+      const items = [
+        { label: 'Home', href: '/' },
+        { label: 'Categories', href: '/categories' },
+        { label: 'Kitchen' },
+      ];
+
+      const result = generateBreadcrumbStructuredData(items);
+
+      expect(result.itemListElement[0].position).toBe(1);
+      expect(result.itemListElement[1].position).toBe(2);
+      expect(result.itemListElement[2].position).toBe(3);
+    });
+
+    it('generateBreadcrumbStructuredData_ShouldBuildAbsoluteItemUrls_WhenHrefIsRelative', () => {
+      const items = [{ label: 'Home', href: '/' }];
+
+      const result = generateBreadcrumbStructuredData(items);
+
+      expect(result.itemListElement[0].item).toBe(`${SITE_URL}/`);
+    });
+
+    it('generateBreadcrumbStructuredData_ShouldPreserveAbsoluteItemUrls_WhenHrefIsAbsolute', () => {
+      const items = [{ label: 'Home', href: 'https://example.com/' }];
+
+      const result = generateBreadcrumbStructuredData(items);
+
+      expect(result.itemListElement[0].item).toBe('https://example.com/');
+    });
+
+    it('generateBreadcrumbStructuredData_ShouldOmitItemProperty_WhenHrefIsNotProvided', () => {
+      const items = [{ label: 'Current Page' }];
+
+      const result = generateBreadcrumbStructuredData(items);
+
+      expect(result.itemListElement[0].item).toBeUndefined();
+      expect(result.itemListElement[0].name).toBe('Current Page');
+    });
+
+    it('generateBreadcrumbStructuredData_ShouldUseCustomBaseUrl_WhenProvided', () => {
+      const items = [{ label: 'Home', href: '/' }];
+      const customBase = 'https://custom.example.com';
+
+      const result = generateBreadcrumbStructuredData(items, customBase);
+
+      expect(result.itemListElement[0].item).toBe(`${customBase}/`);
+    });
+
+    it('generateBreadcrumbStructuredData_ShouldHandleEmptyItems_WhenCalledWithEmptyArray', () => {
+      const result = generateBreadcrumbStructuredData([]);
+
+      expect(result.itemListElement).toHaveLength(0);
     });
   });
 

@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import TipDetailPage, { generateMetadata } from './page';
 import { getCachedTipById } from '@/lib/data/tip-data';
 import { TipDetail } from '@/lib/types/api';
+import { SITE_URL } from '@/lib/config/site';
 
 // Mock Firebase to avoid API key errors
 vi.mock('@/lib/firebase', () => ({
@@ -123,6 +124,11 @@ vi.mock('@/lib/seo/structured-data', () => ({
       description: tip.description,
     };
   }),
+  generateBreadcrumbStructuredData: vi.fn(() => ({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [],
+  })),
   safeJsonLdStringify: vi.fn((data) => JSON.stringify(data)),
 }));
 
@@ -417,7 +423,7 @@ describe('generateMetadata', () => {
 
       const metadata = await generateMetadata({ params: { id: mockTip.id } });
 
-      expect(metadata.alternates?.canonical).toBe(`https://lifehackbuddy.com/tips/${mockTip.id}`);
+      expect(metadata.alternates?.canonical).toBe(`${SITE_URL}/tips/${mockTip.id}`);
     });
   });
 
@@ -430,7 +436,7 @@ describe('generateMetadata', () => {
       expect(metadata.openGraph?.title).toBe(mockTip.title);
       expect(metadata.openGraph?.description).toBe(mockTip.description.slice(0, 160));
       expect(metadata.openGraph?.type).toBe('article');
-      expect(metadata.openGraph?.url).toBe(`https://lifehackbuddy.com/tips/${mockTip.id}`);
+      expect(metadata.openGraph?.url).toBe(`${SITE_URL}/tips/${mockTip.id}`);
     });
 
     it('Should_IncludeImageInOpenGraph_When_TipHasImage', async () => {

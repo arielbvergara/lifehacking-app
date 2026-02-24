@@ -1,8 +1,19 @@
+import type { Metadata } from 'next';
 import { connection } from 'next/server';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { TipCard } from '@/components/shared/tip/tip-card';
 import { getCachedPopularTips } from '@/lib/data/tip-data';
+import { SITE_URL } from '@/lib/config/site';
+
+export const metadata: Metadata = {
+  title: 'Popular Life Hacks - LifeHackBuddy',
+  description: 'Explore the most popular life hacks on LifeHackBuddy. Find top-rated tips for cooking, cleaning, productivity, and everyday living.',
+  keywords: ['popular life hacks', 'top tips', 'best life hacks', 'trending tips'],
+  alternates: {
+    canonical: `${SITE_URL}/tips/popular`,
+  },
+};
 
 /**
  * PopularTipsPage Component

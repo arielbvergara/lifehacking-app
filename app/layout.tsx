@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/lib/auth/auth-context";
 import { FavoritesProvider } from "@/lib/context/favorites-context";
 import { ToastContainer } from "@/components/shared/toast";
+import { SITE_URL } from "@/lib/config/site";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-display",
@@ -12,7 +13,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://lifehacking.vercel.app'), //TODO: replace for https://lifehacking.com or similar
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "LifeHackBuddy - Simple Life Hacks for Everyday Living",
     template: "%s | LifeHackBuddy",
@@ -36,7 +37,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://lifehackbuddy.com",
+    url: SITE_URL,
     siteName: "LifeHackBuddy",
     title: "LifeHackBuddy - Simple Life Hacks for Everyday Living",
     description: "Discover simple tricks for cooking, cleaning, and living better.",

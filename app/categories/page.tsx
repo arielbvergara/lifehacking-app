@@ -5,11 +5,15 @@ import { Footer } from '@/components/layout/footer';
 import { Breadcrumb } from '@/components/shared/breadcrumb';
 import { CategoryCard } from '@/components/shared/category/category-card';
 import { getCachedCategories } from '@/lib/data/category-data';
+import { SITE_URL } from '@/lib/config/site';
 
 export const metadata: Metadata = {
   title: 'Browse Categories - LifeHackBuddy',
   description: 'Explore all life hack categories including kitchen, cleaning, tech, productivity, and more. Find tips organized by topic.',
   keywords: ['categories', 'life hacks', 'tips', 'browse', 'topics'],
+  alternates: {
+    canonical: `${SITE_URL}/categories`,
+  },
 };
 
 /**

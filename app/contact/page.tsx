@@ -3,10 +3,14 @@ import Link from 'next/link';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { SocialLinks } from '@/components/shared/social-links';
+import { SITE_URL } from '@/lib/config/site';
 
 export const metadata: Metadata = {
   title: 'Contact Us | Lifehacking',
   description: 'Get in touch with the Lifehacking team. We\'d love to hear from you!',
+  alternates: {
+    canonical: `${SITE_URL}/contact`,
+  },
 };
 
 export default function ContactPage() {

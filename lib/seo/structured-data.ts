@@ -1,4 +1,5 @@
 import { TipSummary, TipDetail } from '@/lib/types/api';
+import { SITE_URL } from '@/lib/config/site';
 
 /**
  * SEO Structured Data Utilities
@@ -17,6 +18,22 @@ export interface WebsiteStructuredData {
     target: string;
     'query-input': string;
   };
+}
+
+export interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
+
+export interface BreadcrumbStructuredData {
+  '@context': string;
+  '@type': 'BreadcrumbList';
+  itemListElement: Array<{
+    '@type': 'ListItem';
+    position: number;
+    name: string;
+    item?: string;
+  }>;
 }
 
 export interface ArticleStructuredData {
@@ -58,7 +75,7 @@ export interface HowToStructuredData {
 /**
  * Generates website-level structured data with search action
  */
-export function generateWebsiteStructuredData(baseUrl: string = 'https://lifehackbuddy.com'): WebsiteStructuredData {
+export function generateWebsiteStructuredData(baseUrl: string = SITE_URL): WebsiteStructuredData {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -110,6 +127,37 @@ export function structuredDataToScript(data: WebsiteStructuredData | ArticleStru
  */
 export function safeJsonLdStringify(data: unknown): string {
   return JSON.stringify(data).replace(/</g, '\\u003c');
+}
+
+/**
+ * Generates BreadcrumbList structured data for a page
+ * Follows Schema.org BreadcrumbList specification
+ *
+ * @param items - Array of breadcrumb items with label and optional href
+ * @param baseUrl - Base URL for constructing absolute item URLs
+ * @returns BreadcrumbList structured data object ready for JSON-LD embedding
+ */
+export function generateBreadcrumbStructuredData(
+  items: BreadcrumbItem[],
+  baseUrl: string = SITE_URL
+): BreadcrumbStructuredData {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => {
+      const listItem: BreadcrumbStructuredData['itemListElement'][number] = {
+        '@type': 'ListItem',
+        position: index + 1,
+        name: item.label,
+      };
+      if (item.href) {
+        listItem.item = item.href.startsWith('http')
+          ? item.href
+          : `${baseUrl}${item.href}`;
+      }
+      return listItem;
+    }),
+  };
 }
 
 /**

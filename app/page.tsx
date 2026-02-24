@@ -10,6 +10,7 @@ import { CategoryCarouselSkeleton } from '@/components/home/category-carousel-sk
 import { FeaturedTip } from '@/components/home/featured-tip';
 import { LatestLifehacks } from '@/components/home/latest-lifehacks';
 import { Footer } from '@/components/layout/footer';
+import { SITE_URL } from '@/lib/config/site';
 
 /**
  * Home Page Metadata
@@ -22,13 +23,13 @@ export const metadata: Metadata = {
   description: 'Discover simple tricks for cooking, cleaning, and living better. Browse thousands of practical life hacks organized by category.',
   keywords: ['life hacks', 'tips', 'tricks', 'home organization', 'cooking tips', 'cleaning hacks', 'productivity', 'wellness'],
   alternates: {
-    canonical: 'https://lifehackbuddy.com',
+    canonical: SITE_URL,
   },
   openGraph: {
     title: 'LifeHackBuddy - Simple Life Hacks for Everyday Living',
     description: 'Discover simple tricks for cooking, cleaning, and living better.',
     type: 'website',
-    url: 'https://lifehackbuddy.com',
+    url: SITE_URL,
     images: [
       {
         url: '/og-image.png',
