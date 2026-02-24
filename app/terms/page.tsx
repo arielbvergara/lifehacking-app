@@ -5,6 +5,9 @@ import { Footer } from '@/components/layout/footer';
 export const metadata: Metadata = {
   title: 'Terms of Service | Lifehacking',
   description: 'Read the Terms of Service for using Lifehacking.',
+  alternates: {
+    canonical: 'https://lifehackbuddy.com/terms',
+  },
 };
 
 export default function TermsPage() {

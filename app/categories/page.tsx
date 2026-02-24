@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   title: 'Browse Categories - LifeHackBuddy',
   description: 'Explore all life hack categories including kitchen, cleaning, tech, productivity, and more. Find tips organized by topic.',
   keywords: ['categories', 'life hacks', 'tips', 'browse', 'topics'],
+  alternates: {
+    canonical: 'https://lifehackbuddy.com/categories',
+  },
 };
 
 /**

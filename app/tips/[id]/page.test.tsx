@@ -123,6 +123,11 @@ vi.mock('@/lib/seo/structured-data', () => ({
       description: tip.description,
     };
   }),
+  generateBreadcrumbStructuredData: vi.fn(() => ({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [],
+  })),
   safeJsonLdStringify: vi.fn((data) => JSON.stringify(data)),
 }));
 

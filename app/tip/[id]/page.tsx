@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { connection } from 'next/server';
 import { notFound } from 'next/navigation';
 import { getCachedTipById } from '@/lib/data/tip-data';
-import { generateHowToStructuredData, safeJsonLdStringify } from '@/lib/seo/structured-data';
+import { generateHowToStructuredData, generateBreadcrumbStructuredData, safeJsonLdStringify } from '@/lib/seo/structured-data';
 import { truncateForBreadcrumb } from '@/lib/utils/text';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
@@ -88,12 +88,18 @@ export default async function TipDetailPage({ params }: Props) {
     { label: truncateForBreadcrumb(tip.title) },
   ];
 
+  const breadcrumbStructuredData = generateBreadcrumbStructuredData(breadcrumbItems);
+
   return (
     <>
       {/* Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(breadcrumbStructuredData) }}
       />
 
       {/* Page Layout */}

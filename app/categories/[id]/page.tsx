@@ -6,6 +6,7 @@ import { Footer } from '@/components/layout/footer';
 import { TipCard } from '@/components/shared/tip/tip-card';
 import { Breadcrumb } from '@/components/shared/breadcrumb';
 import { getCachedCategoryById, getCachedTipsByCategory } from '@/lib/data/category-data';
+import { generateBreadcrumbStructuredData, safeJsonLdStringify } from '@/lib/seo/structured-data';
 
 interface CategoryPageProps {
   params: Promise<{
@@ -30,6 +31,9 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
     return {
       title: `${category.name} - LifeHackBuddy`,
       description: `Browse ${category.name} tips and life hacks`,
+      alternates: {
+        canonical: `https://lifehackbuddy.com/categories/${id}`,
+      },
     };
   } catch {
     return {
@@ -72,13 +76,22 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     { label: category.name },
   ];
 
+  const breadcrumbStructuredData = generateBreadcrumbStructuredData(breadcrumbItems);
+
   return (
-    <div className="min-h-screen flex flex-col bg-background-light">
-      <Header />
-      
-      <main className="flex-grow w-full max-w-7xl mx-auto px-4 md:px-8 py-8">
-        {/* Breadcrumb Navigation */}
-        <Breadcrumb items={breadcrumbItems} />
+    <>
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(breadcrumbStructuredData) }}
+      />
+
+      <div className="min-h-screen flex flex-col bg-background-light">
+        <Header />
+        
+        <main className="flex-grow w-full max-w-7xl mx-auto px-4 md:px-8 py-8">
+          {/* Breadcrumb Navigation */}
+          <Breadcrumb items={breadcrumbItems} />
 
         {/* Page Header */}
         <div className="mt-8 mb-8">
@@ -107,5 +120,6 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       
       <Footer />
     </div>
+    </>
   );
 }

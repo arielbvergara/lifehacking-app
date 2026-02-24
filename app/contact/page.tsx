@@ -7,6 +7,9 @@ import { SocialLinks } from '@/components/shared/social-links';
 export const metadata: Metadata = {
   title: 'Contact Us | Lifehacking',
   description: 'Get in touch with the Lifehacking team. We\'d love to hear from you!',
+  alternates: {
+    canonical: 'https://lifehackbuddy.com/contact',
+  },
 };
 
 export default function ContactPage() {

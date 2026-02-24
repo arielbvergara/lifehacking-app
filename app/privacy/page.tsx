@@ -5,6 +5,9 @@ import { Footer } from '@/components/layout/footer';
 export const metadata: Metadata = {
   title: 'Privacy Policy | Lifehacking',
   description: 'Learn how Lifehacking collects, uses, and protects your personal information.',
+  alternates: {
+    canonical: 'https://lifehackbuddy.com/privacy',
+  },
 };
 
 export default function PrivacyPage() {

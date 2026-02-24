@@ -6,6 +6,9 @@ import { Footer } from '@/components/layout/footer';
 export const metadata: Metadata = {
   title: 'About Us | Lifehacking',
   description: 'Learn about Lifehacking - your trusted source for practical daily life tips and tricks to make everyday living easier.',
+  alternates: {
+    canonical: 'https://lifehackbuddy.com/about',
+  },
 };
 
 export default function AboutPage() {
