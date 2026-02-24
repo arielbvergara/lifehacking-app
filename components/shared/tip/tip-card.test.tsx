@@ -28,9 +28,9 @@ vi.mock('@/lib/context/favorites-context', () => ({
 
 // Mock Next.js Image component
 vi.mock('next/image', () => ({
-  default: ({ src, alt }: { src: string; alt: string }) => (
+  default: ({ src, alt, quality, sizes }: { src: string; alt: string; quality?: number; sizes?: string }) => (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={alt} />
+    <img src={src} alt={alt} data-quality={quality} data-sizes={sizes} />
   ),
 }));
 
@@ -185,6 +185,22 @@ describe('TipCard', () => {
     expect(screen.getByText(/Learn the best techniques/)).toBeInTheDocument();
     expect(screen.getByText('Kitchen')).toBeInTheDocument();
     expect(screen.getByAltText('How to Clean Your Kitchen Faster - Kitchen life hack with step-by-step guide')).toBeInTheDocument();
+  });
+
+  describe('Image Optimization Props', () => {
+    it('Should_SetQualityProp_When_ImageIsRendered', () => {
+      render(<TipCard tip={mockTip} />);
+      
+      const image = screen.getByAltText('How to Clean Your Kitchen Faster - Kitchen life hack with step-by-step guide');
+      expect(image).toHaveAttribute('data-quality', '75');
+    });
+
+    it('Should_SetResponsiveSizesProp_When_ImageIsRendered', () => {
+      render(<TipCard tip={mockTip} />);
+      
+      const image = screen.getByAltText('How to Clean Your Kitchen Faster - Kitchen life hack with step-by-step guide');
+      expect(image).toHaveAttribute('data-sizes', '(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 384px');
+    });
   });
 });
 

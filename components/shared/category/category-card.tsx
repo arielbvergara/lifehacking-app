@@ -47,7 +47,8 @@ export function CategoryCard({ category, priority = false }: CategoryCardProps) 
           fill
           className="object-cover"
           priority={priority}
-          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          quality={75}
+          sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 33vw"
         />
         <div className="absolute inset-0 bg-black bg-opacity-40" />
         <div className="relative p-6 h-full flex flex-col justify-end">
