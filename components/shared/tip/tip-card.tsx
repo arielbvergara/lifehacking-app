@@ -64,7 +64,7 @@ export function TipCard({ tip }: TipCardProps) {
             fill
             className="object-cover"
             quality={75}
-            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 400px"
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 384px"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-400">

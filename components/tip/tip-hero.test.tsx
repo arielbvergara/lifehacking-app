@@ -5,13 +5,14 @@ import { TipImage } from '@/lib/types/api';
 
 // Mock Next.js Image component
 vi.mock('next/image', () => ({
-  default: ({ src, alt, priority, sizes, fill, className }: {
+  default: ({ src, alt, priority, sizes, fill, className, quality }: {
     src: string;
     alt: string;
     priority?: boolean;
     sizes?: string;
     fill?: boolean;
     className?: string;
+    quality?: number;
   }) => (
     // eslint-disable-next-line @next/next/no-img-element
     <img
@@ -20,6 +21,7 @@ vi.mock('next/image', () => ({
       data-priority={priority}
       data-sizes={sizes}
       data-fill={fill}
+      data-quality={quality}
       className={className}
     />
   ),
@@ -181,6 +183,18 @@ describe('TipHero', () => {
       const image = screen.getByAltText(`${mockTitle} - Life hack demonstration`);
       const expectedSizes = '(max-width: 640px) 100vw, (max-width: 1024px) 90vw, (max-width: 1280px) 80vw, 1200px';
       expect(image).toHaveAttribute('data-sizes', expectedSizes);
+    });
+
+    it('Should_SetQualityProp_When_RenderingImage', () => {
+      render(
+        <TipHero
+          image={mockImage}
+          title={mockTitle}
+        />
+      );
+
+      const image = screen.getByAltText(`${mockTitle} - Life hack demonstration`);
+      expect(image).toHaveAttribute('data-quality', '85');
     });
 
     it('Should_SetObjectCoverClass_When_RenderingImage', () => {
