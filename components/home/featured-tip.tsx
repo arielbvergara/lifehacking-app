@@ -110,7 +110,7 @@ export function FeaturedTip({ tip }: FeaturedTipProps) {
                     className="object-cover rounded-[24px] shadow-[0_8px_30px_rgba(0,0,0,0.12)] transform rotate-[-6deg] hover:rotate-[-3deg] transition-transform duration-300"
                     loading="lazy"
                     quality={80}
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 600px"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 448px"
                   />
                 </div>
               </div>
