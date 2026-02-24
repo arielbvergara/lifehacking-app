@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Lighthouse CI configuration files (CommonJS)
+    ".lighthouserc*.js",
+    "scripts/**/*.js",
   ]),
 ]);
 

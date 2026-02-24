@@ -14,6 +14,9 @@
     "test:coverage": "vitest --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "lighthouse:local": "lhci autorun --config=.lighthouserc.js",
+    "lighthouse:full": "lhci autorun --config=.lighthouserc.full.js",
+    "lighthouse:ci": "lhci autorun --config=.lighthouserc.ci.js",
     "prepare": "husky"
   },
   "dependencies": {
@@ -29,6 +32,7 @@
   },
   "devDependencies": {
     "@fast-check/vitest": "^0.2.4",
+    "@lhci/cli": "^0.15.0",
     "@playwright/test": "^1.58.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -44,7 +48,9 @@
     "fast-check": "^4.5.3",
     "happy-dom": "^20.7.0",
     "husky": "^9.1.7",
+    "lighthouse": "^12.2.1",
     "postcss": "^8.5.6",
+    "puppeteer": "^24.2.0",
     "tailwindcss": "^3.4.17",
     "typescript": "^5",
     "vitest": "^4.0.18"
