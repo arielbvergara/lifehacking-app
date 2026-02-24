@@ -11,7 +11,7 @@ This repository contains the **frontend** of the Lifehacking platform, a full-st
 | Layer | Repository | Technology |
 |-------|-----------|------------|
 | **Frontend** | [lifehacking-app](https://github.com/arielbvergara/lifehacking-app) (this repo) | Next.js 16 |
-| **Backend** | [lifehacking](https://github.com/arielbvergara/lifehacking) | .NET 9 |
+| **Backend** | [lifehacking](https://github.com/arielbvergara/lifehacking) | .NET 10 |
 
 ---
 
@@ -42,8 +42,10 @@ This repository contains the **frontend** of the Lifehacking platform, a full-st
 
 | Technology | Purpose |
 |------------|---------|
-| [Google Gemini AI](https://ai.google.dev) | In-app AI features powered by `@google/generative-ai` |
+| [Google Gemini AI](https://ai.google.dev) | In-app AI features powered by `@google/generative-ai` for content generation from videos |
 | [Kiro](https://kiro.dev) | AI coding assistant used during development |
+| [Warp](https://warp.dev) | AI coding assistant used during development |
+| [GitHub Copilot](https://github.com/features/copilot) | AI-powered code review integrated into pull request workflows |
 
 ### Observability & Monitoring
 
