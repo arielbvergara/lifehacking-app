@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg";
@@ -8,9 +9,9 @@ interface LogoProps {
 
 export function Logo({ size = "md", href = "/", isAdmin = false }: LogoProps) {
   const iconSize = {
-    sm: "w-8 h-8 text-xl",
-    md: "w-10 h-10 text-2xl",
-    lg: "w-12 h-12 text-3xl",
+    sm: "w-12 h-12",
+    md: "w-14 h-14",
+    lg: "w-16 h-16",
   }[size];
 
   const textSize = {
@@ -20,11 +21,18 @@ export function Logo({ size = "md", href = "/", isAdmin = false }: LogoProps) {
   }[size];
 
   return (
-    <Link href={href} className="flex items-center gap-2">
+    <Link href={href} className="flex items-center gap-3">
       <div
-        className={`${iconSize} rounded-xl flex items-center justify-center transform rotate-3 bg-primary shadow-soft`}
+        className={`${iconSize} rounded-xl flex items-center justify-center transform rotate-3 overflow-hidden shadow-soft`}
       >
-        <span className="material-icons-round text-white">emoji_objects</span>
+        <Image
+          src="/logo.jpeg"
+          alt="LifeHacking Buddy Logo"
+          width={64}
+          height={64}
+          className="w-full h-full object-cover"
+          priority
+        />
       </div>
       <span className={`${textSize} font-bold tracking-tight text-gray-900`}>
         LifeHacking
