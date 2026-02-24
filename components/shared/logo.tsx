@@ -21,7 +21,7 @@ export function Logo({ size = "md", href = "/", isAdmin = false }: LogoProps) {
   }[size];
 
   return (
-    <Link href={href} className="flex items-center gap-3">
+    <Link href={href} className="flex items-center">
       <div
         className={`${iconSize} rounded-xl flex items-center justify-center transform rotate-3 overflow-hidden shadow-soft`}
       >
