@@ -53,3 +53,8 @@ firebase-debug.log
 
 # npm lock file (project uses pnpm)
 package-lock.json
+
+# Lighthouse CI
+.lighthouseci/
+.lighthouse-auth.json
+lighthouse-reports/
