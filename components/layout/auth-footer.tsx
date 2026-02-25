@@ -14,7 +14,7 @@ export function AuthFooter() {
           Help
         </Link>
       </div>
-      © 2023 LifeHacking
+      © {new Date().getFullYear()} LifeHacking
     </footer>
   );
 }
