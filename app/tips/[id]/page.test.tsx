@@ -375,7 +375,7 @@ describe('generateMetadata', () => {
 
       const metadata = await generateMetadata({ params: { id: mockTip.id } });
 
-      expect(metadata.title).toBe(`${mockTip.title} - LifeHackBuddy`);
+      expect(metadata.title).toBe(`${mockTip.title} - LifeHacking`);
     });
   });
 
@@ -516,7 +516,7 @@ describe('generateMetadata', () => {
 
       const metadata = await generateMetadata({ params: { id: 'invalid-id' } });
 
-      expect(metadata.title).toBe('Tip Not Found - LifeHackBuddy');
+      expect(metadata.title).toBe('Tip Not Found - LifeHacking');
       expect(metadata.description).toBe('The tip you are looking for could not be found.');
     });
   });

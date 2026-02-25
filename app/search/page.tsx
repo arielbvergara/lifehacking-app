@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { SearchPageClient } from '@/components/search/search-page-client';
 
 export const metadata: Metadata = {
-  title: 'Search Life Hacks - LifeHackBuddy',
+  title: 'Search Life Hacks - LifeHacking',
   description: 'Search through thousands of practical life hacks by keyword or category.',
   robots: {
     index: false,

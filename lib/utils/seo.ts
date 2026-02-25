@@ -69,5 +69,5 @@ export function generateCategoryMetaDescription(categoryName: string, tipCount: 
  * @returns Complete page title
  */
 export function generatePageTitle(pageTitle: string, includeSiteName: boolean = true): string {
-  return includeSiteName ? `${pageTitle} | LifeHackBuddy` : pageTitle;
+  return includeSiteName ? `${pageTitle} | LifeHacking` : pageTitle;
 }

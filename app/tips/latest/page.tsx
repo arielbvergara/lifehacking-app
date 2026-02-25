@@ -7,8 +7,8 @@ import { getCachedLatestTips } from '@/lib/data/tip-data';
 import { SITE_URL } from '@/lib/config/site';
 
 export const metadata: Metadata = {
-  title: 'Latest Life Hacks - LifeHackBuddy',
-  description: 'Browse the newest life hacks and practical tips added to LifeHackBuddy. Discover fresh ideas for cooking, cleaning, productivity, and more.',
+  title: 'Latest Life Hacks - LifeHacking',
+  description: 'Browse the newest life hacks and practical tips added to LifeHacking. Discover fresh ideas for cooking, cleaning, productivity, and more.',
   keywords: ['latest life hacks', 'new tips', 'recent tips', 'life hacks'],
   alternates: {
     canonical: `${SITE_URL}/tips/latest`,

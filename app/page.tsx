@@ -19,14 +19,14 @@ import { SITE_URL } from '@/lib/config/site';
  * Open Graph tags, Twitter cards, and canonical URL.
  */
 export const metadata: Metadata = {
-  title: 'LifeHackBuddy - Simple Life Hacks for Everyday Living',
+  title: 'LifeHacking - Simple Life Hacks for Everyday Living',
   description: 'Discover simple tricks for cooking, cleaning, and living better. Browse thousands of practical life hacks organized by category.',
   keywords: ['life hacks', 'tips', 'tricks', 'home organization', 'cooking tips', 'cleaning hacks', 'productivity', 'wellness'],
   alternates: {
     canonical: SITE_URL,
   },
   openGraph: {
-    title: 'LifeHackBuddy - Simple Life Hacks for Everyday Living',
+    title: 'LifeHacking - Simple Life Hacks for Everyday Living',
     description: 'Discover simple tricks for cooking, cleaning, and living better.',
     type: 'website',
     url: SITE_URL,
@@ -35,13 +35,13 @@ export const metadata: Metadata = {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'LifeHackBuddy - Simple Life Hacks for Everyday Living',
+        alt: 'LifeHacking - Simple Life Hacks for Everyday Living',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'LifeHackBuddy - Simple Life Hacks for Everyday Living',
+    title: 'LifeHacking - Simple Life Hacks for Everyday Living',
     description: 'Discover simple tricks for cooking, cleaning, and living better.',
     images: ['/twitter-image.png'],
   },

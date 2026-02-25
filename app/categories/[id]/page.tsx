@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
     // Skip metadata generation during build if params are not available
     if (!id) {
       return {
-        title: 'Category - LifeHackBuddy',
+        title: 'Category - LifeHacking',
         description: 'Browse category tips and life hacks',
       };
     }
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
     const category = await getCachedCategoryById(id);
     
     return {
-      title: `${category.name} - LifeHackBuddy`,
+      title: `${category.name} - LifeHacking`,
       description: `Browse ${category.name} tips and life hacks`,
       alternates: {
         canonical: `${SITE_URL}/categories/${id}`,
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
     };
   } catch {
     return {
-      title: 'Category Not Found - LifeHackBuddy',
+      title: 'Category Not Found - LifeHacking',
       description: 'The category you are looking for could not be found.',
     };
   }

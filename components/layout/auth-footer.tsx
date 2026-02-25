@@ -14,7 +14,7 @@ export function AuthFooter() {
           Help
         </Link>
       </div>
-      © 2023 LifeHackBuddy
+      © 2023 LifeHacking
     </footer>
   );
 }
