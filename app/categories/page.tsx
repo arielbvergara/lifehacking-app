@@ -8,7 +8,7 @@ import { getCachedCategories } from '@/lib/data/category-data';
 import { SITE_URL } from '@/lib/config/site';
 
 export const metadata: Metadata = {
-  title: 'Browse Categories - LifeHackBuddy',
+  title: 'Browse Categories - LifeHacking',
   description: 'Explore all life hack categories including kitchen, cleaning, tech, productivity, and more. Find tips organized by topic.',
   keywords: ['categories', 'life hacks', 'tips', 'browse', 'topics'],
   alternates: {

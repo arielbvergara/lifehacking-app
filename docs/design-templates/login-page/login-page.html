@@ -3,7 +3,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Friendly Login - LifeHackBuddy</title>
+<title>Friendly Login - LifeHacking</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
@@ -139,6 +139,9 @@
 <a class="hover:text-primary transition-colors" href="#">Terms</a>
 <a class="hover:text-primary transition-colors" href="#">Help</a>
 </div>
-        © 2023 LifeHackBuddy
+        © <span id="current-year"></span> LifeHacking
     </footer>
+<script>
+  document.getElementById('current-year').textContent = new Date().getFullYear();
+</script>
 </body></html>

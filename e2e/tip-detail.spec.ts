@@ -310,7 +310,7 @@ test.describe('Tip Detail Page', () => {
       await page.goto(`/tips/${validTipId}`);
 
       // Title should include tip title and site name
-      await expect(page).toHaveTitle(/LifeHackBuddy/);
+      await expect(page).toHaveTitle(/LifeHacking/);
     });
 
     test('should have meta description', async ({ page }) => {

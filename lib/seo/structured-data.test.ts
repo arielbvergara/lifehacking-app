@@ -17,7 +17,7 @@ describe('structured-data', () => {
       expect(result).toEqual({
         '@context': 'https://schema.org',
         '@type': 'WebSite',
-        name: 'LifeHackBuddy',
+        name: 'LifeHacking',
         url: SITE_URL,
         potentialAction: {
           '@type': 'SearchAction',
@@ -68,7 +68,7 @@ describe('structured-data', () => {
         datePublished: mockTip.createdAt,
         author: {
           '@type': 'Organization',
-          name: 'LifeHackBuddy',
+          name: 'LifeHacking',
         },
       });
     });

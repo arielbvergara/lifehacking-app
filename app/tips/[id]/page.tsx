@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const canonicalUrl = `${SITE_URL}/tips/${tip.id}`;
     
     return {
-      title: `${tip.title} - LifeHackBuddy`,
+      title: `${tip.title} - LifeHacking`,
       description,
       keywords: [tip.categoryName, ...tip.tags, 'life hack', 'tip'],
       alternates: {
@@ -59,7 +59,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   } catch {
     return {
-      title: 'Tip Not Found - LifeHackBuddy',
+      title: 'Tip Not Found - LifeHacking',
       description: 'The tip you are looking for could not be found.',
     };
   }

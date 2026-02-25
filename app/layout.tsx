@@ -15,14 +15,14 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "LifeHackBuddy - Simple Life Hacks for Everyday Living",
-    template: "%s | LifeHackBuddy",
+    default: "LifeHacking - Simple Life Hacks for Everyday Living",
+    template: "%s | LifeHacking",
   },
   description: "Discover simple tricks for cooking, cleaning, and living better. Browse thousands of practical life hacks organized by category.",
   keywords: ["life hacks", "tips", "tricks", "home organization", "cooking tips", "cleaning hacks", "productivity", "wellness"],
-  authors: [{ name: "LifeHackBuddy" }],
-  creator: "LifeHackBuddy",
-  publisher: "LifeHackBuddy",
+  authors: [{ name: "LifeHacking" }],
+  creator: "LifeHacking",
+  publisher: "LifeHacking",
   robots: {
     index: true,
     follow: true,
@@ -38,24 +38,24 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: SITE_URL,
-    siteName: "LifeHackBuddy",
-    title: "LifeHackBuddy - Simple Life Hacks for Everyday Living",
+    siteName: "LifeHacking",
+    title: "LifeHacking - Simple Life Hacks for Everyday Living",
     description: "Discover simple tricks for cooking, cleaning, and living better.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "LifeHackBuddy - Simple Life Hacks for Everyday Living",
+        alt: "LifeHacking - Simple Life Hacks for Everyday Living",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "LifeHackBuddy - Simple Life Hacks for Everyday Living",
+    title: "LifeHacking - Simple Life Hacks for Everyday Living",
     description: "Discover simple tricks for cooking, cleaning, and living better.",
     images: ["/twitter-image.png"],
-    creator: "@lifehackbuddy",
+    creator: "@lifehacking",
   },
 };
 

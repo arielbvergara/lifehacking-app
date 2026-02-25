@@ -79,7 +79,7 @@ export function generateWebsiteStructuredData(baseUrl: string = SITE_URL): Websi
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'LifeHackBuddy',
+    name: 'LifeHacking',
     url: baseUrl,
     potentialAction: {
       '@type': 'SearchAction',
@@ -102,7 +102,7 @@ export function generateTipStructuredData(tip: TipSummary): ArticleStructuredDat
     datePublished: tip.createdAt,
     author: {
       '@type': 'Organization',
-      name: 'LifeHackBuddy',
+      name: 'LifeHacking',
     },
   };
 }

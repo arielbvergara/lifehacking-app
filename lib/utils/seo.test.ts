@@ -88,7 +88,7 @@ describe('seo', () => {
     it('generatePageTitle_ShouldIncludeSiteName_WhenIncludeSiteNameIsTrue', () => {
       const result = generatePageTitle('Home Page', true);
 
-      expect(result).toBe('Home Page | LifeHackBuddy');
+      expect(result).toBe('Home Page | LifeHacking');
     });
 
     it('generatePageTitle_ShouldExcludeSiteName_WhenIncludeSiteNameIsFalse', () => {
@@ -100,7 +100,7 @@ describe('seo', () => {
     it('generatePageTitle_ShouldIncludeSiteNameByDefault_WhenIncludeSiteNameIsNotProvided', () => {
       const result = generatePageTitle('Home Page');
 
-      expect(result).toBe('Home Page | LifeHackBuddy');
+      expect(result).toBe('Home Page | LifeHacking');
     });
   });
 });
