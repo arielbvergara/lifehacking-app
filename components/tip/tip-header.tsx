@@ -1,6 +1,4 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 /**
  * TipHeaderProps Interface
@@ -43,12 +41,7 @@ function formatDate(isoDate: string): string {
  * />
  */
 export function TipHeader({ title, categoryName, createdAt, tags }: TipHeaderProps) {
-  const router = useRouter();
   const formattedDate = formatDate(createdAt);
-
-  const handleTagClick = (tag: string) => {
-    router.push(`/search?q=${encodeURIComponent(tag)}`);
-  };
 
   return (
     <header className="mb-8">
@@ -77,16 +70,18 @@ export function TipHeader({ title, categoryName, createdAt, tags }: TipHeaderPro
       {/* Tags */}
       {tags && tags.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 mt-4">
-          {tags.map((tag, index) => (
-            <button
-              key={`${tag}-${index}`}
-              onClick={() => handleTagClick(tag)}
-              className="inline-block px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1"
-              type="button"
-            >
-              #{tag.toLowerCase().replace(/\s+/g, '')}
-            </button>
-          ))}
+          {tags.map((tag, index) => {
+            const normalizedTag = tag.trim();
+            return (
+              <Link
+                key={`${tag}-${index}`}
+                href={`/search?q=${encodeURIComponent(normalizedTag)}`}
+                className="inline-block px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1"
+              >
+                #{tag.toLowerCase().replace(/\s+/g, '')}
+              </Link>
+            );
+          })}
         </div>
       )}
     </header>
