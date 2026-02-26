@@ -1,5 +1,14 @@
 import { render, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import { TipHeader } from './tip-header';
+
+// Mock Next.js router
+const mockPush = vi.fn();
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockPush,
+  }),
+}));
 
 describe('TipHeader', () => {
   const mockProps = {
@@ -85,5 +94,84 @@ describe('TipHeader', () => {
     
     const h1 = header?.querySelector('h1');
     expect(h1).toBeInTheDocument();
+  });
+
+  it('TipHeader_ShouldDisplayTags_WhenTagsProvided', () => {
+    const tags = ['quick', 'easy', 'kitchen'];
+    render(<TipHeader {...mockProps} tags={tags} />);
+    
+    expect(screen.getByText('#quick')).toBeInTheDocument();
+    expect(screen.getByText('#easy')).toBeInTheDocument();
+    expect(screen.getByText('#kitchen')).toBeInTheDocument();
+  });
+
+  it('TipHeader_ShouldNotDisplayTags_WhenTagsNotProvided', () => {
+    const { container } = render(<TipHeader {...mockProps} />);
+    
+    const tags = container.querySelectorAll('[class*="bg-gray-100"]');
+    expect(tags.length).toBe(0);
+  });
+
+  it('TipHeader_ShouldNotDisplayTags_WhenTagsArrayEmpty', () => {
+    const { container } = render(<TipHeader {...mockProps} tags={[]} />);
+    
+    const tags = container.querySelectorAll('[class*="bg-gray-100"]');
+    expect(tags.length).toBe(0);
+  });
+
+  it('TipHeader_ShouldFormatTags_WhenTagsHaveSpaces', () => {
+    const tags = ['Quick Tip', 'Easy Method'];
+    render(<TipHeader {...mockProps} tags={tags} />);
+    
+    expect(screen.getByText('#quicktip')).toBeInTheDocument();
+    expect(screen.getByText('#easymethod')).toBeInTheDocument();
+  });
+
+  it('TipHeader_ShouldDisplayMultipleTags_WhenMultipleTagsProvided', () => {
+    const tags = ['tag1', 'tag2', 'tag3', 'tag4', 'tag5'];
+    render(<TipHeader {...mockProps} tags={tags} />);
+    
+    tags.forEach(tag => {
+      expect(screen.getByText(`#${tag}`)).toBeInTheDocument();
+    });
+  });
+
+  it('TipHeader_ShouldApplyCorrectStyling_WhenTagsDisplayed', () => {
+    const tags = ['test'];
+    render(<TipHeader {...mockProps} tags={tags} />);
+    
+    const tagElement = screen.getByText('#test');
+    expect(tagElement).toHaveClass('bg-gray-100', 'text-gray-700', 'rounded-full');
+  });
+
+  it('TipHeader_ShouldNavigateToSearch_WhenTagClicked', async () => {
+    const user = userEvent.setup();
+    const tags = ['quick', 'easy'];
+    render(<TipHeader {...mockProps} tags={tags} />);
+    
+    const quickTag = screen.getByRole('button', { name: '#quick' });
+    await user.click(quickTag);
+    
+    expect(mockPush).toHaveBeenCalledWith('/search?q=quick');
+  });
+
+  it('TipHeader_ShouldEncodeTagsInURL_WhenTagHasSpaces', async () => {
+    const user = userEvent.setup();
+    const tags = ['Quick Tip'];
+    render(<TipHeader {...mockProps} tags={tags} />);
+    
+    const tag = screen.getByRole('button', { name: '#quicktip' });
+    await user.click(tag);
+    
+    expect(mockPush).toHaveBeenCalledWith('/search?q=Quick%20Tip');
+  });
+
+  it('TipHeader_ShouldRenderTagsAsButtons_WhenTagsProvided', () => {
+    const tags = ['test'];
+    render(<TipHeader {...mockProps} tags={tags} />);
+    
+    const tagButton = screen.getByRole('button', { name: '#test' });
+    expect(tagButton).toBeInTheDocument();
+    expect(tagButton.tagName).toBe('BUTTON');
   });
 });

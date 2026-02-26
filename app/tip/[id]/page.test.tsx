@@ -72,7 +72,7 @@ vi.mock('@/components/shared/breadcrumb', () => ({
 }));
 
 vi.mock('@/components/tip/tip-header', () => ({
-  TipHeader: ({ title, categoryName, createdAt }: { title: string; categoryName: string; createdAt: string }) => (
+  TipHeader: ({ title, categoryName, createdAt, tags }: { title: string; categoryName: string; createdAt: string; tags?: string[] }) => (
     <div data-testid="tip-header">
       <h1>{title}</h1>
       <span>{categoryName}</span>

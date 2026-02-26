@@ -117,6 +117,7 @@ export default async function TipDetailPage({ params }: Props) {
               title={tip.title}
               categoryName={tip.categoryName}
               createdAt={tip.createdAt}
+              tags={tip.tags}
             />
 
             <TipHero
