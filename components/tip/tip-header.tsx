@@ -78,7 +78,7 @@ export function TipHeader({ title, categoryName, createdAt, tags }: TipHeaderPro
                 href={`/search?q=${encodeURIComponent(normalizedTag)}`}
                 className="inline-block px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1"
               >
-                #{tag.toLowerCase().replace(/\s+/g, '')}
+                #{normalizedTag.toLowerCase().replace(/\s+/g, '')}
               </Link>
             );
           })}
