@@ -42,9 +42,9 @@ describe('HeroSection', () => {
   it('should render CategoryTags component with default tags', () => {
     render(<HeroSection />);
 
-    expect(screen.getByRole('button', { name: /#kitchenhacks/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /#organization/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /#wellness/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /#DIY/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /#fruit/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /#easy/i })).toBeInTheDocument();
   });
 
   it('should pass onSearch prop to SearchBar', () => {

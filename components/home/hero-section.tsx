@@ -8,7 +8,7 @@ export interface HeroSectionProps {
   onSearch?: (query: string) => void;
 }
 
-const DEFAULT_TAGS = ['kitchenhacks', 'organization', 'wellness'];
+const DEFAULT_TAGS = ['DIY', 'fruit', 'easy'];
 
 /**
  * HeroSection Component

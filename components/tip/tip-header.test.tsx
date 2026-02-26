@@ -86,4 +86,77 @@ describe('TipHeader', () => {
     const h1 = header?.querySelector('h1');
     expect(h1).toBeInTheDocument();
   });
+
+  it('TipHeader_ShouldDisplayTags_WhenTagsProvided', () => {
+    const tags = ['quick', 'easy', 'kitchen'];
+    render(<TipHeader {...mockProps} tags={tags} />);
+    
+    expect(screen.getByText('#quick')).toBeInTheDocument();
+    expect(screen.getByText('#easy')).toBeInTheDocument();
+    expect(screen.getByText('#kitchen')).toBeInTheDocument();
+  });
+
+  it('TipHeader_ShouldNotDisplayTags_WhenTagsNotProvided', () => {
+    render(<TipHeader {...mockProps} />);
+    
+    const tagElement = screen.queryByText(/^#/i);
+    expect(tagElement).not.toBeInTheDocument();
+  });
+
+  it('TipHeader_ShouldNotDisplayTags_WhenTagsArrayEmpty', () => {
+    render(<TipHeader {...mockProps} tags={[]} />);
+    
+    const tagElement = screen.queryByText(/^#/i);
+    expect(tagElement).not.toBeInTheDocument();
+  });
+
+  it('TipHeader_ShouldFormatTags_WhenTagsHaveSpaces', () => {
+    const tags = ['Quick Tip', 'Easy Method'];
+    render(<TipHeader {...mockProps} tags={tags} />);
+    
+    expect(screen.getByText('#quicktip')).toBeInTheDocument();
+    expect(screen.getByText('#easymethod')).toBeInTheDocument();
+  });
+
+  it('TipHeader_ShouldDisplayMultipleTags_WhenMultipleTagsProvided', () => {
+    const tags = ['tag1', 'tag2', 'tag3', 'tag4', 'tag5'];
+    render(<TipHeader {...mockProps} tags={tags} />);
+    
+    tags.forEach(tag => {
+      expect(screen.getByText(`#${tag}`)).toBeInTheDocument();
+    });
+  });
+
+  it('TipHeader_ShouldApplyCorrectStyling_WhenTagsDisplayed', () => {
+    const tags = ['test'];
+    render(<TipHeader {...mockProps} tags={tags} />);
+    
+    const tagElement = screen.getByText('#test');
+    expect(tagElement).toHaveClass('bg-gray-100', 'text-gray-700', 'rounded-full');
+  });
+
+  it('TipHeader_ShouldNavigateToSearch_WhenTagClicked', () => {
+    const tags = ['quick', 'easy'];
+    render(<TipHeader {...mockProps} tags={tags} />);
+    
+    const quickTag = screen.getByRole('link', { name: '#quick' });
+    expect(quickTag).toHaveAttribute('href', '/search?q=quick');
+  });
+
+  it('TipHeader_ShouldEncodeTagsInURL_WhenTagHasSpaces', () => {
+    const tags = ['Quick Tip'];
+    render(<TipHeader {...mockProps} tags={tags} />);
+    
+    const tag = screen.getByRole('link', { name: '#quicktip' });
+    expect(tag).toHaveAttribute('href', '/search?q=Quick%20Tip');
+  });
+
+  it('TipHeader_ShouldRenderTagsAsLinks_WhenTagsProvided', () => {
+    const tags = ['test'];
+    render(<TipHeader {...mockProps} tags={tags} />);
+    
+    const tagLink = screen.getByRole('link', { name: '#test' });
+    expect(tagLink).toBeInTheDocument();
+    expect(tagLink.tagName).toBe('A');
+  });
 });

@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 /**
  * TipHeaderProps Interface
  * 
@@ -7,6 +9,7 @@ export interface TipHeaderProps {
   title: string;
   categoryName: string;
   createdAt: string; // ISO 8601 date-time
+  tags?: string[];
 }
 
 /**
@@ -26,7 +29,7 @@ function formatDate(isoDate: string): string {
 /**
  * TipHeader Component
  * 
- * Displays tip title, category badge, and metadata (creation date).
+ * Displays tip title, category badge, and metadata (creation date, tags).
  * Uses responsive typography that scales from 4xl to 5xl.
  * 
  * @example
@@ -34,9 +37,10 @@ function formatDate(isoDate: string): string {
  *   title="Peel Garlic in 10 Seconds"
  *   categoryName="Kitchen"
  *   createdAt="2024-01-15T10:30:00Z"
+ *   tags={['quick', 'easy', 'kitchen']}
  * />
  */
-export function TipHeader({ title, categoryName, createdAt }: TipHeaderProps) {
+export function TipHeader({ title, categoryName, createdAt, tags }: TipHeaderProps) {
   const formattedDate = formatDate(createdAt);
 
   return (
@@ -62,6 +66,24 @@ export function TipHeader({ title, categoryName, createdAt }: TipHeaderProps) {
           {formattedDate}
         </time>
       </div>
+
+      {/* Tags */}
+      {tags && tags.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 mt-4">
+          {tags.map((tag, index) => {
+            const normalizedTag = tag.trim();
+            return (
+              <Link
+                key={`${tag}-${index}`}
+                href={`/search?q=${encodeURIComponent(normalizedTag)}`}
+                className="inline-block px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1"
+              >
+                #{normalizedTag.toLowerCase().replace(/\s+/g, '')}
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </header>
   );
 }
