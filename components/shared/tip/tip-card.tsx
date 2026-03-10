@@ -48,6 +48,7 @@ export function TipCard({ tip }: TipCardProps) {
         }
       }}
       aria-label={`View tip: ${tip.title}`}
+      data-testid="tip-card"
     >
       {/* Structured Data (JSON-LD) */}
       <script
