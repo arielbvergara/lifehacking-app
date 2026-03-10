@@ -61,9 +61,12 @@ export async function logout(page: Page): Promise<void> {
     }
   }
 
-  // Wait deterministically for logged-out state: "Login" link should appear
-  const loginLink = page.getByRole('link', { name: /^login$/i });
-  await loginLink.waitFor({ state: 'visible', timeout: 10000 });
+  // Wait deterministically for logged-out state:
+  // Either the "Login" link appears in the main header, or we get redirected to /login
+  await Promise.race([
+    page.getByRole('link', { name: /^login$/i }).waitFor({ state: 'visible', timeout: 10000 }),
+    page.waitForURL(/\/login/, { timeout: 10000 }),
+  ]);
 }
 
 /**
