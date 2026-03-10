@@ -41,8 +41,6 @@ export async function login(
  * @param page - Playwright page object
  */
 export async function logout(page: Page): Promise<void> {
-  const urlBeforeLogout = page.url();
-
   // The Sign Out button is in a dropdown menu, need to open it first
   // Look for the user menu button (UserAvatar)
   const userMenuButton = page.getByRole('button', { name: /user menu/i });
@@ -63,13 +61,9 @@ export async function logout(page: Page): Promise<void> {
     }
   }
 
-  // Wait for sign-out to complete deterministically:
-  // - URL changes (handleSignOut navigates to '/' after sign-out)
-  // - OR the "Login" link appears in the header (auth state updated)
-  await Promise.race([
-    page.waitForURL((url) => url.href !== urlBeforeLogout, { timeout: 15000 }),
-    page.getByRole('link', { name: /^login$/i }).waitFor({ state: 'visible', timeout: 15000 }),
-  ]);
+  // Navigate to login page after sign-out to ensure a clean, deterministic state
+  await page.goto('/login');
+  await page.waitForURL(/\/login/, { timeout: 10000 });
 }
 
 /**
