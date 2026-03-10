@@ -36,18 +36,12 @@ Configure test environment via environment variables:
 # Default: Test against localhost (your local changes)
 pnpm test:e2e
 
-# CI/CD: Test against deployed environment (set in CI pipeline)
-E2E_BASE_URL=https://lifehacking.vercel.app pnpm test:e2e
-```
-
 You can also set these in a `.env.local` file:
 ```env
 # For local development (default)
-E2E_BASE_URL=http://localhost:3000
 NEXT_PUBLIC_API_BASE_URL=http://localhost:5055
 
 # For testing deployed environment
-# E2E_BASE_URL=https://lifehacking.vercel.app
 # NEXT_PUBLIC_API_BASE_URL=https://slight-janet-lifehacking-ce47cbe0.koyeb.app
 ```
 
@@ -103,11 +97,12 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:5055
 ### Authentication Testing
 The e2e tests include comprehensive authentication flow testing using real Firebase credentials:
 
-**Test Credentials:**
-- Email: `e2e-tests@lifehacking.com`
-- Password: `e2e-tests@lifehacking.com`
+**Test Credentials Configuration:**
+The tests use a dedicated Firebase test user account. Configure credentials via environment variables:
+- `E2E_TEST_EMAIL` — test account email
+- `E2E_TEST_PASSWORD` — test account password
 
-These credentials are stored in `e2e/fixtures/mock-data.ts` as constants and used across authentication tests.
+These are read in `e2e/fixtures/mock-data.ts` and fall back to default values if not set. For CI, configure them as repository secrets.
 
 **Authentication Test Coverage:**
 - Successful login with valid credentials
@@ -132,9 +127,6 @@ The `e2e/helpers/auth-helper.ts` module provides reusable utilities:
 # Run all e2e tests (against localhost by default)
 pnpm test:e2e
 
-# Run against deployed test environment (for CI/CD or manual verification)
-E2E_BASE_URL=https://lifehacking.vercel.app pnpm test:e2e
-
 # Run specific test file
 pnpm exec playwright test e2e/home.spec.ts
 
@@ -151,7 +143,6 @@ pnpm exec playwright test --debug e2e/home.spec.ts
 ## CI/CD Integration
 
 The e2e tests run in a separate job in the CI pipeline (`.github/workflows/ci.yml`):
-- Should be configured to run against deployed test environment: `E2E_BASE_URL=https://lifehacking.vercel.app`
 - Tests run after deployment to verify production-like environment
 - Uses cached Playwright browsers for faster execution
 - Uploads test reports as artifacts
@@ -182,16 +173,6 @@ The e2e tests run in a separate job in the CI pipeline (`.github/workflows/ci.ym
 - Check backend API: `curl https://slight-janet-lifehacking-ce47cbe0.koyeb.app/api/Category`
 - Ensure you're not behind a firewall blocking the test environment
 
-**Want to test locally:**
-```bash
-# Start your local servers first
-pnpm run dev  # Terminal 1
-# Start backend on localhost:5055  # Terminal 2
-
-# Then run tests against local
-E2E_BASE_URL=http://localhost:3000 E2E_API_URL=http://localhost:5055 pnpm test:e2e
-```
-
 ### Port Already in Use
 If you see `EADDRINUSE` error when testing locally:
 ```bash
@@ -215,7 +196,7 @@ The backend may rate limit requests. If you see 429 errors:
 - Use local environment for rapid test iteration
 
 ### Authentication Issues
-- Verify test credentials are valid: `e2e-tests@lifehacking.com`
+- Verify test credentials are valid (check `E2E_TEST_EMAIL` / `E2E_TEST_PASSWORD` env vars)
 - Check Firebase configuration in deployed environment
 - Ensure auth state is properly cleared between tests
 

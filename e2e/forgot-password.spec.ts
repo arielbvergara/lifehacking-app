@@ -19,11 +19,17 @@ test.describe('Forgot Password Page', () => {
 
     const submitButton = page.getByRole('button', { name: /send reset link/i });
 
+    const emailInput = page.getByLabel(/email address/i);
+
     // Try to submit without filling email
     await submitButton.click();
 
-    // Form should not have submitted (button still enabled)
-    await expect(submitButton).toBeVisible();
+    // Email input should be invalid according to browser validation
+    const isEmailValid = await emailInput.evaluate((el: HTMLInputElement) => el.validity.valid);
+    expect(isEmailValid).toBeFalsy();
+
+    // Form should not have submitted: still on the forgot-password page
+    await expect(page).toHaveURL(/\/forgot-password/);
   });
 
   test('should navigate to login page via back to login link', async ({ page }) => {

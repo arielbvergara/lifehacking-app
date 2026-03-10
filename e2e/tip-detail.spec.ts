@@ -142,8 +142,8 @@ test.describe('Tip Detail Page', () => {
           await card.waitFor({ state: 'visible' });
           await card.click();
           
-          // Wait a bit for navigation
-          await page.waitForTimeout(500);
+          // Wait for navigation deterministically
+          await page.waitForURL((url) => url.href !== currentUrl, { timeout: 5000 }).catch(() => {});
           
           // Check if we navigated to a different page
           if (page.url() !== currentUrl) {

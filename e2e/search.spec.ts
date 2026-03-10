@@ -36,8 +36,14 @@ test.describe('Search Page', () => {
     await page.waitForLoadState('networkidle');
 
     const cardCount = await tipCards.count();
-    // Should either show results or an empty state
-    expect(cardCount).toBeGreaterThanOrEqual(0);
+    if (cardCount > 0) {
+      // Verify at least one card is visible
+      await expect(tipCards.first()).toBeVisible();
+    } else {
+      // Should show an empty state or "no results" message
+      const emptyState = page.getByText(/no.*results|no.*tips|nothing found/i);
+      await expect(emptyState).toBeVisible();
+    }
   });
 
   test('should display header with navigation', async ({ page }) => {

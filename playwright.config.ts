@@ -1,22 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-/**
- * E2E Test Configuration
- * 
- * Local Development (default):
- * - Frontend: http://localhost:3000 (tests your changes before deployment)
- * - Backend: http://localhost:5055
- * - Starts local dev server automatically
- * 
- * CI/CD (deployed environment):
- * - Set E2E_BASE_URL=https://lifehacking.vercel.app in CI
- * - Tests against deployed test environment after code is deployed
- * - No local server needed
- * 
- * See https://playwright.dev/docs/test-configuration.
- */
-
-const baseURL = process.env.E2E_BASE_URL || 'http://localhost:3000';
+const baseURL = 'http://localhost:3000';
 const isLocalEnvironment = baseURL.includes('localhost');
 
 export default defineConfig({

@@ -61,8 +61,9 @@ export async function logout(page: Page): Promise<void> {
     }
   }
 
-  // Wait for navigation or auth state change (more flexible)
-  await page.waitForTimeout(2000);
+  // Wait deterministically for logged-out state: "Login" link should appear
+  const loginLink = page.getByRole('link', { name: /^login$/i });
+  await loginLink.waitFor({ state: 'visible', timeout: 10000 });
 }
 
 /**

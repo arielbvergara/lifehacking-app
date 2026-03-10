@@ -3,9 +3,9 @@
  * These fixtures provide consistent test data for API mocking
  */
 
-// Test credentials for authentication flows
-export const E2E_TEST_EMAIL = 'e2e-tests@lifehacking.com';
-export const E2E_TEST_PASSWORD = 'e2e-tests@lifehacking.com';
+// Test credentials for authentication flows (configured via environment variables)
+export const E2E_TEST_EMAIL = process.env.E2E_TEST_EMAIL ?? 'e2e-tests@lifehacking.com';
+export const E2E_TEST_PASSWORD = process.env.E2E_TEST_PASSWORD ?? 'e2e-tests@lifehacking.com';
 
 export const MOCK_CATEGORIES = [
   {
@@ -167,11 +167,13 @@ export const MOCK_CATEGORIES_RESPONSE = {
 
 export const MOCK_TIP_DETAIL = MOCK_TIPS[0];
 
+const MOCK_SEARCH_RESULT_ITEMS = MOCK_TIPS.filter((tip) =>
+  tip.title.toLowerCase().includes('productivity')
+);
+
 export const MOCK_SEARCH_RESULTS = {
-  items: MOCK_TIPS.filter((tip) =>
-    tip.title.toLowerCase().includes('productivity')
-  ),
-  totalCount: 2,
+  items: MOCK_SEARCH_RESULT_ITEMS,
+  totalCount: MOCK_SEARCH_RESULT_ITEMS.length,
   page: 1,
   pageSize: 20,
   totalPages: 1,
