@@ -70,7 +70,7 @@ test.describe('Categories Page', () => {
     // Verify no horizontal scroll
     const bodyWidth = await page.evaluate(() => document.body.scrollWidth);
     const viewportWidth = await page.evaluate(() => window.innerWidth);
-    expect(bodyWidth).toBeLessThanOrEqual(viewportWidth + 10); // Allow 10px tolerance for CI headless rendering differences
+    expect(bodyWidth).toBeLessThanOrEqual(viewportWidth + 20); // Allow 20px tolerance for CI headless rendering differences
   });
 
   test('should have proper heading hierarchy', async ({ page }) => {

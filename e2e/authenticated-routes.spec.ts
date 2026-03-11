@@ -98,7 +98,7 @@ test.describe('Protected Routes - Authentication Required', () => {
 
       // Refresh page
       await page.reload();
-      await page.waitForLoadState('networkidle');
+      await page.waitForLoadState('domcontentloaded');
 
       // Should still be on profile page (not redirected to login)
       await expect(page).toHaveURL('/profile');

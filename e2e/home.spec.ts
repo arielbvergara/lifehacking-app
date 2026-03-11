@@ -7,7 +7,7 @@ test.describe('Home Page', () => {
   test('should display the page title', async ({ page }) => {
     await page.goto('/');
 
-    await expect(page).toHaveTitle(/LifeHacking/i);
+    await expect(page).toHaveTitle(/LifeHackBuddy/i);
   });
 
   test('should display the hero section', async ({ page }) => {

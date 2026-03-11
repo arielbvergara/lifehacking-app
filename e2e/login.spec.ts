@@ -10,7 +10,7 @@ test.describe('Login Page', () => {
     await page.goto('/login');
 
     // Check page title (uses default site title)
-    await expect(page).toHaveTitle(/LifeHacking/i);
+    await expect(page).toHaveTitle(/LifeHackBuddy/i);
 
     // Check form elements are present
     await expect(page.getByLabel(/email/i)).toBeVisible();

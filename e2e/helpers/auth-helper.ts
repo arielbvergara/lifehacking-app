@@ -32,8 +32,25 @@ export async function login(
   await passwordInput.fill(password);
   await submitButton.click();
 
-  // Wait for navigation after successful login
-  await page.waitForURL('/', { timeout: 10000 });
+  // Wait for either successful navigation or login error
+  const loginErrorSelector = 'form [role="alert"]';
+  const navigationPromise = page.waitForURL('/', { timeout: 15000 })
+    .then(() => 'navigated' as const)
+    .catch(() => 'nav-timeout' as const);
+  const errorPromise = page.waitForSelector(loginErrorSelector, { timeout: 15000 })
+    .then(() => 'error' as const)
+    .catch(() => 'err-timeout' as const);
+
+  const result = await Promise.race([navigationPromise, errorPromise]);
+
+  if (result === 'error') {
+    const errorText = await page.locator(loginErrorSelector).textContent();
+    throw new Error(`Login failed: ${errorText}`);
+  }
+
+  if (result !== 'navigated') {
+    throw new Error('Login timed out: did not navigate to home page');
+  }
 }
 
 /**
@@ -61,9 +78,9 @@ export async function logout(page: Page): Promise<void> {
     }
   }
 
-  // Navigate to login page after sign-out to ensure a clean, deterministic state
-  await page.goto('/login');
-  await page.waitForURL(/\/login/, { timeout: 10000 });
+  // Navigate to home page after sign-out to ensure isLoggedIn() can detect the Login link
+  await page.goto('/');
+  await page.waitForURL('/', { timeout: 10000 });
 }
 
 /**
