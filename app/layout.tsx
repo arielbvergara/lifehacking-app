@@ -55,7 +55,7 @@ export const metadata: Metadata = {
     title: "LifeHacking - Simple Life Hacks for Everyday Living",
     description: "Discover simple tricks for cooking, cleaning, and living better.",
     images: ["/twitter-image.png"],
-    creator: "@lifehacking",
+    creator: "@LifeHacking",
   },
 };
 
