@@ -278,7 +278,7 @@ export function FavoritesPageClient() {
       <div className="min-h-screen flex flex-col">
         <Header showSearchBar={false} showCategoryFilter={false} />
         
-        <div className="flex-1 bg-gray-50">
+        <main className="flex-1 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
             {/* Header */}
             <div className="mb-8">
@@ -362,7 +362,7 @@ export function FavoritesPageClient() {
               </div>
             )}
           </div>
-        </div>
+        </main>
 
         <Footer />
       </div>

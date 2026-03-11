@@ -58,7 +58,7 @@ export function TipHero({ videoUrl, image, title }: TipHeroProps) {
   // Priority 1: Render video if videoUrl exists
   if (videoUrl) {
     return (
-      <div className="mb-12">
+      <div className="mb-12" data-testid="tip-hero">
         <VideoEmbed videoUrl={videoUrl} title={title} />
       </div>
     );
@@ -71,7 +71,7 @@ export function TipHero({ videoUrl, image, title }: TipHeroProps) {
     : 'Life hack illustration';
 
   return (
-    <div className="mb-12">
+    <div className="mb-12" data-testid="tip-hero">
       <div className="relative w-full aspect-video rounded-3xl overflow-hidden shadow-card">
         <Image
           src={imageUrl}

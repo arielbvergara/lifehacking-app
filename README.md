@@ -36,7 +36,7 @@ This repository contains the **frontend** of the Lifehacking platform, a full-st
 
 | Technology | Purpose |
 |------------|---------|
-| [Firebase](https://firebase.google.com) | Authentication (Email/Password, Social login) and Firestore database |
+| [Firebase](https://firebase.google.com) | Authentication (Email/Password, Google OAuth) |
 
 ### AI & Intelligence
 
