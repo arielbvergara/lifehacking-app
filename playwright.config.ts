@@ -11,9 +11,9 @@ export default defineConfig({
   workers: process.env.CI ? 1 : 5, // Limit workers to reduce backend load and rate limiting
   reporter: 'html',
   
-  // Global setup and teardown (commented out to use real backend)
-  // globalSetup: require.resolve('./e2e/global-setup.ts'),
-  // globalTeardown: require.resolve('./e2e/global-teardown.ts'),
+  // Global setup and teardown: starts/stops mock API server on port 8080
+  globalSetup: require.resolve('./e2e/global-setup.ts'),
+  globalTeardown: require.resolve('./e2e/global-teardown.ts'),
   
   use: {
     baseURL,
