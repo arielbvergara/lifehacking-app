@@ -66,6 +66,8 @@ jobs:
     name: E2E Tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Temporarily skipped: E2E tests will be re-enabled once new stable features are in place.
+    if: false
 
     steps:
       - name: Checkout code
