@@ -1,5 +1,6 @@
 import { Page } from '@playwright/test';
 import { E2E_TEST_EMAIL, E2E_TEST_PASSWORD } from '../fixtures/mock-data';
+import { setupFirebaseAuthMocks } from './firebase-auth-mock';
 
 /**
  * Authentication helper functions for e2e tests
@@ -17,6 +18,10 @@ export async function login(
   email: string = E2E_TEST_EMAIL,
   password: string = E2E_TEST_PASSWORD
 ): Promise<void> {
+  // Intercept Firebase Auth HTTP calls before the login page mounts so the
+  // SDK never reaches real Firebase with the dummy CI credentials.
+  await setupFirebaseAuthMocks(page, { email });
+
   await page.goto('/login');
 
   const emailInput = page.getByLabel(/email/i);

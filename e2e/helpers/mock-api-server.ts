@@ -2,6 +2,7 @@ import { createServer, IncomingMessage, ServerResponse } from 'http';
 import {
   MOCK_CATEGORIES_RESPONSE,
   MOCK_TIPS,
+  MOCK_USER_PROFILE,
 } from '../fixtures/mock-data';
 
 /**
@@ -114,6 +115,94 @@ export function createMockApiServer() {
             })
           );
         }
+        return;
+      }
+
+      // Route: GET /api/User/me — returns the mock user profile consumed by
+      // AuthProvider's backend sync (`handleUserSync` in lib/api/user.ts).
+      if (pathname === '/api/User/me' && req.method === 'GET') {
+        res.writeHead(200);
+        res.end(JSON.stringify(MOCK_USER_PROFILE));
+        return;
+      }
+
+      // Route: POST /api/User — called by `createUser` / `createUserInBackend`
+      // during the signup flow. Returns the mock profile with a 201 status.
+      if (pathname === '/api/User' && req.method === 'POST') {
+        res.writeHead(201);
+        res.end(JSON.stringify(MOCK_USER_PROFILE));
+        return;
+      }
+
+      // Route: PUT /api/User/me/name — updateDisplayName. Accept and no-op.
+      if (pathname === '/api/User/me/name' && req.method === 'PUT') {
+        res.writeHead(204);
+        res.end();
+        return;
+      }
+
+      // Route: DELETE /api/User/me — deleteAccount. Accept and no-op.
+      if (pathname === '/api/User/me' && req.method === 'DELETE') {
+        res.writeHead(204);
+        res.end();
+        return;
+      }
+
+      // Route: GET /api/me/favorites — FavoritesContext.loadFavorites on mount.
+      // Returns an empty favorites list in the backend response shape
+      // (`FavoritesApiResponse` in lib/api/favorites.ts).
+      if (pathname === '/api/me/favorites' && req.method === 'GET') {
+        const pageSize = Number(url.searchParams.get('pageSize') ?? 10);
+        const pageNumber = Number(url.searchParams.get('pageNumber') ?? 1);
+        res.writeHead(200);
+        res.end(
+          JSON.stringify({
+            favorites: [],
+            metadata: {
+              totalItems: 0,
+              pageNumber,
+              pageSize,
+              totalPages: 0,
+            },
+          })
+        );
+        return;
+      }
+
+      // Route: POST /api/me/favorites/merge — merge local favorites after login.
+      if (
+        pathname === '/api/me/favorites/merge' &&
+        req.method === 'POST'
+      ) {
+        res.writeHead(200);
+        res.end(
+          JSON.stringify({
+            addedCount: 0,
+            skippedCount: 0,
+            failedCount: 0,
+            failedTipIds: [],
+          })
+        );
+        return;
+      }
+
+      // Route: POST /api/me/favorites/:tipId — addFavorite.
+      if (
+        pathname.startsWith('/api/me/favorites/') &&
+        req.method === 'POST'
+      ) {
+        res.writeHead(201);
+        res.end();
+        return;
+      }
+
+      // Route: DELETE /api/me/favorites/:tipId — removeFavorite.
+      if (
+        pathname.startsWith('/api/me/favorites/') &&
+        req.method === 'DELETE'
+      ) {
+        res.writeHead(204);
+        res.end();
         return;
       }
 

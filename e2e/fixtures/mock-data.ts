@@ -7,6 +7,24 @@
 export const E2E_TEST_EMAIL = process.env.E2E_TEST_EMAIL ?? 'e2e-tests@lifehacking.com';
 export const E2E_TEST_PASSWORD = process.env.E2E_TEST_PASSWORD ?? 'e2e-tests@lifehacking.com';
 
+/**
+ * Stable UID used for the mocked test user across Firebase Auth
+ * route interceptors and the mock API server's `/api/User/me` response.
+ */
+export const E2E_TEST_USER_UID = 'e2e-test-user-uid';
+
+/**
+ * Mock UserProfile returned by the backend `/api/User/me` and `POST /api/User`
+ * endpoints during e2e tests. Shape matches `UserProfile` in `lib/api/user.ts`.
+ */
+export const MOCK_USER_PROFILE = {
+  id: E2E_TEST_USER_UID,
+  email: E2E_TEST_EMAIL,
+  displayName: 'E2E Test User',
+  role: 'User',
+  createdAt: '2024-01-01T00:00:00Z',
+};
+
 export const MOCK_CATEGORIES = [
   {
     id: '550e8400-e29b-41d4-a716-446655440001',
